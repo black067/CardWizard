@@ -1,0 +1,1840 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>CardWizard</name>
+    </assembly>
+    <members>
+        <member name="T:CardWizard.App">
+            <summary>
+            Interaction logic for App.xaml
+            </summary>
+            <summary>
+            App
+            </summary>
+        </member>
+        <member name="M:CardWizard.App.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="M:CardWizard.App.Main">
+            <summary>
+            Application Entry Point.
+            </summary>
+        </member>
+        <member name="T:CardWizard.Data.Character">
+            <summary>
+            角色
+            </summary>
+        </member>
+        <member name="T:CardWizard.Data.Character.TraitChangedEventArgs">
+            <summary>
+            特点值发生变化时的事件消息
+            </summary>
+        </member>
+        <member name="P:CardWizard.Data.Character.TraitChangedEventArgs.OriginalBase">
+            <summary>
+            原来的特点基础值
+            </summary>
+        </member>
+        <member name="P:CardWizard.Data.Character.TraitChangedEventArgs.OriginalGrowth">
+            <summary>
+            原来的特点成长值
+            </summary>
+        </member>
+        <member name="P:CardWizard.Data.Character.TraitChangedEventArgs.NewBase">
+            <summary>
+            新的特点基础值
+            </summary>
+        </member>
+        <member name="P:CardWizard.Data.Character.TraitChangedEventArgs.NewGrowth">
+            <summary>
+            新的特点成长值
+            </summary>
+        </member>
+        <member name="P:CardWizard.Data.Character.TraitChangedEventArgs.OriginalSenescence">
+            <summary>
+            原有的衰老惩罚值
+            </summary>
+        </member>
+        <member name="P:CardWizard.Data.Character.TraitChangedEventArgs.NewSenescence">
+            <summary>
+            新的衰老惩罚值
+            </summary>
+        </member>
+        <member name="P:CardWizard.Data.Character.TraitChangedEventArgs.Key">
+            <summary>
+            发生变化的特点名称
+            </summary>
+        </member>
+        <member name="M:CardWizard.Data.Character.GetTraitBase(System.String)">
+            <summary>
+            取得角色特点的基础值
+            </summary>
+            <param name="key"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CardWizard.Data.Character.SetTraitBase(System.String,System.Int32)">
+            <summary>
+            设置特点的基础值
+            </summary>
+            <param name="key"></param>
+            <param name="value"></param>
+        </member>
+        <member name="M:CardWizard.Data.Character.GetTraitGrowth(System.String)">
+            <summary>
+            取得特点的成长值
+            </summary>
+            <param name="key"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CardWizard.Data.Character.SetTraitGrowth(System.String,System.Int32)">
+            <summary>
+            设置特点的成长值
+            </summary>
+            <param name="key"></param>
+            <param name="value"></param>
+        </member>
+        <member name="M:CardWizard.Data.Character.GetTraitSenescence(System.String)">
+            <summary>
+            取得特点的衰老惩罚值
+            </summary>
+            <param name="key"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CardWizard.Data.Character.SetTraitSenescence(System.String,System.Int32)">
+            <summary>
+            设置特点的衰老惩罚值
+            </summary>
+            <param name="key"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CardWizard.Data.Character.GetTrait(System.String)">
+            <summary>
+            取得特点的最终值, 包括基础与成长
+            </summary>
+            <param name="key"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CardWizard.Data.Character.GetTraitText(System.String)">
+            <summary>
+            取得特点值的字符串表达式
+            <para>形如: {base}+{growth}</para>
+            </summary>
+            <param name="key"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CardWizard.Data.Character.SplitTraitText(System.String)">
+            <summary>
+            分割记录了角色特点的字符串
+            </summary>
+            <param name="valueText"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CardWizard.Data.Character.SetTrait(System.String,System.String)">
+            <summary>
+            解析字符串, 设置特点的值
+            </summary>
+            <param name="key"></param>
+            <param name="valueText"></param>
+        </member>
+        <member name="P:CardWizard.Data.Character.Name">
+            <summary>
+            名称
+            </summary>
+        </member>
+        <member name="P:CardWizard.Data.Character.Age">
+            <summary>
+            年龄
+            </summary>
+        </member>
+        <member name="P:CardWizard.Data.Character.Era">
+            <summary>
+            时代
+            </summary>
+        </member>
+        <member name="P:CardWizard.Data.Character.Gender">
+            <summary>
+            性别
+            </summary>
+        </member>
+        <member name="P:CardWizard.Data.Character.Education">
+            <summary>
+            学历
+            </summary>
+        </member>
+        <member name="P:CardWizard.Data.Character.Occupation">
+            <summary>
+            职业
+            </summary>
+        </member>
+        <member name="P:CardWizard.Data.Character.Homeland">
+            <summary>
+            故乡
+            </summary>
+        </member>
+        <member name="P:CardWizard.Data.Character.Traits">
+            <summary>
+            角色的特点值
+            </summary>
+        </member>
+        <member name="P:CardWizard.Data.Character.Growths">
+            <summary>
+            特点成长值
+            </summary>
+        </member>
+        <member name="P:CardWizard.Data.Character.Senescence">
+            <summary>
+            衰老惩罚
+            </summary>
+        </member>
+        <member name="P:CardWizard.Data.Character.OccupationPoints">
+            <summary>
+            职业点数
+            </summary>
+        </member>
+        <member name="P:CardWizard.Data.Character.InterestPoints">
+            <summary>
+            兴趣点数
+            </summary>
+        </member>
+        <member name="P:CardWizard.Data.Character.Skills">
+            <summary>
+            个人技能
+            </summary>
+        </member>
+        <member name="F:CardWizard.Data.Character.skills">
+            <summary>
+            角色的所有个人技能
+            </summary>
+        </member>
+        <member name="E:CardWizard.Data.Character.PropertyChanged">
+            <summary>
+            角色名称等信息发生改变时, 触发的事件
+            <para>注意, 角色的特点数值变化需要监听事件 <see cref="E:CardWizard.Data.Character.TraitChanged"/> </para>
+            </summary>
+        </member>
+        <member name="E:CardWizard.Data.Character.TraitChanged">
+            <summary>
+            角色的特点数值发生改变时, 触发的事件
+            </summary>
+        </member>
+        <member name="M:CardWizard.Data.Character.UpdateData(System.String)">
+            <summary>
+            更新角色信息
+            </summary>
+            <param name="name"></param>
+        </member>
+        <member name="M:CardWizard.Data.Character.UpdateTrait(CardWizard.Data.Character.TraitChangedEventArgs)">
+            <summary>
+            更新特点数值
+            </summary>
+            <param name="propKey"></param>
+        </member>
+        <member name="M:CardWizard.Data.Character.ClearObservers">
+            <summary>
+            清空所有对角色数值/属性改变的监听
+            <para>清空 <see cref="E:CardWizard.Data.Character.TraitChanged"/> 与 <see cref="E:CardWizard.Data.Character.PropertyChanged"/></para>
+            </summary>
+        </member>
+        <member name="M:CardWizard.Data.Character.Create(System.Collections.Generic.Dictionary{System.String,CardWizard.Data.DataModel},System.Func{System.Collections.Generic.Dictionary{System.String,System.Int32},System.String,System.Int32})">
+            <summary>
+            创建一个新角色
+            </summary>
+            <param name="baseModelDict"></param>
+            <param name="calculator"></param>
+            <returns></returns>
+        </member>
+        <member name="T:CardWizard.Data.Config">
+            <summary>
+            配置数据
+            </summary>
+        </member>
+        <member name="F:CardWizard.Data.Config.KEY_ASSET">
+            <summary>
+            调查员资产的缩写
+            </summary>
+        </member>
+        <member name="F:CardWizard.Data.Config.GCInterval">
+            <summary>
+            垃圾回收的周期
+            </summary>
+        </member>
+        <member name="F:CardWizard.Data.Config.SaveTranslationDoc">
+            <summary>
+            是否保存翻译后的文本
+            </summary>
+        </member>
+        <member name="F:CardWizard.Data.Config.FileExtensionForCard">
+            <summary>
+            角色存档文件的标准后缀名
+            </summary>
+        </member>
+        <member name="F:CardWizard.Data.Config.FileExtensionForCardDoc">
+            <summary>
+            角色存档的翻译文件的标准后缀名
+            </summary>
+        </member>
+        <member name="T:CardWizard.Data.Config.Localization">
+            <summary>
+            本地化文本相关数据
+            </summary>
+        </member>
+        <member name="F:CardWizard.Data.Config.Localization.labelForEras">
+            <summary>
+            可选择的时代
+            </summary>
+        </member>
+        <member name="F:CardWizard.Data.Config.Localization.dictionary">
+            <summary>
+            名词翻译
+            </summary>
+        </member>
+        <member name="M:CardWizard.Data.Config.Localization.TryTranslate(System.String,System.String@,System.Boolean)">
+            <summary>
+            查询翻译文字
+            </summary>
+            <param name="path"></param>
+            <param name="text"></param>
+            <returns></returns>
+        </member>
+        <member name="F:CardWizard.Data.Config.Translator">
+            <summary>
+            文本翻译工具
+            </summary>
+        </member>
+        <member name="T:CardWizard.Data.Config.PathsDatabase">
+            <summary>
+            路径数据库, 缓存了应用的特殊路径
+            </summary>
+        </member>
+        <member name="F:CardWizard.Data.Config.PathsDatabase.PathSave">
+            <summary>
+            存档的根目录
+            </summary>
+        </member>
+        <member name="F:CardWizard.Data.Config.PathsDatabase.PathResources">
+            <summary>
+            资源的根目录
+            </summary>
+        </member>
+        <member name="F:CardWizard.Data.Config.PathsDatabase.PathData">
+            <summary>
+            数据存放的根目录
+            </summary>
+        </member>
+        <member name="F:CardWizard.Data.Config.PathsDatabase.FileSkills">
+            <summary>
+            技能数据位置
+            </summary>
+        </member>
+        <member name="F:CardWizard.Data.Config.PathsDatabase.FileOccupations">
+            <summary>
+            职业数据的位置
+            </summary>
+        </member>
+        <member name="F:CardWizard.Data.Config.PathsDatabase.FileWeapons">
+            <summary>
+            武器数据的位置
+            </summary>
+        </member>
+        <member name="F:CardWizard.Data.Config.PathsDatabase.PathScripts">
+            <summary>
+            脚本的目录
+            </summary>
+        </member>
+        <member name="F:CardWizard.Data.Config.PathsDatabase.ScriptFormula">
+            <summary>
+            启动脚本的位置
+            </summary>
+        </member>
+        <member name="F:CardWizard.Data.Config.PathsDatabase.ScriptStartup">
+            <summary>
+            启动完毕脚本的位置
+            </summary>
+        </member>
+        <member name="F:CardWizard.Data.Config.PathsDatabase.ScriptDebug">
+            <summary>
+            Debug 脚本的位置
+            </summary>
+        </member>
+        <member name="F:CardWizard.Data.Config.PathsDatabase.PathTextures">
+            <summary>
+            图片资源的位置
+            </summary>
+        </member>
+        <member name="F:CardWizard.Data.Config.Paths">
+            <summary>
+            路径数据, 缓存了应用的特殊路径
+            </summary>
+        </member>
+        <member name="F:CardWizard.Data.Config.DataModels">
+            <summary>
+            基础属性模型
+            </summary>
+        </member>
+        <member name="P:CardWizard.Data.Config.BaseModelDict">
+            <summary>
+            属性模型的字典
+            </summary>
+        </member>
+        <member name="T:CardWizard.Data.Config.ProcessIndexAttribute">
+            <summary>
+            用于指定 <see cref="M:CardWizard.Data.Config.Process"/> 中, 处理此字段的顺序 (数字升序)
+            </summary>
+        </member>
+        <member name="M:CardWizard.Data.Config.MapKeywords(System.String,System.Collections.Generic.Dictionary{System.String,System.Func{System.String}})">
+            <summary>
+            将语句中的关键字 (被 '{' 与 '}' 环绕的词) 替换为 <paramref name="getters"/> 中获取的值
+            </summary>
+            <param name="sentence"></param>
+            <param name="getters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CardWizard.Data.Config.Process">
+            <summary>
+            处理数据
+            </summary>
+        </member>
+        <member name="P:CardWizard.Data.DataBus.Skills">
+            <summary>
+            技能数据
+            </summary>
+        </member>
+        <member name="P:CardWizard.Data.DataBus.Occupations">
+            <summary>
+            职业数据
+            </summary>
+        </member>
+        <member name="P:CardWizard.Data.DataBus.Weapons">
+            <summary>
+            武器数据
+            </summary>
+        </member>
+        <member name="M:CardWizard.Data.DataBus.TryGetSkill(System.String,CardWizard.Data.Skill@)">
+            <summary>
+            根据技能名称查询技能
+            </summary>
+            <param name="key"></param>
+            <param name="skill"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CardWizard.Data.DataBus.TryGetOccupation(System.String,CardWizard.Data.Occupation@)">
+            <summary>
+            根据职业名称查询职业
+            </summary>
+            <param name="key"></param>
+            <param name="occupation"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CardWizard.Data.DataBus.TryGetWeapon(System.String,CardWizard.Data.Weapon@)">
+            <summary>
+            根据武器名称查询武器
+            </summary>
+            <param name="key"></param>
+            <param name="weapon"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CardWizard.Data.DataBus.#ctor">
+            <summary>
+            初始化数据总线
+            </summary>
+        </member>
+        <member name="M:CardWizard.Data.DataBus.LoadAll(System.String)">
+            <summary>
+            从文件/文件夹中读取数据
+            <para>如果是文件夹, 会读取文件夹内的所有子目录与子文件</para>
+            </summary>
+            <param name="path"></param>
+        </member>
+        <member name="M:CardWizard.Data.DataBus.CacheData(System.Object)">
+            <summary>
+            将数据储存到库中
+            </summary>
+            <param name="item"></param>
+        </member>
+        <member name="T:CardWizard.Data.DataModel">
+            <summary>
+            角色属性的模型
+            </summary>
+        </member>
+        <member name="P:CardWizard.Data.DataModel.Name">
+            <summary>
+            名称
+            </summary>
+        </member>
+        <member name="P:CardWizard.Data.DataModel.Description">
+            <summary>
+            描述
+            </summary>
+        </member>
+        <member name="P:CardWizard.Data.DataModel.Formula">
+            <summary>
+            生成公式
+            </summary>
+        </member>
+        <member name="P:CardWizard.Data.DataModel.Derived">
+            <summary>
+            是否为派生属性
+            </summary>
+        </member>
+        <member name="P:CardWizard.Data.DataModel.Upper">
+            <summary>
+            上限
+            </summary>
+        </member>
+        <member name="T:CardWizard.Data.Occupation">
+            <summary>
+            职业
+            </summary>
+        </member>
+        <member name="P:CardWizard.Data.Occupation.Name">
+            <summary>
+            职业名称
+            </summary>
+        </member>
+        <member name="P:CardWizard.Data.Occupation.Description">
+            <summary>
+            技能描述
+            </summary>
+        </member>
+        <member name="P:CardWizard.Data.Occupation.Skills">
+            <summary>
+            职业技能
+            </summary>
+        </member>
+        <member name="P:CardWizard.Data.Occupation.ContextData">
+            <summary>
+            客制化数据
+            </summary>
+        </member>
+        <member name="T:CardWizard.Data.Skill">
+            <summary>
+            技能
+            </summary>
+        </member>
+        <member name="P:CardWizard.Data.Skill.Name">
+            <summary>
+            名称
+            </summary>
+        </member>
+        <member name="P:CardWizard.Data.Skill.Description">
+            <summary>
+            技能描述
+            </summary>
+        </member>
+        <member name="P:CardWizard.Data.Skill.BaseValue">
+            <summary>
+            技能基础值
+            </summary>
+        </member>
+        <member name="P:CardWizard.Data.Skill.ContextData">
+            <summary>
+            客制化数据, 比如成长值等
+            </summary>
+        </member>
+        <member name="M:CardWizard.Data.Skill.Clone">
+            <summary>
+            取得拷贝
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:CardWizard.Data.Weapon">
+            <summary>
+            武器的数据结构
+            </summary>
+        </member>
+        <member name="T:CardWizard.Data.Weapon.WEAPONTYPE">
+            <summary>
+            枚举: 武器类型
+            </summary>
+        </member>
+        <member name="F:CardWizard.Data.Weapon.WEAPONTYPE.Melee">
+            <summary>
+            近战武器
+            </summary>
+        </member>
+        <member name="F:CardWizard.Data.Weapon.WEAPONTYPE.Pistol">
+            <summary>
+            手枪
+            </summary>
+        </member>
+        <member name="F:CardWizard.Data.Weapon.WEAPONTYPE.Shotgun">
+            <summary>
+            霰弹枪
+            </summary>
+        </member>
+        <member name="F:CardWizard.Data.Weapon.WEAPONTYPE.Rifle">
+            <summary>
+            步枪
+            </summary>
+        </member>
+        <member name="F:CardWizard.Data.Weapon.WEAPONTYPE.SubmachineGun">
+            <summary>
+            冲锋枪
+            </summary>
+        </member>
+        <member name="F:CardWizard.Data.Weapon.WEAPONTYPE.MachineGun">
+            <summary>
+            机枪
+            </summary>
+        </member>
+        <member name="F:CardWizard.Data.Weapon.WEAPONTYPE.HeavyWeapon">
+            <summary>
+            重武器
+            </summary>
+        </member>
+        <member name="F:CardWizard.Data.Weapon.WEAPONTYPE.Explosive">
+            <summary>
+            爆炸物
+            </summary>
+        </member>
+        <member name="F:CardWizard.Data.Weapon.WEAPONTYPE.Misc">
+            <summary>
+            其它
+            </summary>
+        </member>
+        <member name="P:CardWizard.Data.Weapon.Name">
+            <summary>
+            武器名称
+            </summary>
+        </member>
+        <member name="P:CardWizard.Data.Weapon.WeaponType">
+            <summary>
+            武器类型
+            </summary>
+        </member>
+        <member name="P:CardWizard.Data.Weapon.Description">
+            <summary>
+            武器描述
+            </summary>
+        </member>
+        <member name="P:CardWizard.Data.Weapon.Hitrate">
+            <summary>
+            基本命中率公式
+            </summary>
+        </member>
+        <member name="P:CardWizard.Data.Weapon.Damage">
+            <summary>
+            伤害公式
+            </summary>
+        </member>
+        <member name="P:CardWizard.Data.Weapon.BaseRange">
+            <summary>
+            基础射程
+            </summary>
+        </member>
+        <member name="P:CardWizard.Data.Weapon.AttacksPerRound">
+            <summary>
+            每轮攻击次数
+            </summary>
+        </member>
+        <member name="P:CardWizard.Data.Weapon.Bullets">
+            <summary>
+            装弹数
+            </summary>
+        </member>
+        <member name="P:CardWizard.Data.Weapon.Resistance">
+            <summary>
+            耐久度
+            </summary>
+        </member>
+        <member name="P:CardWizard.Data.Weapon.Prices">
+            <summary>
+            在各个年代的价格
+            </summary>
+        </member>
+        <member name="P:CardWizard.Data.Weapon.ContextData">
+            <summary>
+            客制化数据
+            </summary>
+        </member>
+        <member name="M:CardWizard.Data.Weapon.SetType(System.String)">
+            <summary>
+            用字符串设置武器类型 <see cref="P:CardWizard.Data.Weapon.WeaponType"/> 的值
+            </summary>
+            <param name="value"></param>
+        </member>
+        <member name="M:CardWizard.Data.Weapon.SetType(System.Int32)">
+            <summary>
+            用 <see cref="T:System.Int32"/> 设置武器类型 <see cref="P:CardWizard.Data.Weapon.WeaponType"/> 的值
+            </summary>
+            <param name="value"></param>
+        </member>
+        <member name="T:CardWizard.MainWindow">
+            <summary>
+            Interaction logic for MainWindow.xaml
+            </summary>
+            <summary>
+            MainWindow
+            </summary>
+        </member>
+        <member name="F:CardWizard.MainWindow.manager">
+            <summary>
+            处理逻辑与数据
+            </summary>
+        </member>
+        <member name="F:CardWizard.MainWindow.CardInfoView">
+            <summary>
+            CardInfoView Name Field
+            </summary>
+        </member>
+        <member name="M:CardWizard.MainWindow.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:CardWizard.Properties.Resources">
+            <summary>
+              一个强类型的资源类，用于查找本地化的字符串等。
+            </summary>
+        </member>
+        <member name="P:CardWizard.Properties.Resources.ResourceManager">
+            <summary>
+              返回此类使用的缓存的 ResourceManager 实例。
+            </summary>
+        </member>
+        <member name="P:CardWizard.Properties.Resources.Culture">
+            <summary>
+              重写当前线程的 CurrentUICulture 属性
+              重写当前线程的 CurrentUICulture 属性。
+            </summary>
+        </member>
+        <member name="P:CardWizard.Properties.Resources.FileConfig">
+            <summary>
+              查找类似 ./config.yaml 的本地化字符串。
+            </summary>
+        </member>
+        <member name="P:CardWizard.Properties.Resources.Icon_Miskatonic">
+            <summary>
+              查找类似于 (图标) 的 System.Drawing.Icon 类型的本地化资源。
+            </summary>
+        </member>
+        <member name="P:CardWizard.Properties.Resources.Image_Avatar_Empty">
+            <summary>
+              查找 System.Drawing.Bitmap 类型的本地化资源。
+            </summary>
+        </member>
+        <member name="F:CardWizard.Tools.CodeBuilder.SummaryFormat">
+            <summary>
+            注释的格式化文本
+            </summary>
+        </member>
+        <member name="P:CardWizard.Tools.CodeBuilder.Namespace">
+            <summary>
+            类的命名空间
+            </summary>
+        </member>
+        <member name="P:CardWizard.Tools.CodeBuilder.Name">
+            <summary>
+            类名称
+            </summary>
+        </member>
+        <member name="P:CardWizard.Tools.CodeBuilder.FullName">
+            <summary>
+            类的全名
+            </summary>
+        </member>
+        <member name="P:CardWizard.Tools.CodeBuilder.Comment">
+            <summary>
+            注释
+            </summary>
+        </member>
+        <member name="P:CardWizard.Tools.CodeBuilder.DestPath">
+            <summary>
+            类代码文件的保存路径
+            </summary>
+        </member>
+        <member name="P:CardWizard.Tools.CodeBuilder.Declaration">
+            <summary>
+            生成的类
+            </summary>
+        </member>
+        <member name="M:CardWizard.Tools.CodeBuilder.Format(System.String)">
+            <summary>
+            取得格式化的注释文本
+            </summary>
+            <param name="s"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CardWizard.Tools.CodeBuilder.GenerateUnit(System.Collections.Generic.Dictionary{System.String,System.Object})">
+            <summary>
+            生成编译单元
+            </summary>
+            <param name="propertyTypePairs"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CardWizard.Tools.CodeBuilder.GenerateCode(System.CodeDom.CodeCompileUnit,System.String,System.String,System.Boolean)">
+            <summary>
+            生成代码
+            <para>如果输出路径中存在同名文件, 且不覆盖 (<paramref name="overwrite"/> == <see cref="!:false"/>), 则为同名文件会移动到 Backup 文件夹下</para>
+            </summary>
+            <param name="unit">代码单元</param>
+            <param name="fileName">文件名称(无后缀)</param>
+            <param name="overwrite">是否覆盖同名文件</param>
+            <returns>生成源代码的完整路径</returns>
+        </member>
+        <member name="M:CardWizard.Tools.CodeBuilder.ResolveType(System.String)">
+            <summary>
+            检查并取得字符串的类型;
+            <para>支持以下缩写
+             <see cref="T:System.Int32"/>, <see cref="T:System.Single"/>, <see cref="T:System.Double"/>, <see cref="T:System.Boolean"/>,
+             <see cref="T:System.String"/>, <see cref="T:System.Char"/>, <see cref="T:System.Byte"/>, <see cref="T:System.Int16"/>
+            </para>
+            <para>以及 <see cref="T:System.Collections.Generic.List`1"/> where T : 上述所有类型 </para>
+            <para>找不到对应类型的字符串会用反射查询, 仍找不到时会返回 typeof(<see cref="T:System.String"/>) </para>
+            </summary>
+            <param name="typeName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CardWizard.Tools.CodeBuilder.ResolveTypeByFullName(System.String)">
+            <summary>
+            根据字符串取得类型
+            </summary>
+            <param name="typeName"></param>
+            <returns></returns>
+        </member>
+        <member name="T:CardWizard.Tools.Die">
+            <summary>
+            随机数工具
+            </summary>
+        </member>
+        <member name="M:CardWizard.Tools.Die.#ctor(System.Int32)">
+            <summary>
+            构造新的随机数工具
+            </summary>
+            <param name="seed">随机数种子</param>
+        </member>
+        <member name="M:CardWizard.Tools.Die.#ctor">
+            <summary>
+            用新GUID为随机数种子构造随机数工具
+            </summary>
+        </member>
+        <member name="P:CardWizard.Tools.Die.Tool">
+            <summary>
+            随机数产生工具（如果要重新设置随机数种子, 直接为Seed赋值）
+            </summary>
+        </member>
+        <member name="P:CardWizard.Tools.Die.Seed">
+            <summary>
+            随机数种子, 对此赋值会重新构造随机数工具
+            </summary>
+        </member>
+        <member name="M:CardWizard.Tools.Die.Range(System.Int32,System.Int32)">
+            <summary>
+            返回范围内的随机整数, 不含上限
+            </summary>
+            <param name="min">下限, 包含</param>
+            <param name="max">上限, 不含</param>
+            <returns></returns>
+        </member>
+        <member name="M:CardWizard.Tools.Die.Range(System.Single,System.Single)">
+            <summary>
+            返回范围内的随机浮点数, 不含上限
+            </summary>
+            <param name="min">下限, 包含</param>
+            <param name="max">上限, 不含</param>
+            <returns></returns>
+        </member>
+        <member name="M:CardWizard.Tools.Die.SelectRandom``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            完全随机选取一个元素
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="list"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CardWizard.Tools.Die.SelectRandom``1(``0[])">
+            <summary>
+            完全随机选取一个元素
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="args"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CardWizard.Tools.Die.Select``1(System.Collections.Generic.IEnumerable{``0},System.Func{``0,System.Single},System.Single@,System.Single@,System.Single[]@)">
+            <summary>
+            根据权重计算函数, 从集合中选出一个元素
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="collection">集合</param>
+            <param name="weightGetter">权重计算函数</param>
+            <param name="point">输出, 随机值</param>
+            <param name="sum">输出, 每个元素权重之和</param>
+            <param name="probabilities">输出, 每个元素概率的合集</param>
+            <returns></returns>
+        </member>
+        <member name="M:CardWizard.Tools.Die.Select``1(System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEnumerable{System.Single},System.Single@,System.Single@,System.Single[]@)">
+            <summary>
+            根据 浮点型 的权重数组, 从集合中选出一个元素
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="collection">元素集合</param>
+            <param name="weights">权重集合</param>
+            <param name="point">随机值</param>
+            <param name="sum">权重之和</param>
+            <param name="probabilities">概率的合集</param>
+            <returns></returns>
+        </member>
+        <member name="M:CardWizard.Tools.Die.Resolve(System.String)">
+            <summary>
+            解析掷骰公式, 比如 3D6+3
+            </summary>
+            <param name="formula"></param>
+            <returns></returns>
+        </member>
+        <member name="T:CardWizard.Tools.IOKit">
+            <summary>
+            与系统相关的工具
+            </summary>
+        </member>
+        <member name="M:CardWizard.Tools.IOKit.GetUniqueFileName(System.String,System.String)">
+            <summary>
+            为文件添加后缀使其不重名
+            </summary>
+            <param name="file">文件名</param>
+            <param name="suffix">后缀名, 不带 '.'</param>
+            <returns></returns>
+        </member>
+        <member name="F:CardWizard.Tools.IOKit.NAME_BackupFolder">
+            <summary>
+            备份文件夹
+            </summary>
+        </member>
+        <member name="M:CardWizard.Tools.IOKit.Backup(System.String)">
+            <summary>
+            备份指定的文件
+            </summary>
+            <param name="file">文件的名称</param>
+        </member>
+        <member name="M:CardWizard.Tools.IOKit.Rollback(System.String)">
+            <summary>
+            回滚到最近版本
+            </summary>
+            <param name="file"></param>
+            <returns>表示回滚成功与否</returns>
+        </member>
+        <member name="T:CardWizard.Tools.Messenger">
+            <summary>
+            信息管理器
+            </summary>
+        </member>
+        <member name="P:CardWizard.Tools.Messenger.PretreatmentHandler">
+            <summary>
+            信息入列前的预处理事件
+            </summary>
+        </member>
+        <member name="P:CardWizard.Tools.Messenger.EnqueueHandler">
+            <summary>
+            信息入列时的事件
+            </summary>
+        </member>
+        <member name="P:CardWizard.Tools.Messenger.DequeueHandler">
+            <summary>
+            信息出列时的事件
+            </summary>
+        </member>
+        <member name="E:CardWizard.Tools.Messenger.OnPretreatment">
+            <summary>
+            消息进入队列之前的预处理事件
+            </summary>
+        </member>
+        <member name="E:CardWizard.Tools.Messenger.OnEnqueue">
+            <summary>
+            消息进入队列时的事件
+            </summary>
+        </member>
+        <member name="E:CardWizard.Tools.Messenger.OnDequeue">
+            <summary>
+            消息出列时的事件
+            </summary>
+        </member>
+        <member name="P:CardWizard.Tools.Messenger.Queue">
+            <summary>
+            信息队列
+            </summary>
+        </member>
+        <member name="M:CardWizard.Tools.Messenger.Dequeue">
+            <summary>
+            信息出列, 如果队列中有信息, 会触发出列事件 OnDequeue
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:CardWizard.Tools.Messenger.Enqueue(System.String)">
+            <summary>
+            将信息放入信息队列, 会触发入列事件 OnEnqueue
+            </summary>
+            <param name="value"></param>
+        </member>
+        <member name="M:CardWizard.Tools.Messenger.Enqueue(System.Object)">
+            <summary>
+            将物件转为字符串, 放入信息队列, 会触发入列事件 OnEnqueue
+            </summary>
+            <param name="msg"></param>
+        </member>
+        <member name="M:CardWizard.Tools.Messenger.Enqueue(System.Object[])">
+            <summary>
+            将多个物件转为字符串, 放入信息队列, 每一个都会触发入列事件 OnEnqueue
+            </summary>
+            <param name="objects">多个物件</param>
+        </member>
+        <member name="M:CardWizard.Tools.Messenger.Enqueue(System.Collections.Generic.IEnumerable{System.Object})">
+            <summary>
+            将多个物件转为字符串, 放入信息队列, 每一个都会触发入列事件 OnEnqueue
+            </summary>
+            <param name="collection">物件集合</param>
+        </member>
+        <member name="M:CardWizard.Tools.Messenger.EnqueueFormat(System.String,System.Object[])">
+            <summary>
+            将信息格式化, 放入信息队列, 会触发入列事件 OnEnqueue
+            </summary>
+            <param name="format">格式化字符串</param>
+            <param name="args">格式化参数</param>
+        </member>
+        <member name="P:CardWizard.Tools.Messenger.Peek">
+            <summary>
+            返回信息队列的开始处信息, 不取出
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:CardWizard.Tools.Messenger.DequeueAll(System.String)">
+            <summary>
+            取出所有信息, 并格式化输出每一条
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:CardWizard.Tools.Messenger.Clear">
+            <summary>
+            清空信息队列
+            </summary>
+        </member>
+        <member name="M:CardWizard.Tools.Messenger.Reset">
+            <summary>
+            重置信息入列/出列事件
+            </summary>
+        </member>
+        <member name="M:CardWizard.Tools.ProcessKit.AssignAs``1(``0,``0@)">
+            <summary>
+            创建一个新的不同名变量
+            <para>等价于 <typeparamref name="T"/> <paramref name="other"/> = <paramref name="self"/> </para>
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="self"></param>
+            <param name="other"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CardWizard.Tools.ProcessKit.Process``1(``0,System.Action{``0})">
+            <summary>
+            对该对象进行处理, 再返回对象自身
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="self"></param>
+            <param name="process"></param>
+            <returns></returns>
+        </member>
+        <member name="T:CardWizard.Tools.ScriptHub">
+            <summary>
+            Lua 脚本的基类
+            </summary>
+        </member>
+        <member name="M:CardWizard.Tools.ScriptHub.Set``1(System.String,``0)">
+            <summary>
+            设置变量的值
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="path"></param>
+            <param name="value"></param>
+        </member>
+        <member name="M:CardWizard.Tools.ScriptHub.Get``1(System.String)">
+            <summary>
+            查询变量的值
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="path"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CardWizard.Tools.ScriptHub.DoString(System.String,System.String,System.Boolean)">
+            <summary>
+            执行 Lua 字符串
+            </summary>
+            <param name="text"></param>
+            <param name="chunkName"></param>
+            <param name="global"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CardWizard.Tools.ScriptHub.DoString(System.Byte[],System.String,System.Boolean)">
+            <summary>
+            执行 二进制 Lua 字符串 
+            </summary>
+            <param name="source"></param>
+            <param name="chunkName"></param>
+            <param name="global"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CardWizard.Tools.ScriptHub.DoFile(System.String,System.String,System.Boolean)">
+            <summary>
+            执行 Lua 脚本文件
+            </summary>
+            <param name="path"></param>
+            <param name="chunkName"></param>
+            <param name="global"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CardWizard.Tools.ScriptHub.DoFile(System.Byte[],System.String,System.Boolean)">
+            <summary>
+            执行 二进制 Lua 脚本文件
+            </summary>
+            <param name="source"></param>
+            <param name="chunkName"></param>
+            <param name="global"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CardWizard.Tools.ScriptHub.GC">
+            <summary>
+            垃圾回收
+            </summary>
+        </member>
+        <member name="M:CardWizard.Tools.ScriptHub.Dispose">
+            <summary>
+            释放管理器
+            </summary>
+        </member>
+        <member name="T:CardWizard.Tools.StringExtension">
+            <summary>
+            字符串的扩展方法
+            </summary>
+        </member>
+        <member name="M:CardWizard.Tools.StringExtension.EqualsIgnoreCase(System.String,System.String)">
+            <summary>
+            对比两个字符串, 不区分大小写
+            </summary>
+            <param name="self"></param>
+            <param name="other"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CardWizard.Tools.StringExtension.ParseTo``1(System.String)">
+            <summary>
+            尝试将字符串转换为指定的枚举型变量, 不区分大小写
+            </summary>
+            <typeparam name="T">要转化的枚举类型</typeparam>
+            <param name="self"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CardWizard.Tools.StringExtension.EqualsTo``1(System.String,``0)">
+            <summary>
+            将字符串转化为枚举值, 与另一个枚举值进行对比, 判断是否一致, 不区分大小写
+            </summary>
+            <param name="self"></param>
+            <param name="other">要比较的枚举值</param>
+            <returns></returns>
+        </member>
+        <member name="M:CardWizard.Tools.StringExtension.SplitRemoveEmpty(System.String,System.Char[])">
+            <summary>
+            分隔字符串并移除空项
+            </summary>
+            <param name="text"></param>
+            <param name="separators"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CardWizard.Tools.StringExtension.SplitRemoveEmpty(System.String,System.String[])">
+            <summary>
+            分隔字符串并移除空项
+            </summary>
+            <param name="text"></param>
+            <param name="separators"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CardWizard.Tools.StringExtension.SiegeBy(System.String,System.String,System.String)">
+            <summary>
+            返回字符串被指定的前缀, 后缀包围的结果
+            </summary>
+            <param name="text"></param>
+            <param name="prefix">前缀</param>
+            <param name="extension">后缀</param>
+            <returns></returns>
+        </member>
+        <member name="M:CardWizard.Tools.StringExtension.PrefixBy(System.String,System.String)">
+            <summary>
+            为字符串添加前缀
+            </summary>
+            <param name="text"></param>
+            <param name="prefix">前缀</param>
+            <returns></returns>
+        </member>
+        <member name="M:CardWizard.Tools.StringExtension.CombineToString``1(System.Collections.Generic.IEnumerable{``0},System.String,System.Func{``0,System.String})">
+            <summary>
+            按照给定的转换方式, 将集合转换成列表字符串
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="self">要转化的集合</param>
+            <param name="separator">分隔符</param>
+            <param name="converter">将集合内元素转化为字符串的方法</param>
+            <returns></returns>
+        </member>
+        <member name="P:CardWizard.Tools.StringExtension.Prefix_CHS">
+            <summary>
+            中文字符在编码后的前缀
+            </summary>
+        </member>
+        <member name="M:CardWizard.Tools.StringExtension.EncodeHex(System.String)">
+            <summary>
+            将字符串中的所有中文字符转换为 16 进制编码, 比如 "文字" => "OX8765OX575b"
+            </summary>
+            <param name="self"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CardWizard.Tools.StringExtension.DecodeHex(System.String)">
+            <summary>
+            将字符串中的所有 16 进制编码字符转换为 Unitcode 编码的字符, 比如 "OX8765OX575b" => "文字";
+            转换的方式: 
+            找出所有以 "OX" 开头, 后面跟着 4 个字符的子字符串, 且这 4 个字符都在 0-9 或 a-f 的范围内, 然后将其用 Unicode 解码
+            </summary>
+            <param name="self"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CardWizard.Tools.StringExtension.ToDBC(System.String)">
+            <summary>
+            将字符串中的全角标点字符转换为半角标点字符
+            </summary>
+            <param name="self"></param>
+            <returns></returns>
+        </member>
+        <member name="T:CardWizard.Tools.Utilities">
+            <summary>
+            Lua / C# 公用的工具类
+            </summary>
+        </member>
+        <member name="M:CardWizard.Tools.Utilities.NewDict(System.String,System.String)">
+            <summary>
+            使用类型的名称生成字典
+            </summary>
+            <param name="keyTypeName"></param>
+            <param name="valueTypeName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CardWizard.Tools.Utilities.GetCount(System.Object)">
+            <summary>
+            计算集合中的的元素个数
+            <para><em>dirty</em></para>
+            </summary>
+            <param name="someItems"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CardWizard.Tools.XLuaHub.DoString(System.String,System.String,System.Boolean)">
+            <summary>
+            执行文本文件
+            </summary>
+            <param name="text"></param>
+            <param name="chunkName"></param>
+            <param name="global"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CardWizard.Tools.XLuaHub.DoString(System.Byte[],System.String,System.Boolean)">
+            <summary>
+            执行二进制文本
+            </summary>
+            <param name="source"></param>
+            <param name="chunkName"></param>
+            <param name="global"></param>
+            <returns></returns>
+        </member>
+        <member name="T:CardWizard.Tools.YamlKit">
+            <summary>
+            数据载入工具
+            </summary>
+        </member>
+        <member name="F:CardWizard.Tools.YamlKit.EXTENSION_A">
+            <summary>
+            Yaml 文件后缀名 .yaml
+            </summary>
+        </member>
+        <member name="F:CardWizard.Tools.YamlKit.EXTENSION_B">
+            <summary>
+            Yaml 文件后缀名 .yml
+            </summary>
+        </member>
+        <member name="M:CardWizard.Tools.YamlKit.LoadFile``1(System.String)">
+            <summary>
+            从文件中反序列化数据获得类的实例
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="path"></param>
+            <param name="defaultValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CardWizard.Tools.YamlKit.SaveFile``1(System.String,``0,System.Boolean)">
+            <summary>
+            将对象序列化并保存到文件
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="path"></param>
+            <param name="item"></param>
+        </member>
+        <member name="M:CardWizard.Tools.YamlKit.Clone``1(``0)">
+            <summary>
+            取得一个对象的拷贝, 被标记为 <see cref="T:YamlDotNet.Serialization.YamlIgnoreAttribute"/> 的成员不会被复制
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="object"></param>
+            <returns></returns>
+        </member>
+        <member name="T:CardWizard.View.BatchGenerationWindow">
+            <summary>
+            ListWindow.xaml 的交互逻辑
+            </summary>
+            <summary>
+            BatchGenerationWindow
+            </summary>
+        </member>
+        <member name="P:CardWizard.View.BatchGenerationWindow.Selection">
+            <summary>
+            选择结果
+            </summary>
+        </member>
+        <member name="M:CardWizard.View.BatchGenerationWindow.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:CardWizard.View.DialogWindow">
+            <summary>
+            DialogWindow.xaml 的交互逻辑
+            </summary>
+            <summary>
+            DialogWindow
+            </summary>
+        </member>
+        <member name="M:CardWizard.View.DialogWindow.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:CardWizard.View.InfomationView">
+            <summary>
+            InfomationView.xaml 的交互逻辑
+            </summary>
+            <summary>
+            InfomationView
+            </summary>
+        </member>
+        <member name="M:CardWizard.View.InfomationView.InitializeBinding(CardWizard.View.MainManager)">
+            <summary>
+            初始化角色信息交互面板
+            </summary>
+            <param name="manager"></param>
+        </member>
+        <member name="M:CardWizard.View.InfomationView.IsAgeValid(System.Windows.Controls.Label,CardWizard.Data.Character)">
+            <summary>
+            检查角色的年龄是否满足最小年龄的要求
+            </summary>
+            <param name="check"></param>
+            <param name="c"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CardWizard.View.InfomationView.InitializeGenderRadios(CardWizard.View.MainManager,System.Windows.Controls.RadioButton[])">
+            <summary>
+            初始化性别按钮组
+            </summary>
+            <param name="manager"></param>
+            <param name="radios"></param>
+        </member>
+        <member name="M:CardWizard.View.InfomationView.BindTextBox(System.Windows.Controls.TextBox,System.String,CardWizard.View.MainManager)">
+            <summary>
+            绑定输入框到管理器
+            </summary>
+            <param name="box"></param>
+            <param name="path"></param>
+            <param name="manager"></param>
+        </member>
+        <member name="M:CardWizard.View.InfomationView.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:CardWizard.View.InvestigatorPage">
+            <summary>
+            InvestigatorPage.xaml 的交互逻辑
+            </summary>
+            <summary>
+            InvestigatorPage
+            </summary>
+        </member>
+        <member name="M:CardWizard.View.InvestigatorPage.#ctor">
+            <summary>
+            调查员信息面板
+            </summary>
+        </member>
+        <member name="F:CardWizard.View.InvestigatorPage.CardInfoView">
+            <summary>
+            CardInfoView Name Field
+            </summary>
+        </member>
+        <member name="M:CardWizard.View.InvestigatorPage.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:CardWizard.View.MainManager">
+            <summary>
+            <see cref="T:CardWizard.MainWindow"/> 的控制器
+            </summary>
+        </member>
+        <member name="P:CardWizard.View.MainManager.Window">
+            <summary>
+            管理的窗口主体
+            </summary>
+        </member>
+        <member name="F:CardWizard.View.MainManager.templates">
+            <summary>
+            缓存的控件模板
+            </summary>
+        </member>
+        <member name="P:CardWizard.View.MainManager.Config">
+            <summary>
+            配置表
+            </summary>
+        </member>
+        <member name="P:CardWizard.View.MainManager.Translator">
+            <summary>
+            本地化文本
+            </summary>
+        </member>
+        <member name="P:CardWizard.View.MainManager.PathosDatabase">
+            <summary>
+            路径管理器
+            </summary>
+        </member>
+        <member name="P:CardWizard.View.MainManager.GCDispatcher">
+            <summary>
+            垃圾回收的时钟
+            </summary>
+        </member>
+        <member name="P:CardWizard.View.MainManager.DataBus">
+            <summary>
+            数据总线
+            </summary>
+        </member>
+        <member name="P:CardWizard.View.MainManager.LuaHub">
+            <summary>
+            lua 执行工具
+            </summary>
+        </member>
+        <member name="P:CardWizard.View.MainManager.Die">
+            <summary>
+            骰子
+            </summary>
+        </member>
+        <member name="E:CardWizard.View.MainManager.InfoUpdating">
+            <summary>
+            刷新角色卡牌信息的事件
+            </summary>
+        </member>
+        <member name="E:CardWizard.View.MainManager.InfoUpdated">
+            <summary>
+            刷新角色卡牌信息时执行完毕的事件
+            </summary>
+        </member>
+        <member name="E:CardWizard.View.MainManager.TraitChanged">
+            <summary>
+            角色的特点值被改变时, 触发的事件
+            </summary>
+        </member>
+        <member name="P:CardWizard.View.MainManager.CharacterCardPairs">
+            <summary>
+            当前载入的所有角色
+            </summary>
+        </member>
+        <member name="P:CardWizard.View.MainManager.Current">
+            <summary>
+            当前查看/编辑的角色
+            </summary>
+        </member>
+        <member name="M:CardWizard.View.MainManager.#ctor(CardWizard.MainWindow)">
+            <summary>
+            创建主窗口管理器
+            </summary>
+            <param name="window"></param>
+        </member>
+        <member name="M:CardWizard.View.MainManager.Image_Avatar_Click(System.Object,System.Windows.Input.MouseButtonEventArgs)">
+            <summary>
+            玩家点击头像时触发的事件 (导入新的头像)
+            </summary>
+            <param name="o"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:CardWizard.View.MainManager.Button_Debug_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Debug 按钮点击时触发的事件
+            </summary>
+            <param name="o"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:CardWizard.View.MainManager.AvatarUpdate(CardWizard.Data.Character,System.Windows.Controls.Image)">
+            <summary>
+            更新角色头像的显示
+            </summary>
+            <param name="c"></param>
+            <param name="image"></param>
+        </member>
+        <member name="M:CardWizard.View.MainManager.Messenger_OnEnqueue(System.String)">
+            <summary>
+            当 <see cref="T:CardWizard.Tools.Messenger"/> 收到消息时, 将其打印到 <see cref="P:CardWizard.View.MainManager.Window"/> 的 Logger 控件中
+            </summary>
+            <param name="obj"></param>
+        </member>
+        <member name="M:CardWizard.View.MainManager.InitLuaHub">
+            <summary>
+            初始化 <see cref="P:CardWizard.View.MainManager.LuaHub"/>
+            </summary>
+        </member>
+        <member name="M:CardWizard.View.MainManager.CreateDirectories(CardWizard.Data.Config.PathsDatabase)">
+            <summary>
+            创建目录
+            </summary>
+            <param name="pathos"></param>
+        </member>
+        <member name="M:CardWizard.View.MainManager.Localize(System.Windows.Controls.ContentControl,CardWizard.Data.Config.Localization,System.Collections.Generic.Dictionary{System.String,System.Windows.Controls.ContentControl})">
+            <summary>
+            本地化控件及其子控件的文本
+            </summary>
+        </member>
+        <member name="M:CardWizard.View.MainManager.OnInfoUpdate(CardWizard.Data.Character)">
+            <summary>
+            刷新与此角色相关的控件的值
+            </summary>
+            <param name="character"></param>
+        </member>
+        <member name="M:CardWizard.View.MainManager.AddToCharacters(CardWizard.Data.Character)">
+            <summary>
+            将指定的角色添加到 <see cref="P:CardWizard.View.MainManager.CharacterCardPairs"/> 中
+            </summary>
+            <param name="character"></param>
+        </member>
+        <member name="M:CardWizard.View.MainManager.OnNameChanged(System.Object,System.ComponentModel.PropertyChangedEventArgs,CardWizard.Data.Character,System.Windows.Controls.ListBoxItem)">
+            <summary>
+            当角色的名称改变时, 更改侧边按钮的内容, 使其显示当前角色的名称
+            </summary>
+            <param name="_"></param>
+            <param name="e"></param>
+            <param name="character"></param>
+            <param name="item"></param>
+        </member>
+        <member name="M:CardWizard.View.MainManager.RemoveFromCharacters(CardWizard.Data.Character)">
+            <summary>
+            移除指定的角色
+            </summary>
+            <param name="character"></param>
+        </member>
+        <member name="M:CardWizard.View.MainManager.UpdateSumOfBaseTraits(CardWizard.Data.Character)">
+            <summary>
+            刷新角色的基础属性统计标签
+            </summary>
+            <param name="c"></param>
+        </member>
+        <member name="M:CardWizard.View.MainManager.UpdateDamageBonus(CardWizard.Data.Character)">
+            <summary>
+            刷新角色的基础属性统计标签
+            </summary>
+            <param name="c"></param>
+        </member>
+        <member name="M:CardWizard.View.MainManager.CurrentTraitChanged(System.Object,CardWizard.Data.Character.TraitChangedEventArgs)">
+            <summary>
+            当角色属性发生改变时执行的事件
+            </summary>
+            <param name="character"></param>
+            <param name="args"></param>
+        </member>
+        <member name="M:CardWizard.View.MainManager.Button_Create_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            新建按钮点击时触发的事件
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:CardWizard.View.MainManager.TranslateDict(System.Collections.Generic.Dictionary{System.String,System.Object})">
+            <summary>
+            用递归的方式对字典的键进行翻译
+            </summary>
+            <param name="target"></param>
+        </member>
+        <member name="M:CardWizard.View.MainManager.Button_Save_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            保存按钮点击时触发的事件
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:CardWizard.View.MainManager.GetHandlerForReGenerateTraits(CardWizard.Data.Character)">
+            <summary>
+            取得一个事件: 打开批量随机属性的面板
+            </summary>
+            <param name="character"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CardWizard.View.MainManager.Roll(System.Int32,System.Int32)">
+            <summary>
+            骰点
+            </summary>
+            <param name="count"></param>
+            <param name="upper"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CardWizard.View.MainManager.FormatScript(System.Collections.Generic.Dictionary{System.String,System.Int32},System.String)">
+            <summary>
+            根据掷骰公式产生一个随机数
+            </summary>
+            <param name="properties"></param>
+            <param name="formula"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CardWizard.View.MainManager.CalcForInt(System.String)">
+            <summary>
+            计算一段脚本并返回 <see cref="T:System.Int32"/>
+            </summary>
+            <param name="script"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CardWizard.View.MainManager.SumTraits(CardWizard.Data.Character,System.Func{CardWizard.Data.DataModel,System.Boolean})">
+            <summary>
+            取得角色的总属性点数
+            </summary>
+            <param name="character"></param>
+            <param name="selector"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CardWizard.View.MainManager.ExportDataBus">
+            <summary>
+            导出当前的数据总线
+            </summary>
+        </member>
+        <member name="T:CardWizard.View.OccupationWindow">
+            <summary>
+            OccupationWindow.xaml 的交互逻辑
+            </summary>
+            <summary>
+            OccupationWindow
+            </summary>
+        </member>
+        <member name="M:CardWizard.View.OccupationWindow.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:CardWizard.View.SettingsWindow">
+            <summary>
+            SettingsWindow.xaml 的交互逻辑
+            </summary>
+            <summary>
+            SettingsWindow
+            </summary>
+        </member>
+        <member name="M:CardWizard.View.SettingsWindow.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:CardWizard.View.TraitsViewItem">
+            <summary>
+            ListItemCustom.xaml 的交互逻辑
+            </summary>
+            <summary>
+            TraitsViewItem
+            </summary>
+        </member>
+        <member name="P:CardWizard.View.TraitsViewItem.Values">
+            <summary>
+            值的集合
+            <para>只有在调用了方法: <see cref="M:CardWizard.View.TraitsViewItem.InitAsDatas(System.Collections.Generic.Dictionary{System.String,System.Int32},System.Boolean)"/> 之后, 才会被赋值</para>
+            </summary>
+        </member>
+        <member name="M:CardWizard.View.TraitsViewItem.InitAsDatas(System.Collections.Generic.Dictionary{System.String,System.Int32},System.Boolean)">
+            <summary>
+            作为一行数据进行初始化
+            </summary>
+            <param name="datas"></param>
+        </member>
+        <member name="M:CardWizard.View.TraitsViewItem.BindTraits(CardWizard.View.MainManager,System.Boolean)">
+            <summary>
+            作为角色的属性面板进行初始化
+            </summary>
+            <param name="manager"></param>
+            <param name="derived"></param>
+        </member>
+        <member name="M:CardWizard.View.TraitsViewItem.EndEditTraitBox(System.Windows.Controls.TextBox)">
+            <summary>
+            结束编辑时触发的事件
+            </summary>
+            <param name="box"></param>
+        </member>
+        <member name="M:CardWizard.View.TraitsViewItem.InitAsHeaders(System.Collections.Generic.IEnumerable{System.String},CardWizard.Data.Config.Localization)">
+            <summary>
+            作为表头初始化
+            </summary>
+            <param name="headers"></param>
+            <param name="localization"></param>
+        </member>
+        <member name="M:CardWizard.View.TraitsViewItem.InitToolTips(System.Collections.Generic.IEnumerable{System.ValueTuple{System.String,System.String}})">
+            <summary>
+            添加提示信息
+            </summary>
+            <param name="tooltips"></param>
+        </member>
+        <member name="M:CardWizard.View.TraitsViewItem.CleanExcessColumns(System.Int32)">
+            <summary>
+            清理多余的列
+            </summary>
+            <param name="actualCount"></param>
+        </member>
+        <member name="M:CardWizard.View.TraitsViewItem.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:CardWizard.View.UIExtension">
+            <summary>
+            拓展 UI 类
+            </summary>
+        </member>
+        <member name="M:CardWizard.View.UIExtension.DeepCopy``1(``0)">
+            <summary>
+            取得控件的备份
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="graph"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CardWizard.View.UIExtension.ToXaml``1(``0)">
+            <summary>
+            转换 UI 元素为文本, 可以用 <see cref="M:CardWizard.View.UIExtension.Parse``1(System.String)"/> 将文本转换为 UI 元素
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="graph"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CardWizard.View.UIExtension.Parse``1(System.String)">
+            <summary>
+            将文本转换为 UI 元素
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="xamlText"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CardWizard.View.UIExtension.AddItem``1(System.Windows.Controls.ListBox,``0,System.String)">
+            <summary>
+            向指定的列表框中添加子项目
+            </summary>
+            <param name="box"></param>
+            <param name="template"></param>
+            <param name="name"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CardWizard.View.UIExtension.ForeachChild``1(``0,System.Func{System.Windows.UIElement,System.Int32,System.Boolean},System.Int32,System.Boolean)">
+            <summary>
+            遍历每个子控件(<see cref="T:System.Windows.UIElement"/>)
+            <para><paramref name="dosth"/> : 返回值表示是否继续循环</para>
+            <para><paramref name="loopLimit"/> : 表示最大循环次数(实际循环次数必定小于这个值)</para>
+            <para><paramref name="reverse"/> : 是否逆序循环</para>
+            </summary>
+            <param name="panel"></param>
+            <param name="dosth"></param>
+            <param name="loopLimit"></param>
+            <param name="reverse"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CardWizard.View.UIExtension.ForeachChild``1(``0,System.Action{System.Windows.UIElement,System.Int32},System.Int32,System.Boolean)">
+            <summary>
+            遍历每个子控件(<see cref="T:System.Windows.UIElement"/>)
+            <para><paramref name="dosth"/> : 返回值表示是否继续循环</para>
+            <para><paramref name="loopLimit"/> : 表示最大循环次数(实际循环次数必定小于等于这个值)</para>
+            </summary>
+            <param name="panel"></param>
+            <param name="dosth"></param>
+            <param name="loopLimit"></param>
+            <param name="reverse"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CardWizard.View.UIExtension.CapturePng(System.Windows.Media.Visual,System.String,System.Int32,System.Int32)">
+            <summary>
+            将控件保存为 png
+            </summary>
+            <param name="visual"></param>
+            <param name="filePath"></param>
+            <param name="pxWidth"></param>
+            <param name="pxHeight"></param>
+        </member>
+        <member name="M:CardWizard.View.UIExtension.LoadBitmapImage(System.String)">
+            <summary>
+            载入图片资源
+            </summary>
+            <param name="path"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CardWizard.View.UIExtension.ToBitmapImage(System.Drawing.Image)">
+            <summary>
+            取得 <see cref="T:System.Windows.Media.Imaging.BitmapImage"/>
+            </summary>
+            <param name="image"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CardWizard.View.UIExtension.ZoomIn(System.Drawing.Image,System.Double,System.Double)">
+            <summary>
+            将图片缩小到指定的长宽
+            </summary>
+            <param name="bitmap"></param>
+            <param name="width"></param>
+            <param name="height"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CardWizard.View.UIExtension.ToIcon(System.Drawing.Bitmap)">
+            <summary>
+            将图像转换为 WindowsIcon
+            </summary>
+            <param name="bitmap"></param>
+            <returns></returns>
+        </member>
+        <member name="M:XLua.TemplateEngine.Parser.EscapeString(System.String)">
+            <summary>
+            Replaces special characters with their literal representation.
+            </summary>
+            <returns>Resulting string.</returns>
+            <param name="input">Input string.</param>
+        </member>
+        <member name="M:XLua.TemplateEngine.Parser.Parse(System.String)">
+            <summary>
+            Parses the string into regex groups, 
+            stores group:value pairs in List of Chunk
+            <returns>List of group:value pairs.</returns>;
+            </summary>
+        </member>
+        <member name="T:XamlGeneratedNamespace.GeneratedInternalTypeHelper">
+            <summary>
+            GeneratedInternalTypeHelper
+            </summary>
+        </member>
+        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.CreateInstance(System.Type,System.Globalization.CultureInfo)">
+            <summary>
+            CreateInstance
+            </summary>
+        </member>
+        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.GetPropertyValue(System.Reflection.PropertyInfo,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            GetPropertyValue
+            </summary>
+        </member>
+        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.SetPropertyValue(System.Reflection.PropertyInfo,System.Object,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            SetPropertyValue
+            </summary>
+        </member>
+        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.CreateDelegate(System.Type,System.Object,System.String)">
+            <summary>
+            CreateDelegate
+            </summary>
+        </member>
+        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.AddEventHandler(System.Reflection.EventInfo,System.Object,System.Delegate)">
+            <summary>
+            AddEventHandler
+            </summary>
+        </member>
+    </members>
+</doc>

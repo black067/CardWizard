@@ -1,0 +1,137 @@
+﻿<UserControl x:Class="CardWizard.View.InvestigatorPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:CardWizard.View"
+             mc:Ignorable="d" 
+             d:DesignHeight="1080">
+
+    <Grid x:Name="CardInfoView" x:FieldModifier="public" Background="{Binding Background, ElementName=window}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition/>
+            <RowDefinition Height="30"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="80"/>
+            <ColumnDefinition Width="64"/>
+            <ColumnDefinition Width="64"/>
+            <ColumnDefinition Width="64"/>
+            <ColumnDefinition Width="64"/>
+            <ColumnDefinition Width="64"/>
+            <ColumnDefinition Width="64"/>
+            <ColumnDefinition Width="80"/>
+        </Grid.ColumnDefinitions>
+        <!--角色照片的显示-->
+        <Image x:Name="Image_Avatar" 
+                           Grid.ColumnSpan="4" Grid.RowSpan="6" Grid.Column="4" 
+                           VerticalAlignment="Center" Cursor="Hand" 
+                           RenderTransformOrigin="0.5,0.5"
+                           Source="/Resources/Image.Avatar.Empty.png"
+                           HorizontalAlignment="Center" Tag="Card.Image.Avatar" 
+                           Width="128" Height="128">
+            <Image.Effect>
+                <DropShadowEffect BlurRadius="3" Opacity="0.885" ShadowDepth="2"/>
+            </Image.Effect>
+        </Image>
+
+        <!--角色基础信息的显示-->
+        <local:InfomationView x:Name="InfoPanel" Grid.ColumnSpan="4" Grid.RowSpan="6" />
+        <!--角色属性的显示-->
+        <Label Grid.Row="6" Content="属性" Tag="Properties" Style="{DynamicResource XLabel}"/>
+        <Grid x:Name="TraitsGrid" Grid.Row="7" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.ColumnSpan="8" Grid.RowSpan="5" Margin="2,2,2,2">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <!--基础属性的显示-->
+            <local:TraitsViewItem x:Name="BaseTraits_Headers" Grid.Row="0" Grid.ColumnSpan="{Binding ColumnDefinitions.Count, ElementName=TraitsGrid, Mode=OneWay}"/>
+            <local:TraitsViewItem x:Name="BaseTraits_Values" Grid.Row="1" Grid.ColumnSpan="{Binding ColumnDefinitions.Count, ElementName=TraitsGrid, Mode=OneWay}"/>
+            <!--派生属性的显示-->
+            <local:TraitsViewItem x:Name="DerivedTraits_Headers" Grid.Row="2" Grid.ColumnSpan="{Binding ColumnDefinitions.Count, ElementName=TraitsGrid, Mode=OneWay}"/>
+            <local:TraitsViewItem x:Name="DerivedTraits_Values" Grid.Row="3" Grid.ColumnSpan="{Binding ColumnDefinitions.Count, ElementName=TraitsGrid, Mode=OneWay}"/>
+            <!--总属性的显示-->
+            <Grid Grid.Row="4" Grid.Column="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Label x:Name="Label_Sum_Base_Traits" 
+                               Content="基础属性总计" 
+                               Grid.Column="0" Grid.ColumnSpan="2"
+                               Style="{DynamicResource XLabel}"
+                               Tag="Card.Label.BasePropSum" Padding="5,5,2,5"/>
+                <Label x:Name="Value_Sum_Base_Traits" Content="99" FontSize="14"
+                               Grid.Row="11" Grid.Column="2"
+                               Style="{DynamicResource XLabel}" HorizontalContentAlignment="Left" Margin="2,0,2,0"/>
+                <Button x:Name="Button_Regenerate" Content="重新生成"
+                                Grid.Row="11" Grid.Column="3"
+                                Margin="2,2,2,2"
+                                Style="{StaticResource XButtonStyle}"
+                                Tag="Card.Button.Regenerate"/>
+            </Grid>
+            <!--伤害奖励的显示-->
+            <Grid Grid.Row="4" Grid.Column="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Label x:Name="Label_DamageBonus"
+                               Content="Damage Bonus" 
+                               Grid.Column="0" Grid.ColumnSpan="2"
+                               Style="{DynamicResource XLabel}"
+                               Tag="Card.Label.DamageBonus" HorizontalContentAlignment="Center"/>
+                <Label x:Name="Value_DamageBonus"
+                               Content="5D6"
+                               Grid.Column="2"
+                               HorizontalContentAlignment="Left"
+                               Style="{DynamicResource XLabel}"/>
+                <Button x:Name="Button_Roll_DMGBonus" Content="掷骰"
+                                Grid.Column="3"
+                                Margin="2,2,2,2"
+                                Style="{StaticResource XButtonStyle}"
+                                Tag="Card.Button.DMGBonus"/>
+            </Grid>
+        </Grid>
+        <!--页尾-->
+        <Label Grid.Row="29" Grid.Column="3" Grid.ColumnSpan="2" HorizontalContentAlignment="Center" Foreground="{DynamicResource PlaceholderForeground}">- end -</Label>
+    </Grid>
+</UserControl>

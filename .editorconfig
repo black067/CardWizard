@@ -1,0 +1,13 @@
+﻿[*.cs]
+
+# CA1307: 指定 StringComparison
+dotnet_diagnostic.CA1307.severity = silent
+
+# CA1305: 指定 IFormatProvider
+dotnet_diagnostic.CA1305.severity = silent
+
+# IDE0060: 删除未使用的参数
+dotnet_code_quality_unused_parameters = all:silent
+
+# CA1031: 不捕获常规异常类型
+dotnet_diagnostic.CA1031.severity = silent

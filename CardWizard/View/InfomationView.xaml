@@ -71,11 +71,11 @@
             <TextBox x:Name="Text_Age"
                      InputScope="Number"
                      FontSize="14"
-                     Style="{DynamicResource TextField}" />
+                     Style="{DynamicResource TextField}" Grid.ColumnSpan="2" />
             <Label x:Name="Label_Age_Penalty" 
                    Content="10" Grid.Column="1"
                    Style="{DynamicResource XLabel}"
-                   Foreground="{DynamicResource InvalidForeground}"/>
+                   Foreground="{x:Null}"/>
         </Grid>
         
         <Label x:Name="Label_Age_Check" 

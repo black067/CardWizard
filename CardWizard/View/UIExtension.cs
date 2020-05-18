@@ -25,11 +25,11 @@ namespace CardWizard.View
         /// 取得控件的备份
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="object"></param>
+        /// <param name="graph"></param>
         /// <returns></returns>
-        public static T DeepCopy<T>(this T @object)
+        public static T DeepCopy<T>(this T graph)
         {
-            var doc = XamlWriter.Save(@object);
+            var doc = XamlWriter.Save(graph);
             return (T)XamlReader.Parse(doc);
         }
 
@@ -37,11 +37,11 @@ namespace CardWizard.View
         /// 转换 UI 元素为文本, 可以用 <see cref="Parse{T}(string)"/> 将文本转换为 UI 元素
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="object"></param>
+        /// <param name="graph"></param>
         /// <returns></returns>
-        public static string ToXaml<T>(this T @object)
+        public static string ToXaml<T>(this T graph)
         {
-            return XamlWriter.Save(@object);
+            return XamlWriter.Save(graph);
         }
 
         /// <summary>
@@ -59,11 +59,13 @@ namespace CardWizard.View
         /// 向指定的列表框中添加子项目
         /// </summary>
         /// <param name="box"></param>
+        /// <param name="template"></param>
         /// <param name="name"></param>
         /// <returns></returns>
         public static T AddItem<T>(this ListBox box, T template, string name) where T : UIElement, new()
         {
             T item = template != null ? UIExtension.DeepCopy(template) : new T();
+            if (box == null) throw new NullReferenceException();
             box.Items.Add(item);
             box.RegisterName(name, item);
             item.Visibility = Visibility.Visible;
@@ -79,10 +81,12 @@ namespace CardWizard.View
         /// <param name="panel"></param>
         /// <param name="dosth"></param>
         /// <param name="loopLimit"></param>
+        /// <param name="reverse"></param>
         /// <returns></returns>
         public static T ForeachChild<T>(this T panel, Func<UIElement, int, bool> dosth,
                                         int loopLimit = int.MaxValue, bool reverse = false) where T : Panel
         {
+            if (panel == null) throw new NullReferenceException();
             if (reverse)
             {
                 for (int i = Math.Min(panel.Children.Count, loopLimit) - 1; i >= 0; i--)
@@ -108,10 +112,12 @@ namespace CardWizard.View
         /// <param name="panel"></param>
         /// <param name="dosth"></param>
         /// <param name="loopLimit"></param>
+        /// <param name="reverse"></param>
         /// <returns></returns>
         public static T ForeachChild<T>(this T panel, Action<UIElement, int> dosth,
                                         int loopLimit = int.MaxValue, bool reverse = false) where T : Panel
         {
+            if (panel == null) throw new NullReferenceException();
             if (reverse)
             {
                 for (int i = Math.Min(panel.Children.Count, loopLimit) - 1; i >= 0; i--)
@@ -127,6 +133,13 @@ namespace CardWizard.View
             return panel;
         }
 
+        /// <summary>
+        /// 将控件保存为 png
+        /// </summary>
+        /// <param name="visual"></param>
+        /// <param name="filePath"></param>
+        /// <param name="pxWidth"></param>
+        /// <param name="pxHeight"></param>
         public static void CapturePng(Visual visual, string filePath, int pxWidth = 0, int pxHeight = 0)
         {
             if (visual is FrameworkElement element)
@@ -142,7 +155,15 @@ namespace CardWizard.View
             }
             if (pxWidth == 0) { pxWidth = 800; }
             if (pxHeight == 0) { pxHeight = 800; }
-            RenderTargetBitmap renderTargetBitmap = new RenderTargetBitmap(pxWidth, pxHeight, 96, 96, PixelFormats.Pbgra32);
+            // 获取控件的 dpi
+            PresentationSource source = PresentationSource.FromVisual(visual);
+            double dpiX = 96, dpiY = 96;
+            if (source != null)
+            {
+                dpiX = 96.0 * source.CompositionTarget.TransformToDevice.M11;
+                dpiY = 96.0 * source.CompositionTarget.TransformToDevice.M22;
+            }
+            RenderTargetBitmap renderTargetBitmap = new RenderTargetBitmap(pxWidth, pxHeight, dpiX, dpiY, PixelFormats.Pbgra32);
             renderTargetBitmap.Render(visual);
             PngBitmapEncoder pngImage = new PngBitmapEncoder();
             pngImage.Frames.Add(BitmapFrame.Create(renderTargetBitmap));
@@ -157,7 +178,7 @@ namespace CardWizard.View
         /// <returns></returns>
         public static async Task<BitmapImage> LoadBitmapImage(string path)
         {
-            var buffer = await File.ReadAllBytesAsync(path);
+            var buffer = await File.ReadAllBytesAsync(path).ConfigureAwait(false);
             using MemoryStream stream = new MemoryStream(buffer);
             var bitmapImage = new BitmapImage();
             bitmapImage.BeginInit();
@@ -174,6 +195,7 @@ namespace CardWizard.View
         /// <returns></returns>
         public static BitmapImage ToBitmapImage(this Image image)
         {
+            if (image == null) throw new NullReferenceException();
             using var stream = new MemoryStream();
             image.Save(stream, ImageFormat.Png);
             var bitmapImage = new BitmapImage();
@@ -193,6 +215,7 @@ namespace CardWizard.View
         /// <returns></returns>
         public static Image ZoomIn(this Image bitmap, double width, double height)
         {
+            if (bitmap == null) throw new NullReferenceException();
             if (height <= 0)
             {
                 height = width / (1.0 * bitmap.Width / bitmap.Height);
@@ -211,6 +234,7 @@ namespace CardWizard.View
         /// <returns></returns>
         public static Icon ToIcon(this Bitmap bitmap)
         {
+            if (bitmap == null) throw new NullReferenceException();
             using MemoryStream bitmapStream = new MemoryStream();
             bitmap.Save(bitmapStream, ImageFormat.Png);
 

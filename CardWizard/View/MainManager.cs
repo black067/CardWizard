@@ -87,7 +87,7 @@ namespace CardWizard.View
         /// <summary>
         /// 当前载入的所有角色
         /// </summary>
-        public Dictionary<Character, ListBoxItem> CharacterCardPairs { get; set; } = new Dictionary<Character, ListBoxItem>();
+        public Dictionary<Character, ListBoxItem> CharacterCardPairs { get; } = new Dictionary<Character, ListBoxItem>();
 
         /// <summary>
         /// 当前查看/编辑的角色
@@ -115,7 +115,7 @@ namespace CardWizard.View
         /// <param name="window"></param>
         public MainManager(MainWindow window)
         {
-            Window = window;
+            Window = window ?? throw new NullReferenceException();
             // 设置 Logger
             Messenger.OnEnqueue += Messenger_OnEnqueue;
             // 保存界面中的预设
@@ -158,7 +158,7 @@ namespace CardWizard.View
             var files = Directory.GetFiles(PathosDatabase.PathSave);
             foreach (var item in files)
             {
-                if (!item.EndsWith(Config.FileExtensionForCard)) 
+                if (!item.EndsWith(Config.FileExtensionForCard, StringComparison.OrdinalIgnoreCase)) 
                     continue;
                 var c = YamlKit.LoadFile<Character>(item);
                 if (c == default(Character)) continue;
@@ -275,7 +275,9 @@ namespace CardWizard.View
                 {
                     LuaHub.DoFile(PathosDatabase.ScriptDebug, global: false);
                 }
+#pragma warning disable CA1031 // 不捕获常规异常类型
                 catch (Exception exception)
+#pragma warning restore CA1031 // 不捕获常规异常类型
                 {
                     Messenger.EnqueueFormat("{0}\n{1}", exception.Message, exception.StackTrace);
                     System.Diagnostics.Process.Start("explorer.exe", PathosDatabase.ScriptDebug.Replace("/", "\\"));
@@ -412,39 +414,39 @@ namespace CardWizard.View
         /// <param name="character"></param>
         public void AddToCharacters(Character character)
         {
-            if (CharacterCardPairs.ContainsKey(character)) { return; }
+            if (CharacterCardPairs.ContainsKey(character) || character == null) { return; }
             if (string.IsNullOrWhiteSpace(character.Name))
             {
-
                 var defaultName = Translator.TryTranslate("Name.Default", out var v) ? v : "Adam";
                 character.Name = $"{defaultName}#{CharacterCardPairs.Count}";
             }
             templates.TryGetValue(TMP_CARDSLISTITEM, out var rawTemplate);
             var template = rawTemplate as ListBoxItem;
-            Window.List_Cards.AddItem(template, $"Card_{character.GetHashCode()}").Process(item =>
-            {
-                OnNameChanged(this, new PropertyChangedEventArgs(nameof(Character.Name)), character, item);
-                item.GotFocus += (o, e) =>
-                {
-                    var message = Translator.TryTranslate("Message.Character.Switched", out var v) ? v : "Switch to {0}";
-                    Messenger.EnqueueFormat(message, character.Name);
-                    Current = character;
-                    OnInfoUpdate(Current);
-                };
-                character.PropertyChanged += (object o1, PropertyChangedEventArgs e1) => OnNameChanged(o1, e1, character, item);
-                item.Unloaded += (o, e) => character.PropertyChanged -= (object o1, PropertyChangedEventArgs e1) => OnNameChanged(o1, e1, character, item);
-                CharacterCardPairs.Add(character, item);
-            });
+            ProcessKit.Process(Window.List_Cards.AddItem(template, $"Card_{character.GetHashCode()}"), item =>
+             {
+                 OnNameChanged(this, new PropertyChangedEventArgs(nameof(Character.Name)), character, item);
+                 item.GotFocus += (o, e) =>
+                 {
+                     var message = Translator.TryTranslate("Message.Character.Switched", out var v) ? v : "Switch to {0}";
+                     Messenger.EnqueueFormat(message, character.Name);
+                     Current = character;
+                     OnInfoUpdate(Current);
+                 };
+                 void UpdateNameText(object o, PropertyChangedEventArgs e) => OnNameChanged(o, e, character, item);
+                 character.PropertyChanged += UpdateNameText;
+                 item.Unloaded += (o, e) => character.PropertyChanged -= UpdateNameText;
+                 CharacterCardPairs.Add(character, item);
+             });
         }
 
         /// <summary>
         /// 当角色的名称改变时, 更改侧边按钮的内容, 使其显示当前角色的名称
         /// </summary>
-        /// <param name="o"></param>
+        /// <param name="_"></param>
         /// <param name="e"></param>
         /// <param name="character"></param>
         /// <param name="item"></param>
-        private void OnNameChanged(object o, PropertyChangedEventArgs e, Character character, ListBoxItem item)
+        private void OnNameChanged(object _, PropertyChangedEventArgs e, Character character, ListBoxItem item)
         {
             if (e.PropertyName == nameof(Character.Name))
             {
@@ -478,6 +480,7 @@ namespace CardWizard.View
         /// <param name="c"></param>
         public void UpdateSumOfBaseTraits(Character c)
         {
+            if (c == null) return;
             Window.Value_Sum_Base_Traits.Content = SumTraits(c, d => !d.Derived);
         }
 
@@ -487,6 +490,7 @@ namespace CardWizard.View
         /// <param name="c"></param>
         public void UpdateDamageBonus(Character c)
         {
+            if (c == null) return;
             var scrtipt = string.Format("return DamageBonus({0}, {1})", c.GetTrait("STR"), c.GetTrait("SIZ"));
             Window.Value_DamageBonus.Content = LuaHub.DoString(scrtipt).First().ToString();
         }
@@ -505,7 +509,7 @@ namespace CardWizard.View
         /// 新建按钮点击时触发的事件
         /// </summary>
         /// <param name="sender"></param>
-        /// <param name="_"></param>
+        /// <param name="e"></param>
         private void Button_Create_Click(object sender, RoutedEventArgs e)
         {
             Current = Character.Create(Config.BaseModelDict, null);
@@ -605,11 +609,12 @@ namespace CardWizard.View
         /// <summary>
         /// 根据掷骰公式产生一个随机数
         /// </summary>
+        /// <param name="properties"></param>
         /// <param name="formula"></param>
         /// <returns></returns>
         public static string FormatScript(Dictionary<string, int> properties, string formula)
         {
-            var segments = formula.Split(";");
+            var segments = formula?.Split(";") ?? new string[] { string.Empty };
             var seg = segments[0];
             // 找出所有 xDy
             var matches = Regex.Matches(seg, @"[0-9]{1,}D[0-9]{1,}");
@@ -632,7 +637,7 @@ namespace CardWizard.View
             }
             catch (Exception e)
             {
-                Messenger.Enqueue(e);
+                Messenger.EnqueueFormat("{0}\n{1}", e.Message, e.StackTrace);
                 return "return 0";
             }
         }
