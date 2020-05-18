@@ -1,0 +1,67 @@
+﻿<UserControl
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:CardWizard.View" x:Name="userControl"
+             x:Class="CardWizard.View.TraitsViewItem"
+             mc:Ignorable="d" 
+             d:DesignHeight="30" d:DesignWidth="600" Focusable="True">
+    <UserControl.Resources>
+        <Style x:Key="TraitsInputField" TargetType="TextBox">
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Cursor" Value="IBeam"/>
+            <Setter Property="Foreground" Value="{Binding Foreground, ElementName=userControl}"/>
+            <!--<Setter Property="Text" Value="{MultiBinding Converter={DynamicResource converter}}"/>-->
+        </Style>
+    </UserControl.Resources>
+    <Grid x:Name="MainGrid">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="60"/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <TextBox Grid.Column="0"
+                 Text="SIZ"
+                 Style="{DynamicResource TraitsInputField}"/>
+        <TextBox Grid.Column="1"
+                 Style="{DynamicResource TraitsInputField}"/>
+        <TextBox Grid.Column="2"
+                 Style="{DynamicResource TraitsInputField}"/>
+        <TextBox Grid.Column="3"
+                 Style="{DynamicResource TraitsInputField}"/>
+        <TextBox Grid.Column="4"
+                 Style="{DynamicResource TraitsInputField}"/>
+        <TextBox Grid.Column="5"
+                 Style="{DynamicResource TraitsInputField}"/>
+        <TextBox Grid.Column="6"
+                 Style="{DynamicResource TraitsInputField}"/>
+        <TextBox Grid.Column="7"
+                 Style="{DynamicResource TraitsInputField}"/>
+        <TextBox Grid.Column="8"
+                 Style="{DynamicResource TraitsInputField}"/>
+        <TextBox Grid.Column="9"
+                 Style="{DynamicResource TraitsInputField}"/>
+        <!--<Label Grid.Column="1" DataContext="SIZ" Style="{DynamicResource Label_Data}"/>
+        <Label Grid.Column="2" DataContext="DEX" Style="{DynamicResource Label_Data}"/>
+        <Label Grid.Column="3" DataContext="CON" Style="{DynamicResource Label_Data}"/>
+        <Label Grid.Column="4" DataContext="APP" Style="{DynamicResource Label_Data}"/>
+        <Label Grid.Column="5" DataContext="INT" Style="{DynamicResource Label_Data}"/>
+        <Label Grid.Column="6" DataContext="POW" Style="{DynamicResource Label_Data}"/>
+        <Label Grid.Column="7" DataContext="EDU" Style="{DynamicResource Label_Data}"/>
+        <Label Grid.Column="8" DataContext="资产" Style="{DynamicResource Label_Data}"/>
+        <Label Grid.Column="9" DataContext="总计" Style="{DynamicResource Label_Data}"/>-->
+
+        <!--<Label x:Name="label" Grid.Column="10" Style="{DynamicResource Label_Data}" Content="{Binding DataContext, ElementName=userControl}" RenderTransformOrigin="1,0.5"/>-->
+    </Grid>
+</UserControl>
