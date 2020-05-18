@@ -29,7 +29,11 @@ namespace CardWizard.View
         /// </summary>
         public Dictionary<string, int> Selection { get; set; }
 
-        public BatchGenerationWindow(IEnumerable<DataModel> dataModels, Func<string, int> calculator, Config.Localization localization = null)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="manager"></param>
+        public BatchGenerationWindow(MainManager manager)
         {
             InitializeComponent();
             Width = MinWidth;
@@ -38,7 +42,13 @@ namespace CardWizard.View
             Button_Confirm.Click += Button_Confirm_Click;
             Button_Cancel.Click += Button_Cancel_Click;
             Closed += ListWindow_Closed;
-            if (localization.TryTranslate($"{nameof(BatchGenerationWindow)}.{nameof(Title)}", out var titleText))
+            if (manager == null) throw new NullReferenceException();
+            var translator = manager.Translator;
+            var dataModels = manager.Config.DataModels;
+            Func<string, int> CalcForInt = manager.CalcForInt;
+            Func<Dictionary<string, int>, string, string> FormatScript = manager.FormatScript;
+            
+            if (translator.TryTranslate($"{nameof(BatchGenerationWindow)}.{nameof(Title)}", out var titleText))
             {
                 Title = titleText;
             }
@@ -51,16 +61,14 @@ namespace CardWizard.View
                                   where !m.Derived || m.Name.EqualsIgnoreCase(Config.KEY_ASSET)
                                   select m.Name).ToList();
                 properties.Add("SUM");
-                Headers.InitAsHeaders(properties.ToArray(), localization);
+                Headers.InitAsHeaders(properties.ToArray(), translator);
             });
             // 提示语句
             MessageBox.Process(control =>
             {
                 var tkey = control.DataContext?.ToString() ?? string.Empty;
-                if (localization.TryTranslate(tkey, out var message))
+                if (translator.TryTranslate(tkey, out var message))
                 {
-                    //Label_Message.Document.Blocks.Clear();
-                    //Label_Message.Document.Blocks.Add(new Paragraph(new Run(tipText)));
                     control.Text = message;
                 }
             });
@@ -74,8 +82,7 @@ namespace CardWizard.View
                 }
             }
 
-            int Roll(Dictionary<string, int> properties, string key) 
-                => calculator(MainManager.FormatScript(properties, datas[key].Formula));
+            int Roll(Dictionary<string, int> properties, string key) => CalcForInt(FormatScript(properties, datas[key].Formula));
             // 生成几组角色的属性
             for (int i = ListMain.Items.Count; i > 0; i--)
             {

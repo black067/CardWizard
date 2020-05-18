@@ -69,11 +69,7 @@ function TestForAssets()
     end
 end
 
-function TestForCapturePng()
-    CS.CardWizard.View.UIExtension.CapturePng(MainManager.Window.CardInfoView, './mainWindow.png')
-end
-
-TestForCapturePng()
+TestForAssets()
 
 -- GeneratePropDict(Config.baseModel)
 -- OpenListWindow()

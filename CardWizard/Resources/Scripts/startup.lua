@@ -4,7 +4,7 @@ print('欢迎使用 COC 角色编辑器 - 规则基于 第 6 版规则书.')
 
 --- <summary>
 --- baseModel 是一个数组, 元素类型为 DataModel
---- </summary
+--- </summary>
 function GeneratePropDict(models)
     local dict = CS.CardWizard.Tools.Utilities.NewDict('string', 'object')
     local max = CS.CardWizard.Tools.Utilities.GetCount(models) - 1

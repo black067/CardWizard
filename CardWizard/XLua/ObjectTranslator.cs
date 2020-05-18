@@ -39,7 +39,7 @@ namespace XLua
     }
 
 #pragma warning disable 414
-    public class MonoPInvokeCallbackAttribute : System.Attribute
+    public class MonoPInvokeCallbackAttribute : Attribute
     {
         private Type type;
         public MonoPInvokeCallbackAttribute(Type t) { type = t; }
@@ -621,7 +621,7 @@ namespace XLua
             Utils.BeginObjectRegister(null, L, this, 0, 0, 1, 0, common_array_meta);
             Utils.RegisterFunc(L, Utils.GETTER_IDX, "Length", StaticLuaCallbacks.ArrayLength);
             Utils.EndObjectRegister(null, L, this, null, null,
-                 typeof(System.Array), StaticLuaCallbacks.ArrayIndexer, StaticLuaCallbacks.ArrayNewIndexer);
+                 typeof(Array), StaticLuaCallbacks.ArrayIndexer, StaticLuaCallbacks.ArrayNewIndexer);
         }
 
         int common_delegate_meta = -1;
@@ -632,7 +632,7 @@ namespace XLua
             Utils.RegisterFunc(L, Utils.OBJ_META_IDX, "__add", StaticLuaCallbacks.DelegateCombine);
             Utils.RegisterFunc(L, Utils.OBJ_META_IDX, "__sub", StaticLuaCallbacks.DelegateRemove);
             Utils.EndObjectRegister(null, L, this, null, null,
-                 typeof(System.MulticastDelegate), null, null);
+                 typeof(MulticastDelegate), null, null);
         }
 
         int enumerable_pairs_func = -1;
@@ -1115,9 +1115,9 @@ namespace XLua
                 double d = Convert.ToDouble(o);
                 LuaAPI.lua_pushnumber(L, d);
             }
-            else if (o is IntPtr)
+            else if (o is RealStatePtr)
             {
-                LuaAPI.lua_pushlightuserdata(L, (IntPtr)o);
+                LuaAPI.lua_pushlightuserdata(L, (RealStatePtr)o);
             }
             else if (o is char)
             {
@@ -1535,7 +1535,7 @@ namespace XLua
                     {typeof(bool), new Action<RealStatePtr, bool>(LuaAPI.lua_pushboolean) },
                     {typeof(long), new Action<RealStatePtr, long>(LuaAPI.lua_pushint64) },
                     {typeof(ulong), new Action<RealStatePtr, ulong>(LuaAPI.lua_pushuint64) },
-                    {typeof(IntPtr), new Action<RealStatePtr, IntPtr>(LuaAPI.lua_pushlightuserdata) },
+                    {typeof(RealStatePtr), new Action<RealStatePtr, RealStatePtr>(LuaAPI.lua_pushlightuserdata) },
                     {typeof(decimal), new Action<RealStatePtr, decimal>(PushDecimal) },
                     {typeof(byte),  new Action<RealStatePtr, byte>((L, v) => LuaAPI.xlua_pushinteger(L, v)) },
                     {typeof(sbyte),  new Action<RealStatePtr, sbyte>((L, v) => LuaAPI.xlua_pushinteger(L, v)) },
@@ -1575,7 +1575,7 @@ namespace XLua
                     {typeof(bool), new Func<RealStatePtr, int, bool>(LuaAPI.lua_toboolean) },
                     {typeof(long), new Func<RealStatePtr, int, long>(LuaAPI.lua_toint64) },
                     {typeof(ulong), new Func<RealStatePtr, int, ulong>(LuaAPI.lua_touint64) },
-                    {typeof(IntPtr), new Func<RealStatePtr, int, IntPtr>(LuaAPI.lua_touserdata) },
+                    {typeof(RealStatePtr), new Func<RealStatePtr, int, RealStatePtr>(LuaAPI.lua_touserdata) },
                     {typeof(decimal), new Func<RealStatePtr, int, decimal>((L, idx) => {
                         decimal ret;
                         Get(L, idx, out ret);
@@ -1657,7 +1657,7 @@ namespace XLua
                 bool is_first;
                 decimal_type_id = getTypeId(L, typeof(decimal), out is_first);
             }
-            IntPtr buff = LuaAPI.xlua_pushstruct(L, 16, decimal_type_id);
+            RealStatePtr buff = LuaAPI.xlua_pushstruct(L, 16, decimal_type_id);
             if (!CopyByValue.Pack(buff, 0, val))
             {
                 throw new Exception("pack fail for decimal ,value=" + val);
@@ -1688,7 +1688,7 @@ namespace XLua
                     throw new Exception("invalid userdata for decimal!");
                 }
 
-                IntPtr buff = LuaAPI.lua_touserdata(L, index);
+                RealStatePtr buff = LuaAPI.lua_touserdata(L, index);
 
                 if (!CopyByValue.UnPack(buff, 0, out val))
                 {

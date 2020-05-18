@@ -134,35 +134,40 @@ namespace CardWizard.View
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="element"></param>
+        /// <returns></returns>
+        public static System.Drawing.Size GetActualSize(FrameworkElement element)
+        {
+            if (element == null) return new System.Drawing.Size(0, 0);
+            var pxWidth = (int)element.ActualWidth;
+            var pxHeight = (int)element.ActualHeight;
+            return new System.Drawing.Size(pxWidth, pxHeight);
+        }
+
+        /// <summary>
+        /// 取得控件的 DPI
+        /// </summary>
+        /// <param name="visual"></param>
+        /// <returns></returns>
+        public static double GetDpi(Visual visual)
+        {
+            PresentationSource source = PresentationSource.FromVisual(visual);
+            return 96 * (source?.CompositionTarget.TransformToDevice.M11 ?? 1);
+        }
+
+        /// <summary>
         /// 将控件保存为 png
         /// </summary>
         /// <param name="visual"></param>
         /// <param name="filePath"></param>
         /// <param name="pxWidth"></param>
         /// <param name="pxHeight"></param>
-        public static void CapturePng(Visual visual, string filePath, int pxWidth = 0, int pxHeight = 0)
+        /// <param name="dpiX"></param>
+        /// <param name="dpiY"></param>
+        public static void CapturePng(Visual visual, string filePath, int pxWidth, int pxHeight, double dpiX, double dpiY)
         {
-            if (visual is FrameworkElement element)
-            {
-                if (pxWidth == 0)
-                {
-                    pxWidth = (int)element.ActualWidth;
-                }
-                if (pxHeight == 0)
-                {
-                    pxHeight = (int)element.ActualHeight;
-                }
-            }
-            if (pxWidth == 0) { pxWidth = 800; }
-            if (pxHeight == 0) { pxHeight = 800; }
-            // 获取控件的 dpi
-            PresentationSource source = PresentationSource.FromVisual(visual);
-            double dpiX = 96, dpiY = 96;
-            if (source != null)
-            {
-                dpiX = 96.0 * source.CompositionTarget.TransformToDevice.M11;
-                dpiY = 96.0 * source.CompositionTarget.TransformToDevice.M22;
-            }
             RenderTargetBitmap renderTargetBitmap = new RenderTargetBitmap(pxWidth, pxHeight, dpiX, dpiY, PixelFormats.Pbgra32);
             renderTargetBitmap.Render(visual);
             PngBitmapEncoder pngImage = new PngBitmapEncoder();

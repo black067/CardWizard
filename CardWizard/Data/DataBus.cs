@@ -9,6 +9,9 @@ using CardWizard.Tools;
 
 namespace CardWizard.Data
 {
+    /// <summary>
+    /// 数据总线, 用于存储武器/技能/职业等数据
+    /// </summary>
     public class DataBus
     {
         private Dictionary<string, Skill> skills;
@@ -81,6 +84,7 @@ namespace CardWizard.Data
                 }
                 return;
             }
+            if (path == null) { return; }
             if (path.StartsWith(nameof(Weapon)))
             {
                 SolveRaw<Weapon>(path);
@@ -98,7 +102,7 @@ namespace CardWizard.Data
         private void SolveRaw<T>(string path)
         {
             var datas = YamlKit.LoadFile<IEnumerable<T>>(path);
-            if (datas.Count() == 0) return;
+            if (datas == null || datas.Any()) return;
             foreach (var item in datas)
             {
                 CacheData(item);

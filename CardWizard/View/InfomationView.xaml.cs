@@ -27,6 +27,9 @@ namespace CardWizard.View
 
         private string InvalidText;
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public InfomationView()
         {
             InitializeComponent();
@@ -60,8 +63,8 @@ namespace CardWizard.View
                     var tooltip = Manager.Translator.TryTranslate("ToolTip.Age.Min", out var m) ? m : "Minimum Age is {0}";
                     tooltip = string.Format(tooltip, minAge);
                     check.ToolTip = tooltip;
-                    c.PropertyChanged -= CurrentPropertyChanged;
-                    c.PropertyChanged += CurrentPropertyChanged;
+                    c.PropertyChanged -= CurrentAgeChanged;
+                    c.PropertyChanged += CurrentAgeChanged;
                 };
             });
             Label_Age_Penalty.Process(label =>
@@ -99,24 +102,32 @@ namespace CardWizard.View
             return minAge;
         }
 
-        private void CurrentPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        /// <summary>
+        /// 当角色年龄被编辑时触发的事件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CurrentAgeChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            if (e.PropertyName.EqualsIgnoreCase(nameof(Character.Age)))
+            // 改变的值不是年龄, 直接中断
+            if (!e.PropertyName.EqualsIgnoreCase(nameof(Character.Age))) return;
+            // 判断年龄是否符合规则
+            var minAge = IsAgeValid(Label_Age_Check, Manager.Current);
+            var edu = Manager.Current.GetTraitBase("EDU");
+            var script = $"return AgeBonus({edu}, {Manager.Current.Age}, {minAge})";
+            var table = (XLua.LuaTable)Manager.LuaHub.DoString(script).First();
+            var bonus = new Dictionary<string, int>();
+            foreach (var key in table.GetKeys<string>())
             {
-                var minAge = IsAgeValid(Label_Age_Check, Manager.Current);
-                var edu = Manager.Current.GetTraitBase("EDU");
-                var script = $"return AgeBonus({edu}, {Manager.Current.Age}, {minAge})";
-                var table = (XLua.LuaTable)Manager.LuaHub.DoString(script).First();
-                var bonus = new Dictionary<string, int>();
-                foreach (var key in table.GetKeys<string>())
-                {
-                    bonus[key] = Convert.ToInt32(table.Get<object>(key));
-                }
-                if (bonus.TryGetValue("EDU", out int eduGrowth)) { Manager.Current.SetTraitGrowth("EDU", eduGrowth); }
-                if (bonus.TryGetValue("Senescence", out int senescence))
-                {
-                    Label_Age_Penalty.Content = senescence;
-                }
+                bonus[key] = Convert.ToInt32(table.Get<object>(key));
+            }
+            if (bonus.TryGetValue("EDU", out int eduGrowth))
+            {
+                Manager.Current.SetTraitGrowth("EDU", eduGrowth);
+            }
+            if (bonus.TryGetValue("Adjustment", out int adjustment))
+            {
+                Label_Age_Penalty.Content = adjustment;
             }
         }
 

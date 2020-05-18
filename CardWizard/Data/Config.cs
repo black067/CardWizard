@@ -11,7 +11,7 @@ namespace CardWizard.Data
     /// <summary>
     /// 配置数据
     /// </summary>
-    public class Config
+    public partial class Config
     {
         /// <summary>
         /// 调查员资产的缩写
@@ -39,178 +39,29 @@ namespace CardWizard.Data
         public string FileExtensionForCardDoc = ".ivg.trans.yaml";
 
         /// <summary>
-        /// 本地化文本相关数据
+        /// 角色图像的后缀名
         /// </summary>
-        public class Localization
-        {
-            /// <summary>
-            /// 可选择的时代
-            /// </summary>
-            public string[] labelForEras = new string[]
-            {
-                "1890s", "1920s", "现代"
-            };
-            /// <summary>
-            /// 名词翻译
-            /// </summary>
-            public Dictionary<string, string> dictionary = new Dictionary<string, string>
-            {
-                { "Era", "时代" },
-                { "Name", "名称" },
-                { "Name.Default", "无名小卒" },
-                { "Gender", "性别" },
-                { "Gender.Male", "男" },
-                { "Gender.Female", "女" },
-                { "Gender.Others", "保密" },
-                { "Age", "年龄" },
-                { "ToolTip.Age.Min", "角色的最小年龄是 {0}" },
-                { "ToolTip.Age.Penalty", "角色超过 40 岁时, 每超过 10 年, 从以下属性中选择 1 点减去: {STR} / {CON} / {DEX} / {APP}." },
-                { "Education", "学历" },
-                { "Homeland", "故乡" },
-                { "Occupation", "职业"},
-                { "Description", "描述" },
-                { "Skills", "技能" },
-                { "skills", "技能" },
-                { "Traits", "属性" },
-                { "STR", "力量" },
-                { "CON", "体质" },
-                { "SIZ", "体型" },
-                { "INT", "智力" },
-                { "POW", "意志" },
-                { "DEX", "敏捷" },
-                { "APP", "外表" },
-                { "EDU", "教育" },
-                { "SAN", "理智" },
-                { "LUCK", "幸运" },
-                { "IDEA", "灵感" },
-                { "SUM", "总计" },
-                { "KNOW", "知识" },
-                { KEY_ASSET, "资产" },
-                { "Growths", "成长值" },
-                { "Senescence", "衰老惩罚" },
-                { "OccupationPoints", "职业点数" },
-                { "InterestPoints", "兴趣点数" },
-                { "true", "是" },
-                { "false", "否" },
-                { "Valid", "✅" },
-                { "Invalid", "❎" },
-                { "MenuBar.Button.Create", "新建" },
-                { "MenuBar.Button.Save", "保存" },
-                { "Card.Image.Avatar", "点击可导入新头像" },
-                { "Card.Label.BasePropSum", "基础属性总计" },
-                { "Card.Button.Regenerate", "重新生成" },
-                { "Card.Button.DMGBonus", "掷一次" },
-                { "Card.Label.DamageBonus", "伤害奖励" },
-                { "Message.RollADMGBonus", "根据公式 {0}, 本轮掷出了 {1}" },
-                { "BatchGenerationWindow.Title", "批量生成属性" },
-                { "Dialog.Import.Avatar.Title", "选择调查员的照片 (*.png)" },
-                { "Dialog.Import.Avatar.Confirmation", "是否确认用\n{0}\n覆盖现有的文件?" },
-                { "Message.Regenerate", $"请选择一组数据作为角色的基础属性\n* 当前角色的成长值将被完全清空\n* {{{KEY_ASSET}}} 不计入属性总计" },
-                { "Message.Character.Saved", "角色数据已保存至: {0}" },
-                { "Message.Character.Switched", "已切换至角色: {0}" },
-            };
+        public string FileExtensionForCardPic = ".doc.png";
 
-            [YamlIgnore]
-            internal Dictionary<string, string> dictionaryIgnoreCase = new Dictionary<string, string>();
+        /// <summary>
+        /// 调查员的图像文档在打印时的页面DPI
+        /// </summary>
+        public double PrintSettings_Dpi = 300;
 
-            /// <summary>
-            /// 查询翻译文字
-            /// </summary>
-            /// <param name="path"></param>
-            /// <param name="text"></param>
-            /// <returns></returns>
-            public bool TryTranslate(string path, out string text, bool ignoreCase = false)
-            {
-                path = path.Replace('_', '.');
-                text = null;
-                if (ignoreCase)
-                {
-                    return !string.IsNullOrWhiteSpace(path) && dictionaryIgnoreCase.TryGetValue(path.ToUpper(), out text);
-                }
-                return !string.IsNullOrWhiteSpace(path) && dictionary.TryGetValue(path, out text);
-            }
-        }
+        /// <summary>
+        /// 调查员的图像文档在打印时的页面背景色
+        /// </summary>
+        public string PrintSettings_BackgroundColor = "#ffffffff";
 
         /// <summary>
         /// 文本翻译工具
         /// </summary>
-        public Localization Translator = new Localization();
-
-
-        /// <summary>
-        /// 路径数据库, 缓存了应用的特殊路径
-        /// </summary>
-        public class PathsDatabase
-        {
-            /// <summary>
-            /// 存档的根目录
-            /// </summary>
-            public string PathSave = "./Save";
-
-            /// <summary>
-            /// 资源的根目录
-            /// </summary>
-            public string PathResources = "./Resources";
-
-            /// <summary>
-            /// 数据存放的根目录
-            /// </summary>
-            [ProcessIndex(1)]
-            public string PathData = "{PathResources}/Data";
-
-            /// <summary>
-            /// 技能数据位置
-            /// </summary>
-            [ProcessIndex(2)]
-            public string FileSkills = $"{{PathData}}/{nameof(Skill)}.All.yaml";
-
-            /// <summary>
-            /// 职业数据的位置
-            /// </summary>
-            [ProcessIndex(2)]
-            public string FileOccupations = $"{{PathData}}/{nameof(Occupation)}.All.yaml";
-
-            /// <summary>
-            /// 武器数据的位置
-            /// </summary>
-            [ProcessIndex(2)]
-            public string FileWeapons = $"{{PathData}}/{nameof(Weapon)}.All.yaml";
-
-            /// <summary>
-            /// 脚本的目录
-            /// </summary>
-            [ProcessIndex(1)]
-            public string PathScripts = "{PathResources}/Scripts";
-
-            /// <summary>
-            /// 启动脚本的位置
-            /// </summary>
-            [ProcessIndex(2)]
-            public string ScriptFormula = "{PathScripts}/formula.lua";
-
-            /// <summary>
-            /// 启动完毕脚本的位置
-            /// </summary>
-            [ProcessIndex(2)]
-            public string ScriptStartup = "{PathScripts}/startup.lua";
-
-            /// <summary>
-            /// Debug 脚本的位置
-            /// </summary>
-            [ProcessIndex(2)]
-            public string ScriptDebug = "{PathScripts}/debug.lua";
-
-            /// <summary>
-            /// 图片资源的位置
-            /// </summary>
-            [ProcessIndex(1)]
-            public string PathTextures = "{PathResources}/Textures";
-        }
+        public Translator Translator = new Translator();
 
         /// <summary>
         /// 路径数据, 缓存了应用的特殊路径
         /// </summary>
-        public PathsDatabase Paths = new PathsDatabase();
+        public Paths Paths = new Paths();
 
         /// <summary>
         /// 基础属性模型
@@ -258,7 +109,7 @@ namespace CardWizard.Data
         /// 用于指定 <see cref="Process"/> 中, 处理此字段的顺序 (数字升序)
         /// </summary>
         [AttributeUsage(AttributeTargets.All, Inherited = false, AllowMultiple = true)]
-        sealed class ProcessIndexAttribute : Attribute
+        internal sealed class ProcessIndexAttribute : Attribute
         {
             public ProcessIndexAttribute(int index)
             {

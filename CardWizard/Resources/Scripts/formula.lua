@@ -50,15 +50,9 @@ DOC_AssetOrignal = [[ 本程序的 初始资金 算法参考以下数据 (来自
 ]]
 
 DATA_AssetOriginal = {}
-DATA_AssetOriginal['1890s'] = {
-	'$500+房子&膳食', '$1000', '$1500', '$2000', '$2500', '$3000', '$4000', '$5000', '$5000', '$10000'
-}
-DATA_AssetOriginal['1920s'] = {
-	'$1500+房子&膳食', '$2500', '$3500', '$3500', '$4500', '$5500', '$6500', '$7500', '$10000', '$20000'
-}
-DATA_AssetOriginal['Modern'] = {
-	'$15000+房子&膳食', '$25000', '$35000', '$45000', '$55000', '$75000', '$100000', '$200000', '$300000', '$500000'
-}
+DATA_AssetOriginal['1890s'] = {	'$500+房子&膳食', '$1000', '$1500', '$2000', '$2500', '$3000', '$4000', '$5000', '$5000', '$10000'}
+DATA_AssetOriginal['1920s'] = {	'$1500+房子&膳食', '$2500', '$3500', '$3500', '$4500', '$5500', '$6500', '$7500', '$10000', '$20000'}
+DATA_AssetOriginal['Modern'] = {'$15000+房子&膳食', '$25000', '$35000', '$45000', '$55000', '$75000', '$100000', '$200000', '$300000', '$500000'}
 --- 初始资产的计算
 function AssetOrignal(era, value)
 	-- 1890s || 1920s
@@ -92,10 +86,10 @@ function AgeBonus(eduBase, age, minAge)
 	bonus['EDU'] = ageBonus
 	bonus['OccupationPoints'] = ageBonus
 	-- 计算衰老惩罚
-	bonus['Senescence'] = 0
+	bonus['Adjustment'] = 0
 	local deltaForPenalty = age - 40
 	if deltaForPenalty >= 0 then
-		bonus['Senescence'] = math.floor(deltaForPenalty / 10)
+		bonus['Adjustment'] = math.floor(deltaForPenalty / 10)
 	end
 	return bonus
 end

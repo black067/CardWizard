@@ -195,7 +195,7 @@ namespace XLua.TemplateEngine
             return result[0].ToString();
         }
 
-        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        [MonoPInvokeCallback(typeof(LuaCSFunction))]
         public static int Compile(RealStatePtr L)
         {
 			string snippet = LuaAPI.lua_tostring(L, 1);
@@ -217,7 +217,7 @@ namespace XLua.TemplateEngine
             return 1;
         }
 
-        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        [MonoPInvokeCallback(typeof(LuaCSFunction))]
         public static int Execute(RealStatePtr L)
         {
             if (!LuaAPI.lua_isfunction(L, 1))

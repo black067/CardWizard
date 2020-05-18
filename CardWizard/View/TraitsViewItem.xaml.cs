@@ -18,10 +18,20 @@ namespace CardWizard.View
         /// 值的集合
         /// <para>只有在调用了方法: <see cref="InitAsDatas(Dictionary{string, int}, bool)"/> 之后, 才会被赋值</para>
         /// </summary>
-        public Dictionary<string, int> Values { get; set; }
+        public Dictionary<string, int> Values { get; private set; }
 
         private Dictionary<string, TextBox> Children { get; set; }
 
+        /// <summary>
+        /// 数据提示的显示格式
+        /// </summary>
+        private const string FORMAT_TOOLTIP = "{0} = {1}\n{2}\n{3}";
+
+        private string tooltipForTrait;
+
+        /// <summary>
+        /// 新建此控件
+        /// </summary>
         public TraitsViewItem()
         {
             InitializeComponent();
@@ -33,10 +43,11 @@ namespace CardWizard.View
         /// 作为一行数据进行初始化
         /// </summary>
         /// <param name="datas"></param>
+        /// <param name="enableEdit">是否允许编辑</param>
         public void InitAsDatas(Dictionary<string, int> datas, bool enableEdit = true)
         {
             Values = datas;
-            var values = datas.Values.ToArray();
+            var values = datas?.Values.ToArray() ?? Array.Empty<int>();
             var keys = datas.Keys.ToArray();
             for (int i = 0, len = Math.Min(MainGrid.Children.Count, values.Length); i < len; i++)
             {
@@ -62,13 +73,14 @@ namespace CardWizard.View
         /// 作为角色的属性面板进行初始化
         /// </summary>
         /// <param name="manager"></param>
-        /// <param name="derived"></param>
+        /// <param name="derived">是否绑定派生属性</param>
         public void BindTraits(MainManager manager, bool derived)
         {
-            Manager = manager;
+            Manager = manager ?? throw new NullReferenceException();
             var models = new Dictionary<string, DataModel>(from kvp in Manager.Config.BaseModelDict
                                                            where derived == kvp.Value.Derived
                                                            select kvp);
+            tooltipForTrait = Manager.Translator.TryTranslate("ToolTip.Trait", out var tip) ? tip : "= Initial + Growth + Adjustment";
             var keys = models.Keys.ToArray();
             Children = new Dictionary<string, TextBox>();
             for (int i = 0, len = Math.Min(MainGrid.Children.Count, models.Count); i < len; i++)
@@ -77,13 +89,18 @@ namespace CardWizard.View
                 {
                     // 用 box 的 DataContext 保存其指向的角色特点名称
                     box.DataContext = keys[i];
+                    box.GotFocus += (o, e) =>
+                    {
+                        var key = box.DataContext.ToString();
+                        box.Text = manager.Current.GetTraitText(key);
+                    };
                     box.LostFocus += (o, e) => EndEditTraitBox(box);
                     Manager.InfoUpdating += c =>
                     {
                         var key = box.DataContext.ToString();
                         box.Text = c.GetTraitText(key);
                     };
-                    box.ToolTip = $"{keys[i]} = {models[keys[i]].Formula}";
+                    UpdateBoxText(box, keys[i], manager.Current);
                     Children.Add(keys[i], box);
                 }
             }
@@ -91,11 +108,33 @@ namespace CardWizard.View
             CleanExcessColumns(keys.Length);
         }
 
-        private void C_TraitChanged(object arg1, Character.TraitChangedEventArgs arg2)
+        private void UpdateBoxText(TextBox box, string key, Character character)
         {
-            if (Children.ContainsKey(arg2.Key))
+            box.Text = character.GetTrait(key).ToString();
+            box.ToolTip = string.Format(FORMAT_TOOLTIP, key, Manager.Current.GetTraitText(key), tooltipForTrait, Manager.Config.BaseModelDict[key].Formula);
+        }
+
+        private void C_TraitChanged(Character character, Character.TraitChangedEventArgs e)
+        {
+            var eKey = e.Key;
+            if (Children.ContainsKey(eKey))
             {
-                Children[arg2.Key].Text = Manager.Current.GetTraitText(arg2.Key);
+                UpdateBoxText(Children[eKey], eKey, character);
+            }
+            // 如果当前修改的是基础特点值, 检查是否需要更新派生特点值
+            if (Manager.Config.BaseModelDict.TryGetValue(eKey, out var basemodel) && !basemodel.Derived)
+            {
+                var models = from m in Manager.Config.DataModels where m.Derived && m.Formula.Contains(basemodel.Name, StringComparison.OrdinalIgnoreCase) select m;
+                foreach (var m in models)
+                {
+                    var cKey = m.Name;
+                    if (!Children.ContainsKey(cKey)) { continue; }
+                    var @base = Manager.CalcForInt(Manager.FormatScript(character.Traits, m.Formula));
+                    var growth = Manager.CalcForInt(Manager.FormatScript(character.Growths, m.Formula));
+                    var adjustment = Manager.CalcForInt(Manager.FormatScript(character.Adjustment, m.Formula));
+                    character.SetTrait(cKey, @base, growth, adjustment);
+                    UpdateBoxText(Children[cKey], cKey, character);
+                }
             }
         }
 
@@ -105,13 +144,13 @@ namespace CardWizard.View
         /// <param name="box"></param>
         private void EndEditTraitBox(TextBox box)
         {
-            // box 的 DataContext 保存了其指向的角色特点名称
+            // box 的 DataContext 保存了特点名称
             var key = box.DataContext.ToString();
-            (_, int growth, int senescence) = Character.SplitTraitText(box.Text);
+            // 基础特点值才可以被修改
+            (_, int growth, int adjustment) = Character.SplitTraitText(box.Text);
             Manager.Current.SetTraitGrowth(key, growth);
-            Manager.Current.SetTraitSenescence(key, senescence);
-
-            box.Text = Manager.Current.GetTraitText(key);
+            Manager.Current.SetTraitAdjustment(key, adjustment);
+            UpdateBoxText(box, key, Manager.Current);
             // 编辑完毕后, 还要更新角色的属性总计与伤害奖励的数据
             Manager.UpdateSumOfBaseTraits(Manager.Current);
             Manager.UpdateDamageBonus(Manager.Current);
@@ -122,7 +161,7 @@ namespace CardWizard.View
         /// </summary>
         /// <param name="headers"></param>
         /// <param name="localization"></param>
-        public void InitAsHeaders(IEnumerable<string> headers, Config.Localization localization)
+        public void InitAsHeaders(IEnumerable<string> headers, Translator localization)
         {
             var loopLimit = headers.Count();
             void dosth(UIElement e, int i)
@@ -154,10 +193,10 @@ namespace CardWizard.View
         /// <summary>
         /// 添加提示信息
         /// </summary>
-        /// <param name="tooltips"></param>
-        public void InitToolTips(IEnumerable<(string k, string v)> pairs)
+        /// <param name="tooltipPairs"></param>
+        public void InitToolTips(IEnumerable<(string k, string v)> tooltipPairs)
         {
-            var tooltips = new Dictionary<string, string>(from tp in pairs select new KeyValuePair<string, string>(tp.k, tp.v));
+            var tooltips = new Dictionary<string, string>(from tp in tooltipPairs select new KeyValuePair<string, string>(tp.k, tp.v));
             void dosth(UIElement e, int i)
             {
                 if (e is FrameworkElement ctr && tooltips.TryGetValue(ctr.Tag?.ToString() ?? string.Empty, out var value))

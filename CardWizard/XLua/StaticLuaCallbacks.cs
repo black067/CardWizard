@@ -307,9 +307,9 @@ namespace XLua
                 uint[] array = obj as uint[];
                 LuaAPI.xlua_pushuint(L, array[index]);
             }
-            else if (type == typeof(IntPtr[]))
+            else if (type == typeof(RealStatePtr[]))
             {
-                IntPtr[] array = obj as IntPtr[];
+                RealStatePtr[] array = obj as RealStatePtr[];
                 LuaAPI.lua_pushlightuserdata(L, array[index]);
             }
             else if (type == typeof(decimal[]))
@@ -340,7 +340,7 @@ namespace XLua
             try
             {
                 ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
-                System.Array array = (System.Array)translator.FastGetCSObj(L, 1);
+                Array array = (Array)translator.FastGetCSObj(L, 1);
 
                 if (array == null)
                 {
@@ -448,9 +448,9 @@ namespace XLua
                 uint[] array = obj as uint[];
                 array[array_idx] = LuaAPI.xlua_touint(L, obj_idx);
             }
-            else if (type == typeof(IntPtr[]) && lua_type == LuaTypes.LUA_TLIGHTUSERDATA)
+            else if (type == typeof(RealStatePtr[]) && lua_type == LuaTypes.LUA_TLIGHTUSERDATA)
             {
-                IntPtr[] array = obj as IntPtr[];
+                RealStatePtr[] array = obj as RealStatePtr[];
                 array[array_idx] = LuaAPI.lua_touserdata(L, obj_idx);
             }
             else if (type == typeof(decimal[]))
@@ -500,7 +500,7 @@ namespace XLua
             try
             {
                 ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
-                System.Array array = (System.Array)translator.FastGetCSObj(L, 1);
+                Array array = (Array)translator.FastGetCSObj(L, 1);
 
                 if (array == null)
                 {
@@ -556,11 +556,11 @@ namespace XLua
             try
             {
                 ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
-                System.Array array = (System.Array)translator.FastGetCSObj(L, 1);
+                Array array = (Array)translator.FastGetCSObj(L, 1);
                 LuaAPI.xlua_pushinteger(L, array.Length);
                 return 1;
             }
-            catch (System.Exception e)
+            catch (Exception e)
             {
                 return LuaAPI.luaL_error(L, "c# exception in ArrayLength:" + e);
             }
@@ -584,7 +584,7 @@ namespace XLua
                 LuaAPI.lua_rawget(L, 1);
                 return 1;
             }
-            catch (System.Exception e)
+            catch (Exception e)
             {
                 return LuaAPI.luaL_error(L, "c# exception in MetaFuncIndex:" + e);
             }
@@ -674,7 +674,7 @@ namespace XLua
                 }
                 return 1;
             }
-            catch (System.Exception e)
+            catch (Exception e)
             {
                 return LuaAPI.luaL_error(L, "c# exception in LoadBuiltinLib:" + e);
             }
@@ -798,7 +798,7 @@ namespace XLua
                     "\n\tno such file '{0}' in CustomLoaders!", filename));
                 return 1;
             }
-            catch (System.Exception e)
+            catch (Exception e)
             {
                 return LuaAPI.luaL_error(L, "c# exception in LoadFromCustomLoaders:" + e);
             }
@@ -837,7 +837,7 @@ namespace XLua
                 }
                 return 0;
             }
-            catch (System.Exception e)
+            catch (Exception e)
             {
                 return LuaAPI.luaL_error(L, "c# exception in xlua.load_assembly:" + e);
             }
@@ -870,7 +870,7 @@ namespace XLua
                 }
                 return 1;
             }
-            catch (System.Exception e)
+            catch (Exception e)
             {
                 return LuaAPI.luaL_error(L, "c# exception in xlua.import_type:" + e);
             }
@@ -910,7 +910,7 @@ namespace XLua
 
                 return 1;
             }
-            catch (System.Exception e)
+            catch (Exception e)
             {
                 return LuaAPI.luaL_error(L, "c# exception in xlua.import_type:" + e);
             }
@@ -937,7 +937,7 @@ namespace XLua
                 LuaAPI.lua_setmetatable(L, 1);
                 return 0;
             }
-            catch (System.Exception e)
+            catch (Exception e)
             {
                 return LuaAPI.luaL_error(L, "c# exception in xlua.cast:" + e);
             }

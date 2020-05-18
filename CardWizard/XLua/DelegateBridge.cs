@@ -133,7 +133,7 @@ namespace XLua
         {
         }
 
-        public void PCall(IntPtr L, int nArgs, int nResults, int errFunc)
+        public void PCall(RealStatePtr L, int nArgs, int nResults, int errFunc)
         {
             if (LuaAPI.lua_pcall(L, nArgs, nResults, errFunc) != 0)
                 luaEnv.ThrowExceptionFromError(errFunc - 1);

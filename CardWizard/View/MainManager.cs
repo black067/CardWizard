@@ -14,6 +14,9 @@ using CardWizard.Properties;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using Microsoft.Win32;
+using System.Windows.Media;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace CardWizard.View
 {
@@ -42,12 +45,12 @@ namespace CardWizard.View
         /// <summary>
         /// 本地化文本
         /// </summary>
-        public Config.Localization Translator { get => Config.Translator; }
+        public Translator Translator { get => Config.Translator; }
 
         /// <summary>
         /// 路径管理器
         /// </summary>
-        public Config.PathsDatabase PathosDatabase { get => Config.Paths; }
+        public Paths Paths { get => Config.Paths; }
 
         /// <summary>
         /// 垃圾回收的时钟
@@ -82,7 +85,14 @@ namespace CardWizard.View
         /// <summary>
         /// 角色的特点值被改变时, 触发的事件
         /// </summary>
-        public event Action<object, Character.TraitChangedEventArgs> TraitChanged;
+        public event Action<Character, Character.TraitChangedEventArgs> TraitChanged;
+
+        /// <summary>
+        /// 对事件的包装
+        /// </summary>
+        /// <param name="c"></param>
+        /// <param name="e"></param>
+        private void OnTraitChanged(Character c, Character.TraitChangedEventArgs e) => TraitChanged?.Invoke(c, e);
 
         /// <summary>
         /// 当前载入的所有角色
@@ -100,12 +110,12 @@ namespace CardWizard.View
                 if (current != value)
                 {
                     current?.ClearObservers();
+                    if (value != null)
+                    {
+                        value.TraitChanged += OnTraitChanged;
+                    }
                 }
                 current = value;
-                if (current != null)
-                {
-                    current.TraitChanged += CurrentTraitChanged;
-                }
             }
         }
 
@@ -143,7 +153,7 @@ namespace CardWizard.View
             };
             GCDispatcher.Start();
             // 根据 Config.PathosDatabase 创建目录
-            CreateDirectories(PathosDatabase);
+            CreateDirectories(Paths);
             // 创建数据总线
             DataBus = new DataBus();
             // 新建一个随机数工具
@@ -151,14 +161,14 @@ namespace CardWizard.View
             // 创建 Lua 环境
             InitLuaHub();
             // 如果存在存储了计算公式的脚本文件, 执行
-            LuaHub.DoFile(PathosDatabase.ScriptFormula, global: true);
+            LuaHub.DoFile(Paths.ScriptFormula, global: true);
             // 创建必要的文件夹
-            Directory.CreateDirectory(PathosDatabase.PathSave);
+            Directory.CreateDirectory(Paths.PathSave);
             // 载入角色数据
-            var files = Directory.GetFiles(PathosDatabase.PathSave);
+            var files = Directory.GetFiles(Paths.PathSave);
             foreach (var item in files)
             {
-                if (!item.EndsWith(Config.FileExtensionForCard, StringComparison.OrdinalIgnoreCase)) 
+                if (!item.EndsWith(Config.FileExtensionForCard, StringComparison.OrdinalIgnoreCase))
                     continue;
                 var c = YamlKit.LoadFile<Character>(item);
                 if (c == default(Character)) continue;
@@ -171,7 +181,7 @@ namespace CardWizard.View
             }
             else
             {
-                Current = Character.Create(Config.BaseModelDict, (p, f) => CalcForInt(FormatScript(p, f)));
+                Current = Character.Create(Config.BaseModelDict, CalcTrait);
                 AddToCharacters(Current);
             }
             #region 设置界面的交互逻辑
@@ -179,14 +189,15 @@ namespace CardWizard.View
             Window.Button_Create.Click += Button_Create_Click;
             Window.Button_Save.Click += Button_Save_Click;
             Window.Button_Debug.Click += Button_Debug_Click;
+            Window.Button_SavePic.Click += Button_SavePic_Click;
             // 角色基本信息的控制
             Window.InfoPanel.InitializeBinding(this);
             // 重生成角色属性的按钮
-            Window.Button_Regenerate.Click += GetHandlerForReGenerateTraits(Current);
+            Window.Button_Regenerate.Click += GetHandlerForReGenerateTraits(() => Current);
             // 角色属性的显示
             Window.BaseTraits_Headers.InitAsHeaders(from d in Config.DataModels where !d.Derived select d.Name, Translator);
             Window.DerivedTraits_Headers.InitAsHeaders(from d in Config.DataModels where d.Derived select d.Name, Translator);
-            // 显示属性的说明
+            // 属性的说明
             var descriptions = from d in Config.DataModels select (d.Name, d.Description);
             Window.BaseTraits_Headers.InitToolTips(descriptions);
             Window.DerivedTraits_Headers.InitToolTips(descriptions);
@@ -197,6 +208,7 @@ namespace CardWizard.View
             InfoUpdated += UpdateSumOfBaseTraits;
             // 角色伤害奖励的控制
             InfoUpdated += UpdateDamageBonus;
+            // 绑定事件: 点击骰一次按钮时触发
             Window.Button_Roll_DMGBonus.Click += (o, e) =>
             {
                 var message = Translator.TryTranslate("Message.RollADMGBonus", out string sentence) ? sentence : "{1}";
@@ -215,7 +227,38 @@ namespace CardWizard.View
             // 对界面进行本地化
             Localize(Window, Translator);
             // 如果存在启动脚本文件, 执行
-            LuaHub.DoFile(PathosDatabase.ScriptStartup, global: true);
+            LuaHub.DoFile(Paths.ScriptStartup, global: true);
+        }
+
+        /// <summary>
+        /// 生成图片时的操作
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Button_SavePic_Click(object sender, RoutedEventArgs e)
+        {
+            Window.Button_Regenerate.Visibility = Visibility.Hidden;
+            Window.Button_Roll_DMGBonus.Visibility = Visibility.Hidden;
+            var bg = Window.InvestigatorView.Background;
+            Window.InvestigatorView.Process(source =>
+            {
+                var c = (Color)ColorConverter.ConvertFromString(Config.PrintSettings_BackgroundColor);
+                source.Background = new SolidColorBrush(c);
+                source.UpdateLayout();
+                // 期望的 DPI
+                var tDpi = Config.PrintSettings_Dpi;
+                // 查询得出当前的 真实尺寸 与 DPI
+                var aSize = UIExtension.GetActualSize(source);
+                var aDpi = UIExtension.GetDpi(source);
+                var tWidth = (tDpi / aDpi) * aSize.Width;
+                var tHeight = (tDpi / aDpi) * aSize.Height;
+                var dest = Path.Combine(Paths.PathSave, Current.Name + Config.FileExtensionForCardPic);
+                UIExtension.CapturePng(source, dest, (int)tWidth, (int)tHeight, tDpi, tDpi);
+                Messenger.EnqueueFormat(Translator.TryTranslate("Message.Character.SavedPic", out var v) ? v : "Saved at {0}", dest.Replace("\\", "/"));
+            });
+            Window.InvestigatorView.Background = bg;
+            Window.Button_Regenerate.Visibility = Visibility.Visible;
+            Window.Button_Roll_DMGBonus.Visibility = Visibility.Visible;
         }
 
         /// <summary>
@@ -269,18 +312,18 @@ namespace CardWizard.View
         /// <param name="e"></param>
         private void Button_Debug_Click(object o, RoutedEventArgs e)
         {
-            if (File.Exists(PathosDatabase.ScriptDebug))
+            if (File.Exists(Paths.ScriptDebug))
             {
                 try
                 {
-                    LuaHub.DoFile(PathosDatabase.ScriptDebug, global: false);
+                    LuaHub.DoFile(Paths.ScriptDebug, global: false);
                 }
 #pragma warning disable CA1031 // 不捕获常规异常类型
                 catch (Exception exception)
 #pragma warning restore CA1031 // 不捕获常规异常类型
                 {
                     Messenger.EnqueueFormat("{0}\n{1}", exception.Message, exception.StackTrace);
-                    System.Diagnostics.Process.Start("explorer.exe", PathosDatabase.ScriptDebug.Replace("/", "\\"));
+                    System.Diagnostics.Process.Start("explorer.exe", Paths.ScriptDebug.Replace("/", "\\"));
                 }
             }
         }
@@ -297,7 +340,7 @@ namespace CardWizard.View
                 await b.StreamSource.DisposeAsync();
                 b.StreamSource.Close();
             }
-            var path = $"{PathosDatabase.PathSave}/{c.Name}.png";
+            var path = $"{Paths.PathSave}/{c.Name}.png";
             var rawImage = !File.Exists(path) ? Resources.Image_Avatar_Empty : System.Drawing.Image.FromFile(path);
             double width = image.Width, height = image.Height;
             var bitmapImage = rawImage
@@ -332,21 +375,15 @@ namespace CardWizard.View
             LuaHub.Set(nameof(Data.DataBus), DataBus);
             LuaHub.Set(nameof(Data.Config), Config);
             LuaHub.Set<Func<int, int, int>>(nameof(Roll), Roll);
-            Window.Closing += (o, e) =>
-            {
-                LuaHub.Dispose();
-            };
-            GCDispatcher.Tick += (o, e) =>
-            {
-                LuaHub.GC();
-            };
+            Window.Closed += (o, e) => LuaHub.Dispose();
+            GCDispatcher.Tick += (o, e) => LuaHub.GC();
         }
 
         /// <summary>
         /// 创建目录
         /// </summary>
         /// <param name="pathos"></param>
-        private static void CreateDirectories(Config.PathsDatabase pathos)
+        private static void CreateDirectories(Paths pathos)
         {
             var folders = new string[] {
                 pathos.PathSave, pathos.PathData,
@@ -361,7 +398,7 @@ namespace CardWizard.View
         /// 本地化控件及其子控件的文本
         /// </summary>
         private static void Localize(ContentControl container,
-                                     Config.Localization transdict,
+                                     Translator transdict,
                                      Dictionary<string, ContentControl> histories = null)
         {
             if (histories == null)
@@ -475,6 +512,16 @@ namespace CardWizard.View
         }
 
         /// <summary>
+        /// 取得角色的总属性点数
+        /// </summary>
+        /// <param name="character"></param>
+        /// <param name="selector"></param>
+        /// <returns></returns>
+        public int SumTraits(Character character, Func<DataModel, bool> selector) => (from prop in Config.DataModels
+                                                                                      where selector(prop)
+                                                                                      select character.GetTrait(prop.Name)).Sum();
+
+        /// <summary>
         /// 刷新角色的基础属性统计标签
         /// </summary>
         /// <param name="c"></param>
@@ -496,47 +543,54 @@ namespace CardWizard.View
         }
 
         /// <summary>
-        /// 当角色属性发生改变时执行的事件
-        /// </summary>
-        /// <param name="character"></param>
-        /// <param name="args"></param>
-        private void CurrentTraitChanged(object character, Character.TraitChangedEventArgs args)
-        {
-            TraitChanged?.Invoke(character, args);
-        }
-
-        /// <summary>
         /// 新建按钮点击时触发的事件
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void Button_Create_Click(object sender, RoutedEventArgs e)
         {
-            Current = Character.Create(Config.BaseModelDict, null);
+            Current = Character.Create(Config.BaseModelDict, CalcTrait);
             AddToCharacters(Current);
             Window.List_Cards.SelectedItem = CharacterCardPairs[Current];
-            GetHandlerForReGenerateTraits(Current).Invoke(this, new RoutedEventArgs());
-            //InfoUpdate(Current);
+            GetHandlerForReGenerateTraits(() => Current).Invoke(this, new RoutedEventArgs());
         }
 
         /// <summary>
-        /// 用递归的方式对字典的键进行翻译
+        /// 取得一个事件: 打开批量随机属性的面板
         /// </summary>
-        /// <param name="target"></param>
-        private void TranslateDict(Dictionary<string, object> target)
+        /// <param name="getter"></param>
+        /// <returns></returns>
+        private RoutedEventHandler GetHandlerForReGenerateTraits(Func<Character> getter)
         {
-            var keys = target.Keys.ToArray();
-            foreach (var key in keys)
+            void regenerateprops(object o, RoutedEventArgs e)
             {
-                var value = target[key];
-                if (value is Dictionary<string, object> child)
+                var character = getter?.Invoke();
+                if (character == null) return;
+                var childWindow = new BatchGenerationWindow(this)
                 {
-                    TranslateDict(child);
+                    Owner = Window,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner
+                };
+                childWindow.ShowDialog();
+                if ((bool)childWindow.DialogResult)
+                {
+                    var selection = childWindow.Selection;
+                    foreach (var kvp in selection)
+                    {
+                        if (Config.BaseModelDict.ContainsKey(kvp.Key))
+                            character.SetTraitBase(kvp.Key, kvp.Value);
+                    }
+                    foreach (var model in Config.DataModels)
+                    {
+                        if (model.Derived)
+                        {
+                            character.SetTraitBase(model.Name, CalcTrait(character.Traits, model.Formula));
+                        }
+                    }
+                    OnInfoUpdate(character);
                 }
-                target.Remove(key);
-                var newKey = Translator.TryTranslate(key, out var msg) ? msg : key;
-                target[newKey] = value;
             }
+            return regenerateprops;
         }
 
         /// <summary>
@@ -546,48 +600,38 @@ namespace CardWizard.View
         /// <param name="e"></param>
         private void Button_Save_Click(object sender, RoutedEventArgs e)
         {
-            string dest = Path.Combine(PathosDatabase.PathSave, Current.Name + Config.FileExtensionForCard);
+            string dest = Path.Combine(Paths.PathSave, Current.Name + Config.FileExtensionForCard);
             var source = YamlKit.SaveFile(dest, Current);
             if (Config.SaveTranslationDoc)
             {
                 var deserializer = new YamlDotNet.Serialization.Deserializer();
                 var graph = deserializer.Deserialize<Dictionary<string, object>>(source);
-                TranslateDict(graph);
-                YamlKit.SaveFile(Path.Combine(PathosDatabase.PathSave, Current.Name + Config.FileExtensionForCardDoc), graph);
+                TranslateDict(graph, Translator);
+                YamlKit.SaveFile(Path.Combine(Paths.PathSave, Current.Name + Config.FileExtensionForCardDoc), graph);
             }
             var message = Translator.TryTranslate("Message.Character.Saved", out var v) ? v : "Saved at {0}";
             Messenger.EnqueueFormat(message, dest.Replace("\\", "/"));
         }
 
         /// <summary>
-        /// 取得一个事件: 打开批量随机属性的面板
+        /// 用递归的方式对字典的键进行翻译
         /// </summary>
-        /// <param name="character"></param>
-        /// <returns></returns>
-        private RoutedEventHandler GetHandlerForReGenerateTraits(Character character)
+        /// <param name="target"></param>
+        /// <param name="translator">翻译器</param>
+        private static void TranslateDict(Dictionary<string, object> target, Translator translator)
         {
-            void regenerateprops(object o, RoutedEventArgs e)
+            var keys = target.Keys.ToArray();
+            foreach (var key in keys)
             {
-                var childWindow = new BatchGenerationWindow(Config.DataModels, CalcForInt, Translator)
+                var value = target[key];
+                if (value is Dictionary<string, object> child)
                 {
-                    Owner = Window,
-                    WindowStartupLocation = WindowStartupLocation.CenterOwner
-                };
-                childWindow.ShowDialog();
-                if ((bool)childWindow.DialogResult)
-                {
-                    var selection = childWindow.Selection;
-                    character.Growths?.Clear();
-                    character.Senescence?.Clear();
-                    foreach (var kvp in selection)
-                    {
-                        if (Config.BaseModelDict.ContainsKey(kvp.Key))
-                            character.Traits[kvp.Key] = kvp.Value;
-                    }
-                    OnInfoUpdate(character);
+                    TranslateDict(child, translator);
                 }
+                target.Remove(key);
+                var newKey = translator.TryTranslate(key, out var msg) ? msg : key;
+                target[newKey] = value;
             }
-            return regenerateprops;
         }
 
         /// <summary>
@@ -612,7 +656,7 @@ namespace CardWizard.View
         /// <param name="properties"></param>
         /// <param name="formula"></param>
         /// <returns></returns>
-        public static string FormatScript(Dictionary<string, int> properties, string formula)
+        public string FormatScript(Dictionary<string, int> properties, string formula)
         {
             var segments = formula?.Split(";") ?? new string[] { string.Empty };
             var seg = segments[0];
@@ -623,12 +667,10 @@ namespace CardWizard.View
                 var segmentsJ = m.Value.Split('D');
                 seg = seg.Replace(m.Value, $"{nameof(Roll)}({segmentsJ[0]}, {segmentsJ[1]})");
             }
-            if (properties != null)
+            if (properties == null) properties = new Dictionary<string, int>();
+            foreach (var kvp in Config.BaseModelDict)
             {
-                foreach (var kvp in properties)
-                {
-                    seg = seg.Replace(kvp.Key, kvp.Value.ToString());
-                }
+                seg = seg.Replace(kvp.Key, (properties.TryGetValue(kvp.Key, out int v) ? v : 0).ToString());
             }
             seg = $"return {seg}";
             try
@@ -654,26 +696,21 @@ namespace CardWizard.View
         }
 
         /// <summary>
-        /// 取得角色的总属性点数
+        /// 根据公式与角色特点值的数组计算特点值
         /// </summary>
-        /// <param name="character"></param>
-        /// <param name="selector"></param>
+        /// <param name="traits"></param>
+        /// <param name="formula"></param>
         /// <returns></returns>
-        public int SumTraits(Character character, Func<DataModel, bool> selector)
-        {
-            return (from prop in Config.DataModels
-                    where selector(prop)
-                    select character.GetTrait(prop.Name)).Sum();
-        }
+        private int CalcTrait(Dictionary<string, int> traits, string formula) => CalcForInt(FormatScript(traits, formula));
 
         /// <summary>
         /// 导出当前的数据总线
         /// </summary>
         public void ExportDataBus()
         {
-            YamlKit.SaveFile(PathosDatabase.FileWeapons, DataBus.Weapons.Values);
-            YamlKit.SaveFile(PathosDatabase.FileOccupations, DataBus.Occupations.Values);
-            YamlKit.SaveFile(PathosDatabase.FileSkills, DataBus.Skills.Values);
+            YamlKit.SaveFile(Paths.FileWeapons, DataBus.Weapons.Values);
+            YamlKit.SaveFile(Paths.FileOccupations, DataBus.Occupations.Values);
+            YamlKit.SaveFile(Paths.FileSkills, DataBus.Skills.Values);
         }
     }
 }

@@ -51,7 +51,7 @@ namespace XLua
             checkersMap[typeof(string)] = strCheck;
             checkersMap[typeof(object)] = objectCheck;
             checkersMap[typeof(byte[])] = bytesCheck;
-            checkersMap[typeof(IntPtr)] = intptrCheck;
+            checkersMap[typeof(RealStatePtr)] = intptrCheck;
 
             checkersMap[typeof(LuaTable)] = luaTableCheck;
             checkersMap[typeof(LuaFunction)] = luaFunctionCheck;
@@ -234,7 +234,7 @@ namespace XLua
             castersMap[typeof(string)] =  getString;
             castersMap[typeof(object)] = getObject;
             castersMap[typeof(byte[])] = getBytes;
-            castersMap[typeof(IntPtr)] = getIntptr;
+            castersMap[typeof(RealStatePtr)] = getIntptr;
             //special type
             castersMap[typeof(LuaTable)] = getLuaTable;
             castersMap[typeof(LuaFunction)] = getLuaFunction;

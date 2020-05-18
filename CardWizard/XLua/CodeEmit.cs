@@ -103,7 +103,7 @@ namespace XLua
                 {typeof(string), LuaAPI_lua_pushstring},
                 {typeof(byte[]), LuaAPI_lua_pushbytes},
                 {typeof(bool), LuaAPI_lua_pushboolean},
-                {typeof(IntPtr), LuaAPI_lua_pushlightuserdata},
+                {typeof(RealStatePtr), LuaAPI_lua_pushlightuserdata},
             };
 
             fixCaster = new Dictionary<Type, MethodInfo>()
@@ -112,7 +112,7 @@ namespace XLua
                 {typeof(string), LuaAPI_lua_tostring},
                 {typeof(bool), LuaAPI_lua_toboolean},
                 {typeof(byte[]), LuaAPI_lua_tobytes},
-                {typeof(IntPtr), LuaAPI_lua_touserdata},
+                {typeof(RealStatePtr), LuaAPI_lua_touserdata},
                 {typeof(uint), LuaAPI_xlua_touint},
                 {typeof(ulong), LuaAPI_lua_touint64},
                 {typeof(int), LuaAPI_xlua_tointeger},
@@ -223,7 +223,7 @@ namespace XLua
                     | MethodAttributes.NewSlot
                     | MethodAttributes.Virtual
                     | MethodAttributes.Final,
-                    typeof(System.Delegate), new Type[] { typeof(System.Type) });
+                    typeof(Delegate), new Type[] { typeof(Type) });
 
             ILGenerator get_deleate_by_type_il = get_deleate_by_type.GetILGenerator();
 
@@ -245,7 +245,7 @@ namespace XLua
 
                     get_deleate_by_type_il.Emit(OpCodes.Ldarg_0);
                     get_deleate_by_type_il.Emit(OpCodes.Ldftn, method_builder);
-                    get_deleate_by_type_il.Emit(OpCodes.Newobj, dt.GetConstructor(new Type[] { typeof(object), typeof(IntPtr) }));
+                    get_deleate_by_type_il.Emit(OpCodes.Newobj, dt.GetConstructor(new Type[] { typeof(object), typeof(RealStatePtr) }));
                     get_deleate_by_type_il.Emit(OpCodes.Ret);
                     get_deleate_by_type_il.MarkLabel(end_of_if);
                 }
@@ -683,7 +683,7 @@ namespace XLua
                 {
                     il.Emit(OpCodes.Ldc_I8, (long)Convert.ToUInt64(obj));
                 }
-                else if (typeof(IntPtr) == type || typeof(UIntPtr) == type)
+                else if (typeof(RealStatePtr) == type || typeof(UIntPtr) == type)
                 {
                     il.Emit(OpCodes.Ldloca, localIndex);
                     il.Emit(OpCodes.Initobj, type);
@@ -910,7 +910,7 @@ namespace XLua
         private MethodInfo Utils_RegisterFunc = typeof(Utils).GetMethod("RegisterFunc");
         private MethodInfo Utils_RegisterObject = typeof(Utils).GetMethod("RegisterObject");
 
-        private ConstructorInfo LuaCSFunction_Constructor = typeof(LuaCSFunction).GetConstructor(new Type[] { typeof(object), typeof(IntPtr) });
+        private ConstructorInfo LuaCSFunction_Constructor = typeof(LuaCSFunction).GetConstructor(new Type[] { typeof(object), typeof(RealStatePtr) });
 
         private MethodInfo String_Concat = typeof(string).GetMethod("Concat", new Type[] { typeof(object), typeof(object) });
 

@@ -20,7 +20,7 @@ namespace CardWizard.Data
         /// <summary>
         /// 职业技能
         /// </summary>
-        public Skill[] Skills { get; set; }
+        public List<string> Skills { get; set; }
 
         /// <summary>
         /// 客制化数据

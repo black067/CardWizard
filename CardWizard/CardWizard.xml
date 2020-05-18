@@ -52,12 +52,12 @@
             新的特点成长值
             </summary>
         </member>
-        <member name="P:CardWizard.Data.Character.TraitChangedEventArgs.OriginalSenescence">
+        <member name="P:CardWizard.Data.Character.TraitChangedEventArgs.OriginalAdjustment">
             <summary>
             原有的衰老惩罚值
             </summary>
         </member>
-        <member name="P:CardWizard.Data.Character.TraitChangedEventArgs.NewSenescence">
+        <member name="P:CardWizard.Data.Character.TraitChangedEventArgs.NewAdjustment">
             <summary>
             新的衰老惩罚值
             </summary>
@@ -66,6 +66,12 @@
             <summary>
             发生变化的特点名称
             </summary>
+        </member>
+        <member name="M:CardWizard.Data.Character.TraitChangedEventArgs.#ctor(System.String)">
+            <summary>
+            角色属性变动事件的参数
+            </summary>
+            <param name="key"></param>
         </member>
         <member name="M:CardWizard.Data.Character.GetTraitBase(System.String)">
             <summary>
@@ -95,18 +101,19 @@
             <param name="key"></param>
             <param name="value"></param>
         </member>
-        <member name="M:CardWizard.Data.Character.GetTraitSenescence(System.String)">
+        <member name="M:CardWizard.Data.Character.GetTraitAdjustment(System.String)">
             <summary>
             取得特点的衰老惩罚值
             </summary>
             <param name="key"></param>
             <returns></returns>
         </member>
-        <member name="M:CardWizard.Data.Character.SetTraitSenescence(System.String,System.Int32)">
+        <member name="M:CardWizard.Data.Character.SetTraitAdjustment(System.String,System.Int32)">
             <summary>
             设置特点的衰老惩罚值
             </summary>
             <param name="key"></param>
+            <param name="value"></param>
             <returns></returns>
         </member>
         <member name="M:CardWizard.Data.Character.GetTrait(System.String)">
@@ -137,6 +144,15 @@
             </summary>
             <param name="key"></param>
             <param name="valueText"></param>
+        </member>
+        <member name="M:CardWizard.Data.Character.SetTrait(System.String,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            设置特点的值
+            </summary>
+            <param name="key"></param>
+            <param name="base"></param>
+            <param name="growth"></param>
+            <param name="adjustment"></param>
         </member>
         <member name="P:CardWizard.Data.Character.Name">
             <summary>
@@ -183,7 +199,7 @@
             特点成长值
             </summary>
         </member>
-        <member name="P:CardWizard.Data.Character.Senescence">
+        <member name="P:CardWizard.Data.Character.Adjustment">
             <summary>
             衰老惩罚
             </summary>
@@ -208,6 +224,12 @@
             角色的所有个人技能
             </summary>
         </member>
+        <member name="M:CardWizard.Data.Character.InitializeSkills(System.Collections.Generic.Dictionary{System.String,CardWizard.Data.Skill})">
+            <summary>
+            初始化角色的技能数据
+            </summary>
+            <param name="skillDict"></param>
+        </member>
         <member name="E:CardWizard.Data.Character.PropertyChanged">
             <summary>
             角色名称等信息发生改变时, 触发的事件
@@ -229,7 +251,7 @@
             <summary>
             更新特点数值
             </summary>
-            <param name="propKey"></param>
+            <param name="e"></param>
         </member>
         <member name="M:CardWizard.Data.Character.ClearObservers">
             <summary>
@@ -275,92 +297,24 @@
             角色存档的翻译文件的标准后缀名
             </summary>
         </member>
-        <member name="T:CardWizard.Data.Config.Localization">
+        <member name="F:CardWizard.Data.Config.FileExtensionForCardPic">
             <summary>
-            本地化文本相关数据
+            角色图像的后缀名
             </summary>
         </member>
-        <member name="F:CardWizard.Data.Config.Localization.labelForEras">
+        <member name="F:CardWizard.Data.Config.PrintSettings_Dpi">
             <summary>
-            可选择的时代
+            调查员的图像文档在打印时的页面DPI
             </summary>
         </member>
-        <member name="F:CardWizard.Data.Config.Localization.dictionary">
+        <member name="F:CardWizard.Data.Config.PrintSettings_BackgroundColor">
             <summary>
-            名词翻译
+            调查员的图像文档在打印时的页面背景色
             </summary>
-        </member>
-        <member name="M:CardWizard.Data.Config.Localization.TryTranslate(System.String,System.String@,System.Boolean)">
-            <summary>
-            查询翻译文字
-            </summary>
-            <param name="path"></param>
-            <param name="text"></param>
-            <returns></returns>
         </member>
         <member name="F:CardWizard.Data.Config.Translator">
             <summary>
             文本翻译工具
-            </summary>
-        </member>
-        <member name="T:CardWizard.Data.Config.PathsDatabase">
-            <summary>
-            路径数据库, 缓存了应用的特殊路径
-            </summary>
-        </member>
-        <member name="F:CardWizard.Data.Config.PathsDatabase.PathSave">
-            <summary>
-            存档的根目录
-            </summary>
-        </member>
-        <member name="F:CardWizard.Data.Config.PathsDatabase.PathResources">
-            <summary>
-            资源的根目录
-            </summary>
-        </member>
-        <member name="F:CardWizard.Data.Config.PathsDatabase.PathData">
-            <summary>
-            数据存放的根目录
-            </summary>
-        </member>
-        <member name="F:CardWizard.Data.Config.PathsDatabase.FileSkills">
-            <summary>
-            技能数据位置
-            </summary>
-        </member>
-        <member name="F:CardWizard.Data.Config.PathsDatabase.FileOccupations">
-            <summary>
-            职业数据的位置
-            </summary>
-        </member>
-        <member name="F:CardWizard.Data.Config.PathsDatabase.FileWeapons">
-            <summary>
-            武器数据的位置
-            </summary>
-        </member>
-        <member name="F:CardWizard.Data.Config.PathsDatabase.PathScripts">
-            <summary>
-            脚本的目录
-            </summary>
-        </member>
-        <member name="F:CardWizard.Data.Config.PathsDatabase.ScriptFormula">
-            <summary>
-            启动脚本的位置
-            </summary>
-        </member>
-        <member name="F:CardWizard.Data.Config.PathsDatabase.ScriptStartup">
-            <summary>
-            启动完毕脚本的位置
-            </summary>
-        </member>
-        <member name="F:CardWizard.Data.Config.PathsDatabase.ScriptDebug">
-            <summary>
-            Debug 脚本的位置
-            </summary>
-        </member>
-        <member name="F:CardWizard.Data.Config.PathsDatabase.PathTextures">
-            <summary>
-            图片资源的位置
             </summary>
         </member>
         <member name="F:CardWizard.Data.Config.Paths">
@@ -394,6 +348,11 @@
         <member name="M:CardWizard.Data.Config.Process">
             <summary>
             处理数据
+            </summary>
+        </member>
+        <member name="T:CardWizard.Data.DataBus">
+            <summary>
+            数据总线, 用于存储武器/技能/职业等数据
             </summary>
         </member>
         <member name="P:CardWizard.Data.DataBus.Skills">
@@ -508,6 +467,66 @@
             客制化数据
             </summary>
         </member>
+        <member name="T:CardWizard.Data.Paths">
+            <summary>
+            路径数据库, 缓存了应用的特殊路径
+            </summary>
+        </member>
+        <member name="F:CardWizard.Data.Paths.PathSave">
+            <summary>
+            存档的根目录
+            </summary>
+        </member>
+        <member name="F:CardWizard.Data.Paths.PathResources">
+            <summary>
+            资源的根目录
+            </summary>
+        </member>
+        <member name="F:CardWizard.Data.Paths.PathData">
+            <summary>
+            数据存放的根目录
+            </summary>
+        </member>
+        <member name="F:CardWizard.Data.Paths.FileSkills">
+            <summary>
+            技能数据位置
+            </summary>
+        </member>
+        <member name="F:CardWizard.Data.Paths.FileOccupations">
+            <summary>
+            职业数据的位置
+            </summary>
+        </member>
+        <member name="F:CardWizard.Data.Paths.FileWeapons">
+            <summary>
+            武器数据的位置
+            </summary>
+        </member>
+        <member name="F:CardWizard.Data.Paths.PathScripts">
+            <summary>
+            脚本的目录
+            </summary>
+        </member>
+        <member name="F:CardWizard.Data.Paths.ScriptFormula">
+            <summary>
+            启动脚本的位置
+            </summary>
+        </member>
+        <member name="F:CardWizard.Data.Paths.ScriptStartup">
+            <summary>
+            启动完毕脚本的位置
+            </summary>
+        </member>
+        <member name="F:CardWizard.Data.Paths.ScriptDebug">
+            <summary>
+            Debug 脚本的位置
+            </summary>
+        </member>
+        <member name="F:CardWizard.Data.Paths.PathTextures">
+            <summary>
+            图片资源的位置
+            </summary>
+        </member>
         <member name="T:CardWizard.Data.Skill">
             <summary>
             技能
@@ -538,6 +557,36 @@
             取得拷贝
             </summary>
             <returns></returns>
+        </member>
+        <member name="T:CardWizard.Data.Translator">
+            <summary>
+            本地化文本相关数据
+            </summary>
+        </member>
+        <member name="F:CardWizard.Data.Translator.labelForEras">
+            <summary>
+            可选择的时代
+            </summary>
+        </member>
+        <member name="F:CardWizard.Data.Translator.dictionary">
+            <summary>
+            名词翻译
+            </summary>
+        </member>
+        <member name="M:CardWizard.Data.Translator.TryTranslate(System.String,System.String@,System.Boolean)">
+            <summary>
+            查询翻译文字
+            </summary>
+            <param name="path"></param>
+            <param name="text"></param>
+            <param name="ignoreCase"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CardWizard.Data.Translator.Translate(System.Collections.Generic.Dictionary{System.String,System.Object})">
+            <summary>
+            用递归的方式, 对目标字典的键进行翻译
+            </summary>
+            <param name="target"></param>
         </member>
         <member name="T:CardWizard.Data.Weapon">
             <summary>
@@ -674,9 +723,9 @@
             处理逻辑与数据
             </summary>
         </member>
-        <member name="F:CardWizard.MainWindow.CardInfoView">
+        <member name="F:CardWizard.MainWindow.InvestigatorView">
             <summary>
-            CardInfoView Name Field
+            InvestigatorView Name Field
             </summary>
         </member>
         <member name="M:CardWizard.MainWindow.InitializeComponent">
@@ -1291,6 +1340,12 @@
             选择结果
             </summary>
         </member>
+        <member name="M:CardWizard.View.BatchGenerationWindow.#ctor(CardWizard.View.MainManager)">
+            <summary>
+            
+            </summary>
+            <param name="manager"></param>
+        </member>
         <member name="M:CardWizard.View.BatchGenerationWindow.InitializeComponent">
             <summary>
             InitializeComponent
@@ -1317,6 +1372,11 @@
             InfomationView
             </summary>
         </member>
+        <member name="M:CardWizard.View.InfomationView.#ctor">
+            <summary>
+            Constructor
+            </summary>
+        </member>
         <member name="M:CardWizard.View.InfomationView.InitializeBinding(CardWizard.View.MainManager)">
             <summary>
             初始化角色信息交互面板
@@ -1330,6 +1390,13 @@
             <param name="check"></param>
             <param name="c"></param>
             <returns></returns>
+        </member>
+        <member name="M:CardWizard.View.InfomationView.CurrentAgeChanged(System.Object,System.ComponentModel.PropertyChangedEventArgs)">
+            <summary>
+            当角色年龄被编辑时触发的事件
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
         </member>
         <member name="M:CardWizard.View.InfomationView.InitializeGenderRadios(CardWizard.View.MainManager,System.Windows.Controls.RadioButton[])">
             <summary>
@@ -1347,29 +1414,6 @@
             <param name="manager"></param>
         </member>
         <member name="M:CardWizard.View.InfomationView.InitializeComponent">
-            <summary>
-            InitializeComponent
-            </summary>
-        </member>
-        <member name="T:CardWizard.View.InvestigatorPage">
-            <summary>
-            InvestigatorPage.xaml 的交互逻辑
-            </summary>
-            <summary>
-            InvestigatorPage
-            </summary>
-        </member>
-        <member name="M:CardWizard.View.InvestigatorPage.#ctor">
-            <summary>
-            调查员信息面板
-            </summary>
-        </member>
-        <member name="F:CardWizard.View.InvestigatorPage.CardInfoView">
-            <summary>
-            CardInfoView Name Field
-            </summary>
-        </member>
-        <member name="M:CardWizard.View.InvestigatorPage.InitializeComponent">
             <summary>
             InitializeComponent
             </summary>
@@ -1399,7 +1443,7 @@
             本地化文本
             </summary>
         </member>
-        <member name="P:CardWizard.View.MainManager.PathosDatabase">
+        <member name="P:CardWizard.View.MainManager.Paths">
             <summary>
             路径管理器
             </summary>
@@ -1439,6 +1483,13 @@
             角色的特点值被改变时, 触发的事件
             </summary>
         </member>
+        <member name="M:CardWizard.View.MainManager.OnTraitChanged(CardWizard.Data.Character,CardWizard.Data.Character.TraitChangedEventArgs)">
+            <summary>
+            对事件的包装
+            </summary>
+            <param name="c"></param>
+            <param name="e"></param>
+        </member>
         <member name="P:CardWizard.View.MainManager.CharacterCardPairs">
             <summary>
             当前载入的所有角色
@@ -1454,6 +1505,13 @@
             创建主窗口管理器
             </summary>
             <param name="window"></param>
+        </member>
+        <member name="M:CardWizard.View.MainManager.Button_SavePic_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            生成图片时的操作
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
         </member>
         <member name="M:CardWizard.View.MainManager.Image_Avatar_Click(System.Object,System.Windows.Input.MouseButtonEventArgs)">
             <summary>
@@ -1487,13 +1545,13 @@
             初始化 <see cref="P:CardWizard.View.MainManager.LuaHub"/>
             </summary>
         </member>
-        <member name="M:CardWizard.View.MainManager.CreateDirectories(CardWizard.Data.Config.PathsDatabase)">
+        <member name="M:CardWizard.View.MainManager.CreateDirectories(CardWizard.Data.Paths)">
             <summary>
             创建目录
             </summary>
             <param name="pathos"></param>
         </member>
-        <member name="M:CardWizard.View.MainManager.Localize(System.Windows.Controls.ContentControl,CardWizard.Data.Config.Localization,System.Collections.Generic.Dictionary{System.String,System.Windows.Controls.ContentControl})">
+        <member name="M:CardWizard.View.MainManager.Localize(System.Windows.Controls.ContentControl,CardWizard.Data.Translator,System.Collections.Generic.Dictionary{System.String,System.Windows.Controls.ContentControl})">
             <summary>
             本地化控件及其子控件的文本
             </summary>
@@ -1525,6 +1583,14 @@
             </summary>
             <param name="character"></param>
         </member>
+        <member name="M:CardWizard.View.MainManager.SumTraits(CardWizard.Data.Character,System.Func{CardWizard.Data.DataModel,System.Boolean})">
+            <summary>
+            取得角色的总属性点数
+            </summary>
+            <param name="character"></param>
+            <param name="selector"></param>
+            <returns></returns>
+        </member>
         <member name="M:CardWizard.View.MainManager.UpdateSumOfBaseTraits(CardWizard.Data.Character)">
             <summary>
             刷新角色的基础属性统计标签
@@ -1537,13 +1603,6 @@
             </summary>
             <param name="c"></param>
         </member>
-        <member name="M:CardWizard.View.MainManager.CurrentTraitChanged(System.Object,CardWizard.Data.Character.TraitChangedEventArgs)">
-            <summary>
-            当角色属性发生改变时执行的事件
-            </summary>
-            <param name="character"></param>
-            <param name="args"></param>
-        </member>
         <member name="M:CardWizard.View.MainManager.Button_Create_Click(System.Object,System.Windows.RoutedEventArgs)">
             <summary>
             新建按钮点击时触发的事件
@@ -1551,11 +1610,12 @@
             <param name="sender"></param>
             <param name="e"></param>
         </member>
-        <member name="M:CardWizard.View.MainManager.TranslateDict(System.Collections.Generic.Dictionary{System.String,System.Object})">
+        <member name="M:CardWizard.View.MainManager.GetHandlerForReGenerateTraits(System.Func{CardWizard.Data.Character})">
             <summary>
-            用递归的方式对字典的键进行翻译
+            取得一个事件: 打开批量随机属性的面板
             </summary>
-            <param name="target"></param>
+            <param name="getter"></param>
+            <returns></returns>
         </member>
         <member name="M:CardWizard.View.MainManager.Button_Save_Click(System.Object,System.Windows.RoutedEventArgs)">
             <summary>
@@ -1564,12 +1624,12 @@
             <param name="sender"></param>
             <param name="e"></param>
         </member>
-        <member name="M:CardWizard.View.MainManager.GetHandlerForReGenerateTraits(CardWizard.Data.Character)">
+        <member name="M:CardWizard.View.MainManager.TranslateDict(System.Collections.Generic.Dictionary{System.String,System.Object},CardWizard.Data.Translator)">
             <summary>
-            取得一个事件: 打开批量随机属性的面板
+            用递归的方式对字典的键进行翻译
             </summary>
-            <param name="character"></param>
-            <returns></returns>
+            <param name="target"></param>
+            <param name="translator">翻译器</param>
         </member>
         <member name="M:CardWizard.View.MainManager.Roll(System.Int32,System.Int32)">
             <summary>
@@ -1594,12 +1654,12 @@
             <param name="script"></param>
             <returns></returns>
         </member>
-        <member name="M:CardWizard.View.MainManager.SumTraits(CardWizard.Data.Character,System.Func{CardWizard.Data.DataModel,System.Boolean})">
+        <member name="M:CardWizard.View.MainManager.CalcTrait(System.Collections.Generic.Dictionary{System.String,System.Int32},System.String)">
             <summary>
-            取得角色的总属性点数
+            根据公式与角色特点值的数组计算特点值
             </summary>
-            <param name="character"></param>
-            <param name="selector"></param>
+            <param name="traits"></param>
+            <param name="formula"></param>
             <returns></returns>
         </member>
         <member name="M:CardWizard.View.MainManager.ExportDataBus">
@@ -1647,18 +1707,29 @@
             <para>只有在调用了方法: <see cref="M:CardWizard.View.TraitsViewItem.InitAsDatas(System.Collections.Generic.Dictionary{System.String,System.Int32},System.Boolean)"/> 之后, 才会被赋值</para>
             </summary>
         </member>
+        <member name="F:CardWizard.View.TraitsViewItem.FORMAT_TOOLTIP">
+            <summary>
+            数据提示的显示格式
+            </summary>
+        </member>
+        <member name="M:CardWizard.View.TraitsViewItem.#ctor">
+            <summary>
+            新建此控件
+            </summary>
+        </member>
         <member name="M:CardWizard.View.TraitsViewItem.InitAsDatas(System.Collections.Generic.Dictionary{System.String,System.Int32},System.Boolean)">
             <summary>
             作为一行数据进行初始化
             </summary>
             <param name="datas"></param>
+            <param name="enableEdit">是否允许编辑</param>
         </member>
         <member name="M:CardWizard.View.TraitsViewItem.BindTraits(CardWizard.View.MainManager,System.Boolean)">
             <summary>
             作为角色的属性面板进行初始化
             </summary>
             <param name="manager"></param>
-            <param name="derived"></param>
+            <param name="derived">是否绑定派生属性</param>
         </member>
         <member name="M:CardWizard.View.TraitsViewItem.EndEditTraitBox(System.Windows.Controls.TextBox)">
             <summary>
@@ -1666,7 +1737,7 @@
             </summary>
             <param name="box"></param>
         </member>
-        <member name="M:CardWizard.View.TraitsViewItem.InitAsHeaders(System.Collections.Generic.IEnumerable{System.String},CardWizard.Data.Config.Localization)">
+        <member name="M:CardWizard.View.TraitsViewItem.InitAsHeaders(System.Collections.Generic.IEnumerable{System.String},CardWizard.Data.Translator)">
             <summary>
             作为表头初始化
             </summary>
@@ -1677,7 +1748,7 @@
             <summary>
             添加提示信息
             </summary>
-            <param name="tooltips"></param>
+            <param name="tooltipPairs"></param>
         </member>
         <member name="M:CardWizard.View.TraitsViewItem.CleanExcessColumns(System.Int32)">
             <summary>
@@ -1753,7 +1824,21 @@
             <param name="reverse"></param>
             <returns></returns>
         </member>
-        <member name="M:CardWizard.View.UIExtension.CapturePng(System.Windows.Media.Visual,System.String,System.Int32,System.Int32)">
+        <member name="M:CardWizard.View.UIExtension.GetActualSize(System.Windows.FrameworkElement)">
+            <summary>
+            
+            </summary>
+            <param name="element"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CardWizard.View.UIExtension.GetDpi(System.Windows.Media.Visual)">
+            <summary>
+            取得控件的 DPI
+            </summary>
+            <param name="visual"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CardWizard.View.UIExtension.CapturePng(System.Windows.Media.Visual,System.String,System.Int32,System.Int32,System.Double,System.Double)">
             <summary>
             将控件保存为 png
             </summary>
@@ -1761,6 +1846,8 @@
             <param name="filePath"></param>
             <param name="pxWidth"></param>
             <param name="pxHeight"></param>
+            <param name="dpiX"></param>
+            <param name="dpiY"></param>
         </member>
         <member name="M:CardWizard.View.UIExtension.LoadBitmapImage(System.String)">
             <summary>

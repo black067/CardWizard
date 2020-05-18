@@ -7,23 +7,21 @@
         xmlns:cview="clr-namespace:CardWizard.View"
         mc:Ignorable="d"
         Title="Card Wizard" 
-        Height="720" Width="720"
-        MinHeight="720" MinWidth="720"
+        Height="800" Width="600"
+        MinHeight="720" MinWidth="800"
         FontFamily="Consolas" 
         Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" Cursor="Arrow">
     <Grid x:Name="MainGrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
             <RowDefinition/>
-            <RowDefinition Height="60">
+            <RowDefinition Height="60" MinHeight="60">
             </RowDefinition>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="128"/>
             <ColumnDefinition/>
-            <ColumnDefinition Width="10"/>
         </Grid.ColumnDefinitions>
-        <GridSplitter Grid.Row="2" Grid.ColumnSpan="3" Width="5" VerticalAlignment="Top" />
         <!--菜单栏-->
         <Grid x:Name="MenuBar" 
                 Grid.ColumnSpan="{Binding ColumnDefinitions.Count, ElementName=MainGrid, Mode=OneWay}" 
@@ -43,13 +41,19 @@
                     Style="{StaticResource XButtonStyle}" 
                     Content="新建" 
                     Background="Transparent" 
-                    BorderBrush="Transparent" Tag="MenuBar.Button.Create" Cursor="Hand"/>
+                    BorderBrush="Transparent" Tag="MenuBar.Button.Create"/>
             <Button x:Name="Button_Save" 
                     Style="{StaticResource XButtonStyle}"  
                     Grid.Column="1"
                     Content="保存" 
                     Background="Transparent" 
                     BorderBrush="Transparent" Tag="MenuBar.Button.Save"/>
+            <Button x:Name="Button_SavePic" 
+                    Style="{StaticResource XButtonStyle}"  
+                    Grid.Column="2"
+                    Content="生成图片" 
+                    Background="Transparent" 
+                    BorderBrush="Transparent" Tag="MenuBar.Button.SavePicture"/>
             <Button x:Name="Button_Debug" 
                     Style="{StaticResource XButtonStyle}"  
                     Grid.Column="6"
@@ -74,6 +78,7 @@
                 Cursor="IBeam" 
                 SelectionOpacity="2" 
                 VerticalScrollBarVisibility="Auto" Foreground="{DynamicResource PlaceholderForeground}" />
+        <GridSplitter Grid.Row="2" Grid.ColumnSpan="3" VerticalAlignment="Top" HorizontalAlignment="Stretch" RenderTransformOrigin="0.5,0.5" Height="5"/>
         <!--左侧角色卡牌选择栏的显示-->
         <ListBox x:Name="List_Cards" Grid.Row="1" 
                 Background="#FFB3CCEE" 
@@ -85,9 +90,9 @@
                     Foreground="White" VerticalContentAlignment="Center" Content="新角色"/>
         </ListBox>
         <!--角色数据-->
-        <ScrollViewer Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2">
-            <Viewbox HorizontalAlignment="Left" VerticalAlignment="Top">
-                <Grid x:Name="CardInfoView" x:FieldModifier="public" Background="{Binding Background, ElementName=window}">
+        <ScrollViewer x:Name="InvestigatorScrollViewer" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2">
+            <Viewbox x:Name="InvestigatorViewBox" HorizontalAlignment="Left" VerticalAlignment="Top">
+                <Grid x:Name="InvestigatorView" x:FieldModifier="public">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="30"/>
                         <RowDefinition Height="30"/>
@@ -120,19 +125,14 @@
                         <RowDefinition Height="30"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="80"/>
-                        <ColumnDefinition Width="64"/>
-                        <ColumnDefinition Width="64"/>
-                        <ColumnDefinition Width="64"/>
-                        <ColumnDefinition Width="64"/>
-                        <ColumnDefinition Width="64"/>
-                        <ColumnDefinition Width="64"/>
-                        <ColumnDefinition Width="64"/>
-                        <ColumnDefinition MinWidth="20"/>
+                        <ColumnDefinition Width="320"/>
+                        <ColumnDefinition Width="320"/>
                     </Grid.ColumnDefinitions>
+                    <!--页首的显示-->
+                    <Label  Style="{DynamicResource XLabel}" Grid.ColumnSpan="2" HorizontalContentAlignment="Right" VerticalContentAlignment="Stretch" Foreground="#FFACACAC">★ Call of Cthulhu 6th. ★</Label>
                     <!--角色照片的显示-->
                     <Image x:Name="Image_Avatar" 
-                           Grid.ColumnSpan="4" Grid.RowSpan="6" Grid.Column="4" 
+                           Grid.ColumnSpan="1" Grid.RowSpan="6" Grid.Column="1"  Grid.Row="1"
                            VerticalAlignment="Center" Cursor="Hand" 
                            RenderTransformOrigin="0.5,0.5"
                            Source="/Resources/Image.Avatar.Empty.png"
@@ -144,10 +144,9 @@
                     </Image>
 
                     <!--角色基础信息的显示-->
-                    <cview:InfomationView x:Name="InfoPanel" Grid.ColumnSpan="4" Grid.RowSpan="6" />
+                    <cview:InfomationView x:Name="InfoPanel" Grid.ColumnSpan="1" Grid.RowSpan="7"  Grid.Row="1" />
                     <!--角色属性的显示-->
-                    <Label Grid.Row="6" Content="属性" Tag="Properties" Style="{DynamicResource XLabel}"/>
-                    <Grid x:Name="TraitsGrid" Grid.Row="7" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.ColumnSpan="8" Grid.RowSpan="5" Margin="2,2,2,2">
+                    <Grid x:Name="TraitsGrid" Grid.Row="8" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.ColumnSpan="2" Grid.RowSpan="5" Margin="2,2,2,2">
                         <Grid.RowDefinitions>
                             <RowDefinition/>
                             <RowDefinition/>
@@ -212,9 +211,9 @@
                                 Tag="Card.Button.DMGBonus"/>
                         </Grid>
                     </Grid>
-                    
+
                     <!--页尾-->
-                    <Label Grid.Row="29" Grid.Column="4" Foreground="{DynamicResource PlaceholderForeground}">- end -</Label>
+                    <Label Grid.Row="29" Grid.Column="0" Grid.ColumnSpan="2" Foreground="{DynamicResource PlaceholderForeground}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" >- end -</Label>
                 </Grid>
             </Viewbox>
         </ScrollViewer>

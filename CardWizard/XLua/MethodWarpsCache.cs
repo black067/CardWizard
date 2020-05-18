@@ -306,11 +306,11 @@ namespace XLua
                 }
                 return LuaAPI.luaL_error(L, "invalid arguments to " + methodName);
             }
-            catch (System.Reflection.TargetInvocationException e)
+            catch (TargetInvocationException e)
             {
                 return LuaAPI.luaL_error(L, "c# exception:" + e.InnerException.Message + ",stack:" + e.InnerException.StackTrace);
             }
-            catch (System.Exception e)
+            catch (Exception e)
             {
                 return LuaAPI.luaL_error(L, "c# exception:" + e.Message + ",stack:" + e.StackTrace);
             }
@@ -520,7 +520,7 @@ namespace XLua
                                     return LuaAPI.luaL_error(L, "invalid #" + (start_idx + 1) + ", needed: '+' or '-'" + eventInfo.EventHandlerType);
                             }
                         }
-                        catch (System.Exception e)
+                        catch (Exception e)
                         {
                             return LuaAPI.luaL_error(L, "c# exception:" + e + ",stack:" + e.StackTrace);
                         }

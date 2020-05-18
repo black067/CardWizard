@@ -415,7 +415,7 @@ namespace XLua
                 LuaAPI.lua_close(L);
                 translator = null;
 
-                rawL = IntPtr.Zero;
+                rawL = RealStatePtr.Zero;
 
                 disposed = true;
 #if THREAD_SAFE || HOTFIX_ENABLE

@@ -709,7 +709,7 @@ namespace CSObjectWrapEditor
                     IsOut = param.IsOut,
                     IsIn = param.IsIn,
                     ParameterType = param.ParameterType,
-                    IsParamArray = param.IsDefined(typeof(System.ParamArrayAttribute), false)
+                    IsParamArray = param.IsDefined(typeof(ParamArrayAttribute), false)
                 });
             }
 
@@ -816,8 +816,8 @@ namespace CSObjectWrapEditor
                     IsOut = param.IsOut,
                     IsIn = param.IsIn,
                     ParameterType = (param.ParameterType.IsByRef || (param.ParameterType.IsValueType && !ignoreValueType)
-                      || param.IsDefined(typeof(System.ParamArrayAttribute), false)) ? param.ParameterType : typeof(object),
-                    IsParamArray = param.IsDefined(typeof(System.ParamArrayAttribute), false)
+                      || param.IsDefined(typeof(ParamArrayAttribute), false)) ? param.ParameterType : typeof(object),
+                    IsParamArray = param.IsDefined(typeof(ParamArrayAttribute), false)
                 };
                 if (param.IsOut)
                 {
@@ -888,7 +888,7 @@ namespace CSObjectWrapEditor
             foreach (var param in method.GetParameters())
             {
                 if ((((param.ParameterType.IsValueType && !ignoreValueType) 
-                    || param.ParameterType.IsByRef || param.IsDefined(typeof(System.ParamArrayAttribute), false)) && isNotPublic(param.ParameterType)) 
+                    || param.ParameterType.IsByRef || param.IsDefined(typeof(ParamArrayAttribute), false)) && isNotPublic(param.ParameterType)) 
                     || hasGenericParameter(param.ParameterType))
                     return true;
             }
