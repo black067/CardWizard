@@ -16,7 +16,7 @@ namespace CardWizard.Data
     public class Character : INotifyPropertyChanged
     {
         /// <summary>
-        /// 特点值发生变化时的事件消息
+        /// 属性值发生变化时的事件消息
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1034:嵌套类型应不可见", Justification = "<挂起>")]
         public class TraitChangedEventArgs : EventArgs
@@ -73,7 +73,7 @@ namespace CardWizard.Data
 
         private string homeland;
 
-        #region 角色特点值与其成长值的获取与赋值
+        #region 角色属性值与其成长值的获取与赋值
 
         /// <summary>
         /// 取得角色特点的基础值
@@ -163,7 +163,7 @@ namespace CardWizard.Data
         public int GetTrait(string key) => GetTraitBase(key) + GetTraitGrowth(key) + GetTraitAdjustment(key);
 
         /// <summary>
-        /// 取得特点值的字符串表达式
+        /// 取得属性值的字符串表达式
         /// <para>形如: {base}+{growth}</para>
         /// </summary>
         /// <param name="key"></param>
@@ -323,7 +323,7 @@ namespace CardWizard.Data
         }
 
         /// <summary>
-        /// 角色的特点值
+        /// 角色的属性值
         /// </summary>
         public Dictionary<string, int> Traits { get; set; }
 

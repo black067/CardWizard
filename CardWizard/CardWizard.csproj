@@ -11,6 +11,12 @@
     <Company>SaltyLakes</Company>
     <SignAssembly>false</SignAssembly>
     <ApplicationIcon>Resources\Icon.Miskatonic.ico</ApplicationIcon>
+    <AssemblyVersion>0.0.0.1</AssemblyVersion>
+    <FileVersion>0.0.0.1</FileVersion>
+    <RepositoryUrl>https://gitee.com/blakehe67/CardWizard.git</RepositoryUrl>
+    <PackageProjectUrl>https://gitee.com/blakehe67/CardWizard.git</PackageProjectUrl>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <StartupObject>CardWizard.App</StartupObject>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -26,6 +32,10 @@
     <Compile Remove="Resources\Data\**" />
     <EmbeddedResource Remove="Resources\Data\**" />
     <None Remove="Resources\Data\**" />
+    <None Include="..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
     <Page Remove="Resources\Data\**" />
   </ItemGroup>
 

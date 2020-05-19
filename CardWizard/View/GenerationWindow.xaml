@@ -1,4 +1,4 @@
-﻿<Window x:Class="CardWizard.View.BatchGenerationWindow"
+﻿<Window x:Class="CardWizard.View.GenerationWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -10,6 +10,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
             <RowDefinition/>
+            <RowDefinition Height="60"/>
             <RowDefinition Height="60"/>
             <RowDefinition Height="10"/>
         </Grid.RowDefinitions>
@@ -33,17 +34,41 @@
             <local:TraitsViewItem Height="{Binding ActualHeight, ElementName=border, Mode=OneWay}"/>
             <local:TraitsViewItem Height="{Binding ActualHeight, ElementName=border, Mode=OneWay}"/>
             <local:TraitsViewItem Height="{Binding ActualHeight, ElementName=border, Mode=OneWay}"/>
+            <local:TraitsViewItem Height="{Binding ActualHeight, ElementName=border, Mode=OneWay}" Tag="Age.Penalty"/>
         </ListBox>
+        <Grid x:Name="AgeSettings"
+              Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="4">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="80"/>
+                <ColumnDefinition x:Name="last" Width="80"/>
+            </Grid.ColumnDefinitions>
+            <Label x:Name="Label_Age" Tag="Age"
+               Grid.Row="1" Grid.Column= "3"
+               Style="{DynamicResource XLabel}"
+               Content="年龄"/>
+            <TextBox x:Name="Text_Age" 
+                     Grid.Row="1" Grid.Column="4"
+                     InputScope="Number"
+                     Style="{DynamicResource TextField}" Cursor="IBeam">
+            </TextBox>
+        </Grid>
         <TextBlock x:Name="MessageBox" DataContext="Message_Regenerate"
                    Text="选择一组数据作为角色的基础属性"
-               Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2"
+               Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2"
                Margin="0,2,0,2" Background="{x:Null}" IsEnabled="False">
         </TextBlock>
         <Button x:Name="Button_Confirm" Content="确定" 
                 Style="{DynamicResource XButtonStyle}" 
-                Grid.Column="4" Grid.Row="2" Grid.ColumnSpan="1" Height="30" VerticalAlignment="Bottom" Margin="40,0,0,0"/>
+                Grid.Column="4" Grid.Row="3" Grid.ColumnSpan="1" Height="30" VerticalAlignment="Bottom" Margin="40,0,0,0"/>
         <Button x:Name="Button_Cancel" Content="取消" 
                 Style="{DynamicResource XButtonStyle}" 
-                Grid.Column="3" Grid.Row="2" Grid.ColumnSpan="1" Height="30" VerticalAlignment="Bottom" Margin="40,0,0,0"/>
+                Grid.Column="3" Grid.Row="3" Grid.ColumnSpan="1" Height="30" VerticalAlignment="Bottom" Margin="40,0,0,0"/>
     </Grid>
 </Window>

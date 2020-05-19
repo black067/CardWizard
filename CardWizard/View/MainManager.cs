@@ -93,7 +93,7 @@ namespace CardWizard.View
         }
 
         /// <summary>
-        /// 角色的特点值被改变时, 触发的事件
+        /// 角色的属性值被改变时, 触发的事件
         /// </summary>
         public event Action<Character, Character.TraitChangedEventArgs> TraitChanged;
 
@@ -579,7 +579,7 @@ namespace CardWizard.View
             {
                 var character = getter?.Invoke();
                 if (character == null) return;
-                var childWindow = new BatchGenerationWindow(Config, CalcTrait)
+                var childWindow = new GenerationWindow(Config, CalcTrait)
                 {
                     Owner = Window,
                     WindowStartupLocation = WindowStartupLocation.CenterOwner
@@ -642,7 +642,13 @@ namespace CardWizard.View
             if (properties == null) properties = new Dictionary<string, int>();
             foreach (var kvp in Config.BaseModelDict)
             {
-                seg = seg.Replace(kvp.Key, (properties.TryGetValue(kvp.Key, out int v) ? v : 0).ToString());
+                seg = seg.Replace($"${kvp.Key}", (properties.TryGetValue(kvp.Key, out int v) ? v : 0).ToString());
+            }
+
+            matches = Regex.Matches(seg, @"\$C\b");
+            foreach (Match item in matches)
+            {
+                seg = seg.Replace(item.Value, $"{nameof(MainManager)}.{nameof(Current)}");
             }
             seg = $"return {seg}";
             try
@@ -668,7 +674,7 @@ namespace CardWizard.View
         }
 
         /// <summary>
-        /// 根据公式与角色特点值的数组计算特点值
+        /// 根据公式与角色属性值的数组计算属性值
         /// </summary>
         /// <param name="traits"></param>
         /// <param name="formula"></param>

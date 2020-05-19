@@ -37,6 +37,11 @@ function DamageBonus(strength, size)
 	return string.format('%0.0fD%0.0f', c, d)
 end
 
+--- 计算 MOV 的值
+function GetMOV(character)
+	return 7
+end
+
 DOC_AssetOrignal = [[ 本程序的 初始资金 算法参考以下数据 (来自第六版规则书)
 1. 选择对应的游戏年代(1890s, 1920s 和 现代)
   - 1890s: 投1D10, 结果: 1=$500+房子&膳食, 2=$1000, 3=$1500, 4=$2000, 5=$2500, 6=$3000, 7=$4000, 8=$5000, 9=$5000, 10=$10000

@@ -22,7 +22,7 @@ namespace CardWizard.View
     /// <summary>
     /// ListWindow.xaml 的交互逻辑
     /// </summary>
-    public partial class BatchGenerationWindow : Window
+    public partial class GenerationWindow : Window
     {
         /// <summary>
         /// 选择结果
@@ -30,10 +30,15 @@ namespace CardWizard.View
         public Dictionary<string, int> Selection { get; set; }
 
         /// <summary>
+        /// 年龄带来的属性变动显示在此处
+        /// </summary>
+        public TraitsViewItem Age_Penalty_Row;
+
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="manager"></param>
-        public BatchGenerationWindow(Config config, Func<Dictionary<string, int>, string, int> TraitRoller)
+        public GenerationWindow(Config config, Func<Dictionary<string, int>, string, int> TraitRoller)
         {
             InitializeComponent();
             Width = MinWidth;
@@ -45,8 +50,8 @@ namespace CardWizard.View
             if (config == null) throw new NullReferenceException();
             var translator = config.Translator;
             var dataModels = config.DataModels;
-            
-            if (translator.TryTranslate($"{nameof(BatchGenerationWindow)}.{nameof(Title)}", out var titleText))
+
+            if (translator.TryTranslate($"{nameof(GenerationWindow)}.{nameof(Title)}", out var titleText))
             {
                 Title = titleText;
             }
@@ -54,7 +59,8 @@ namespace CardWizard.View
             // 初始化标题行
             Headers.Process(_ =>
             {
-                var properties = (from m in dataModels where Filter(m)
+                var properties = (from m in dataModels
+                                  where Filter(m)
                                   select m.Name).ToList();
                 properties.Add("SUM");
                 Headers.InitAsHeaders(properties.ToArray(), translator);
@@ -74,30 +80,37 @@ namespace CardWizard.View
             {
                 if (item is TraitsViewItem listItem)
                 {
-                    items.Add(listItem);
+                    if (listItem.Tag.ToString() != "Age.Penalty")
+                    {
+                        items.Add(listItem);
+                    }
+                    else
+                    {
+                        Age_Penalty_Row = listItem;
+                    }
                 }
             }
             // 生成几组角色的属性
             var datas = dataModels.ToDictionary(m => m.Name);
-            for (int i = ListMain.Items.Count; i > 0; i--)
+            for (int i = items.Count - 1; i >= 0; i--)
             {
-                var properties = new Dictionary<string, int>(
-                    from m in dataModels where Filter(m)
-                    select new KeyValuePair<string, int>(m.Name, 0));
+                var properties = new Dictionary<string, int>(from m in dataModels where Filter(m)
+                                                             select new KeyValuePair<string, int>(m.Name, 0));
                 foreach (var key in properties.Keys.ToArray())
                 {
                     var value = TraitRoller(properties, datas[key].Formula);
                     properties[key] = Convert.ToInt32(value);
                 }
-                var sum = properties.Sum(kvp => kvp.Key != Config.KEY_ASSET ? kvp.Value : 0);
+                var sum = properties.Sum(kvp => kvp.Key != "AST" ? kvp.Value : 0);
                 properties["SUM"] = sum;
-                items[i - 1].Process(item => {
-                    item.MouseDown += (o, e) => Selection = properties;
-                    item.InitAsDatas(properties, false);
-                });
-            }
 
-            Selection = (ListMain.Items[0] as TraitsViewItem).Values;
+                items[i].MouseDown += (o, e) => Selection = properties;
+                items[i].InitAsDatas(properties, false);
+            }
+        }
+
+        private void InitAgePenaltyRow(TraitsViewItem traitsView)
+        {
         }
 
         /// <summary>

@@ -29,7 +29,7 @@
         </member>
         <member name="T:CardWizard.Data.Character.TraitChangedEventArgs">
             <summary>
-            特点值发生变化时的事件消息
+            属性值发生变化时的事件消息
             </summary>
         </member>
         <member name="P:CardWizard.Data.Character.TraitChangedEventArgs.OriginalBase">
@@ -125,7 +125,7 @@
         </member>
         <member name="M:CardWizard.Data.Character.GetTraitText(System.String)">
             <summary>
-            取得特点值的字符串表达式
+            取得属性值的字符串表达式
             <para>形如: {base}+{growth}</para>
             </summary>
             <param name="key"></param>
@@ -191,7 +191,7 @@
         </member>
         <member name="P:CardWizard.Data.Character.Traits">
             <summary>
-            角色的特点值
+            角色的属性值
             </summary>
         </member>
         <member name="P:CardWizard.Data.Character.Growths">
@@ -1327,26 +1327,26 @@
             <param name="object"></param>
             <returns></returns>
         </member>
-        <member name="T:CardWizard.View.BatchGenerationWindow">
+        <member name="T:CardWizard.View.GenerationWindow">
             <summary>
             ListWindow.xaml 的交互逻辑
             </summary>
             <summary>
-            BatchGenerationWindow
+            GenerationWindow
             </summary>
         </member>
-        <member name="P:CardWizard.View.BatchGenerationWindow.Selection">
+        <member name="P:CardWizard.View.GenerationWindow.Selection">
             <summary>
             选择结果
             </summary>
         </member>
-        <member name="M:CardWizard.View.BatchGenerationWindow.#ctor(CardWizard.View.MainManager)">
+        <member name="M:CardWizard.View.GenerationWindow.#ctor(CardWizard.View.MainManager)">
             <summary>
             
             </summary>
             <param name="manager"></param>
         </member>
-        <member name="M:CardWizard.View.BatchGenerationWindow.InitializeComponent">
+        <member name="M:CardWizard.View.GenerationWindow.InitializeComponent">
             <summary>
             InitializeComponent
             </summary>
@@ -1364,26 +1364,26 @@
             InitializeComponent
             </summary>
         </member>
-        <member name="T:CardWizard.View.InfomationView">
+        <member name="T:CardWizard.View.BackstoryInfo">
             <summary>
-            InfomationView.xaml 的交互逻辑
+            BackstoryInfo.xaml 的交互逻辑
             </summary>
             <summary>
-            InfomationView
+            BackstoryInfo
             </summary>
         </member>
-        <member name="M:CardWizard.View.InfomationView.#ctor">
+        <member name="M:CardWizard.View.BackstoryInfo.#ctor">
             <summary>
             Constructor
             </summary>
         </member>
-        <member name="M:CardWizard.View.InfomationView.InitializeBinding(CardWizard.View.MainManager)">
+        <member name="M:CardWizard.View.BackstoryInfo.InitializeBinding(CardWizard.View.MainManager)">
             <summary>
             初始化角色信息交互面板
             </summary>
             <param name="manager"></param>
         </member>
-        <member name="M:CardWizard.View.InfomationView.IsAgeValid(System.Windows.Controls.Label,CardWizard.Data.Character)">
+        <member name="M:CardWizard.View.BackstoryInfo.IsAgeValid(System.Windows.Controls.Label,CardWizard.Data.Character)">
             <summary>
             检查角色的年龄是否满足最小年龄的要求
             </summary>
@@ -1391,21 +1391,21 @@
             <param name="c"></param>
             <returns></returns>
         </member>
-        <member name="M:CardWizard.View.InfomationView.CurrentAgeChanged(System.Object,System.ComponentModel.PropertyChangedEventArgs)">
+        <member name="M:CardWizard.View.BackstoryInfo.CurrentAgeChanged(System.Object,System.ComponentModel.PropertyChangedEventArgs)">
             <summary>
             当角色年龄被编辑时触发的事件
             </summary>
             <param name="sender"></param>
             <param name="e"></param>
         </member>
-        <member name="M:CardWizard.View.InfomationView.InitializeGenderRadios(CardWizard.View.MainManager,System.Windows.Controls.RadioButton[])">
+        <member name="M:CardWizard.View.BackstoryInfo.InitializeGenderRadios(CardWizard.View.MainManager,System.Windows.Controls.RadioButton[])">
             <summary>
             初始化性别按钮组
             </summary>
             <param name="manager"></param>
             <param name="radios"></param>
         </member>
-        <member name="M:CardWizard.View.InfomationView.BindTextBox(System.Windows.Controls.TextBox,System.String,CardWizard.View.MainManager)">
+        <member name="M:CardWizard.View.BackstoryInfo.BindTextBox(System.Windows.Controls.TextBox,System.String,CardWizard.View.MainManager)">
             <summary>
             绑定输入框到管理器
             </summary>
@@ -1413,7 +1413,7 @@
             <param name="path"></param>
             <param name="manager"></param>
         </member>
-        <member name="M:CardWizard.View.InfomationView.InitializeComponent">
+        <member name="M:CardWizard.View.BackstoryInfo.InitializeComponent">
             <summary>
             InitializeComponent
             </summary>
@@ -1480,7 +1480,7 @@
         </member>
         <member name="E:CardWizard.View.MainManager.TraitChanged">
             <summary>
-            角色的特点值被改变时, 触发的事件
+            角色的属性值被改变时, 触发的事件
             </summary>
         </member>
         <member name="M:CardWizard.View.MainManager.OnTraitChanged(CardWizard.Data.Character,CardWizard.Data.Character.TraitChangedEventArgs)">
@@ -1656,7 +1656,7 @@
         </member>
         <member name="M:CardWizard.View.MainManager.CalcTrait(System.Collections.Generic.Dictionary{System.String,System.Int32},System.String)">
             <summary>
-            根据公式与角色特点值的数组计算特点值
+            根据公式与角色属性值的数组计算属性值
             </summary>
             <param name="traits"></param>
             <param name="formula"></param>

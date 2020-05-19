@@ -164,7 +164,7 @@ namespace CardWizard.View
             {
                 UpdateBoxText(Children[eKey], eKey, character);
             }
-            // 如果当前修改的是基础特点值, 检查是否需要更新派生特点值
+            // 如果当前修改的是基础属性值, 检查是否需要更新派生属性值
             if (Manager.Config.BaseModelDict.TryGetValue(eKey, out var basemodel) && !basemodel.Derived)
             {
                 var models = from m in Manager.Config.DataModels where m.Derived && m.Formula.Contains(basemodel.Name, StringComparison.OrdinalIgnoreCase) select m;
@@ -189,7 +189,7 @@ namespace CardWizard.View
         {
             // box 的 DataContext 保存了特点名称
             var key = box.DataContext.ToString();
-            // 基础特点值才可以被修改
+            // 基础属性值才可以被修改
             (_, int growth, int adjustment) = Character.SplitTraitText(box.Text);
             Manager.Current.SetTraitGrowth(key, growth);
             Manager.Current.SetTraitAdjustment(key, adjustment);

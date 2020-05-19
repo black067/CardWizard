@@ -17,9 +17,9 @@ using CardWizard.Tools;
 namespace CardWizard.View
 {
     /// <summary>
-    /// InfomationView.xaml 的交互逻辑
+    /// BackstoryInfo.xaml 的交互逻辑
     /// </summary>
-    public partial class InfomationView : UserControl
+    public partial class BackstoryInfo : UserControl
     {
         private MainManager Manager { get; set; }
 
@@ -30,7 +30,7 @@ namespace CardWizard.View
         /// <summary>
         /// Constructor
         /// </summary>
-        public InfomationView()
+        public BackstoryInfo()
         {
             InitializeComponent();
         }
@@ -56,28 +56,20 @@ namespace CardWizard.View
             BindTextBox(Text_Age, nameof(Character.Age), Manager);
             ValidText = Manager.Translator.Translate("Valid", "✔");
             InvalidText = Manager.Translator.Translate("Invalid", "❌");
-            Label_Age_Check.Process(check =>
-            {
-                Manager.InfoUpdated += c =>
-                {
-                    var minAge = IsAgeValid(check, c);
-                    var tooltip = Manager.Translator.Translate("Age.Min.ToolTip", "Minimum Age is {0}");
-                    check.ToolTip = string.Format(tooltip, minAge);
-                    c.PropertyChanged -= CurrentAgeChanged;
-                    c.PropertyChanged += CurrentAgeChanged;
-                };
-            });
-            Label_Age_Penalty.Process(label =>
-            {
-                label.Content = "";
-                //label.ToolTip = Manager.Translator.TryTranslate("Age.Penalty.ToolTip", out var msg) ? msg : "Your Age Penalty.";
-            });
             // 角色出生地的控制
             BindTextBox(Text_Homeland, nameof(Character.Homeland), Manager);
             // 角色学历的控制
             BindTextBox(Text_Education, nameof(Character.Education), Manager);
             // 角色性别的控制
-            InitializeGenderRadios(Manager, Radio_Gender_Male, Radio_Gender_Female, Radio_Gender_Other);
+            var gender_male = manager.Translator.Translate("Gender.Male", "Male");
+            var gender_female = manager.Translator.Translate("Gender.Female", "Female");
+            var gender_others = manager.Translator.Translate("Gender.Others", "Others");
+            Combo_Gender.ItemsSource = new string[] { gender_male, gender_female, gender_others };
+            Manager.InfoUpdating += c =>
+            {
+                var binding = new Binding(nameof(Character.Gender)) { Source = c };
+                Combo_Gender.SetBinding(ComboBox.SelectedValueProperty, binding);
+            };
         }
 
         /// <summary>
@@ -86,17 +78,17 @@ namespace CardWizard.View
         /// <param name="check"></param>
         /// <param name="c"></param>
         /// <returns></returns>
-        int IsAgeValid(Label check, Character c)
+        int IsAgeValid(TextBox check, Character c)
         {
             var minAge = Manager.CalcForInt($"return GetMinAge({c.GetTraitBase("EDU")})");
             if (c.Age < minAge)
             {
-                check.Content = InvalidText;
-                check.Foreground = (SolidColorBrush)Application.Current.FindResource("InvalidForeground");
+                //check.Content = InvalidText;
+                check.BorderBrush = (SolidColorBrush)Application.Current.FindResource("InvalidForeground");
             }
             else
             {
-                check.Content = ValidText;
+                //check.Content = ValidText;
                 check.Foreground = (SolidColorBrush)Application.Current.FindResource("ValidForeground");
             }
             return minAge;
@@ -112,7 +104,7 @@ namespace CardWizard.View
             // 改变的值不是年龄, 直接中断
             if (!e.PropertyName.EqualsIgnoreCase(nameof(Character.Age))) return;
             // 判断年龄是否符合规则
-            var minAge = IsAgeValid(Label_Age_Check, Manager.Current);
+            var minAge = IsAgeValid(Text_Age, Manager.Current);
             var edu = Manager.Current.GetTraitBase("EDU");
             var script = $"return AgeBonus({edu}, {Manager.Current.Age}, {minAge})";
             var table = (XLua.LuaTable)Manager.LuaHub.DoString(script).First();
@@ -127,42 +119,8 @@ namespace CardWizard.View
             }
             if (bonus.TryGetValue("Adjustment", out int adjustment))
             {
-                Label_Age_Penalty.Content = adjustment;
-            }
-        }
 
-        /// <summary>
-        /// 初始化性别按钮组
-        /// </summary>
-        /// <param name="manager"></param>
-        /// <param name="radios"></param>
-        private static void InitializeGenderRadios(MainManager manager, params RadioButton[] radios)
-        {
-            foreach (var item in radios)
-            {
-                item.Checked += (o, e) => manager.Current.Gender = item.Content.ToString();
             }
-            manager.InfoUpdating += c =>
-            {
-                if (string.IsNullOrWhiteSpace(c.Gender))
-                {
-                    foreach (var item in radios)
-                    {
-                        item.IsChecked = false;
-                    }
-                }
-                else
-                {
-                    foreach (var item in radios)
-                    {
-                        if (item.Content.ToString().EqualsIgnoreCase(c.Gender))
-                        {
-                            item.IsChecked = true;
-                            break;
-                        }
-                    }
-                }
-            };
         }
 
         /// <summary>

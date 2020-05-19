@@ -125,11 +125,15 @@
                         <RowDefinition Height="30"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="320"/>
-                        <ColumnDefinition Width="320"/>
+                        <ColumnDefinition Width="280"/>
+                        <ColumnDefinition Width="280"/>
                     </Grid.ColumnDefinitions>
                     <!--页首的显示-->
-                    <Label  Style="{DynamicResource XLabel}" Grid.ColumnSpan="2" HorizontalContentAlignment="Right" VerticalContentAlignment="Stretch" Foreground="#FFACACAC">- Call of Cthulhu 6th. -</Label>
+                    <Label x:Name="Label_Page_Head" Style="{DynamicResource XLabel}" 
+                           Grid.ColumnSpan="{Binding ColumnDefinitions.Count, ElementName=InvestigatorView, Mode=OneWay}" 
+                           HorizontalContentAlignment="Left" VerticalContentAlignment="Stretch" 
+                           Foreground="#FFACACAC"
+                           Tag="Page.Head" Cursor="Arrow">- Call of Cthulhu Investigator -</Label>
                     <!--角色照片的显示-->
                     <Image x:Name="Image_Avatar" 
                            Grid.ColumnSpan="1" Grid.RowSpan="6" Grid.Column="1"  Grid.Row="1"
@@ -144,7 +148,7 @@
                     </Image>
 
                     <!--角色基础信息的显示-->
-                    <cview:InfomationView x:Name="InfoPanel" Grid.ColumnSpan="1" Grid.RowSpan="7"  Grid.Row="1" />
+                    <cview:BackstoryInfo x:Name="InfoPanel" Grid.ColumnSpan="1" Grid.RowSpan="7"  Grid.Row="1" />
                     <!--角色属性的显示-->
                     <Grid x:Name="TraitsGrid" Grid.Row="8" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.ColumnSpan="2" Grid.RowSpan="5" Margin="2,2,2,2">
                         <Grid.RowDefinitions>
@@ -213,7 +217,12 @@
                     </Grid>
 
                     <!--页尾-->
-                    <Label Grid.Row="29" Grid.Column="0" Grid.ColumnSpan="2" Foreground="{DynamicResource PlaceholderForeground}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" >- ★ -</Label>
+                    <Label x:Name="Label_Page_Trail" Tag="Page.Trail"
+                           Content="- Investigator -"
+                           Grid.Row="29" Grid.Column="0" Grid.ColumnSpan="2" 
+                           Foreground="{DynamicResource PlaceholderForeground}" 
+                           HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                           HorizontalContentAlignment="Right" VerticalContentAlignment="Center" />
                 </Grid>
             </Viewbox>
         </ScrollViewer>

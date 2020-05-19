@@ -14,11 +14,6 @@ namespace CardWizard.Data
     public partial class Config
     {
         /// <summary>
-        /// 调查员资产的缩写
-        /// </summary>
-        public const string KEY_ASSET = "AST";
-
-        /// <summary>
         /// 垃圾回收的周期
         /// </summary>
         public int GCInterval = 30;
@@ -68,19 +63,22 @@ namespace CardWizard.Data
         /// </summary>
         public List<DataModel> DataModels = new List<DataModel>()
         {
-            new DataModel() { Name = "STR", Formula = "3D6", Derived = false },
-            new DataModel() { Name = "CON", Formula = "3D6", Derived = false },
-            new DataModel() { Name = "POW", Formula = "3D6", Derived = false },
-            new DataModel() { Name = "DEX", Formula = "3D6", Derived = false },
-            new DataModel() { Name = "APP", Formula = "3D6", Derived = false },
-            new DataModel() { Name = "SIZ", Formula = "2D6+6", Derived = false },
-            new DataModel() { Name = "INT", Formula = "2D6+6",Derived = false },
-            new DataModel() { Name = "EDU", Formula = "3D6+3", Derived = false },
+            new DataModel() { Name = "STR", Formula = "5*(3D6)", Derived = false },
+            new DataModel() { Name = "CON", Formula = "5*(3D6)", Derived = false },
+            new DataModel() { Name = "DEX", Formula = "5*(3D6)", Derived = false },
+            new DataModel() { Name = "APP", Formula = "5*(3D6)", Derived = false },
+            new DataModel() { Name = "POW", Formula = "5*(3D6)", Derived = false },
+            new DataModel() { Name = "SIZ", Formula = "5*(2D6+6)", Derived = false },
+            new DataModel() { Name = "INT", Formula = "5*(2D6+6)",Derived = false },
+            new DataModel() { Name = "EDU", Formula = "5*(2D6+6)", Derived = false, Upper = 99},
             new DataModel() { Name = "AST", Formula = "1D10", Derived = true},
-            new DataModel() { Name = "SAN", Formula = "POW*5", Derived = true, Upper = 99},
-            new DataModel() { Name = "LUCK", Formula = "POW*5", Derived = true },
-            new DataModel() { Name = "IDEA", Formula = "INT*5", Derived = true },
-            new DataModel() { Name = "KNOW", Formula = "EDU*5", Derived = true, Upper = 99},
+            new DataModel() { Name = "SAN", Formula = "$POW", Derived = true, Upper = 99},
+            new DataModel() { Name = "LUCK", Formula = "5*(3D6)", Derived = true },
+            new DataModel() { Name = "IDEA", Formula = "$INT*5", Derived = true },
+            new DataModel() { Name = "MOV", Formula = "GetMOV($C)", Derived = true},
+            new DataModel() { Name = "MP", Formula = "$POW/5", Derived = true},
+            new DataModel() { Name = "HP", Formula = "($SIZ+$CON)/5", Derived = true},
+            //new DataModel() { Name = "KNOW", Formula = "EDU*5", Derived = true, Upper = 99},
         };
 
         [YamlIgnore]
@@ -155,9 +153,11 @@ namespace CardWizard.Data
             return sentence;
         }
 
+
         /// <summary>
         /// 处理数据
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1304:指定 CultureInfo", Justification = "<挂起>")]
         public Config Process()
         {
             var typeofProcessIndexAttr = typeof(ProcessIndexAttribute);
