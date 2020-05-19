@@ -83,6 +83,16 @@ namespace CardWizard.View
         public event Action<Character> InfoUpdated;
 
         /// <summary>
+        /// 刷新与此角色相关的控件的值
+        /// </summary>
+        /// <param name="character"></param>
+        private void OnInfoUpdate(Character character)
+        {
+            InfoUpdating?.Invoke(character);
+            InfoUpdated?.Invoke(character);
+        }
+
+        /// <summary>
         /// 角色的特点值被改变时, 触发的事件
         /// </summary>
         public event Action<Character, Character.TraitChangedEventArgs> TraitChanged;
@@ -97,7 +107,7 @@ namespace CardWizard.View
         /// <summary>
         /// 当前载入的所有角色
         /// </summary>
-        public Dictionary<Character, ListBoxItem> CharacterCardPairs { get; } = new Dictionary<Character, ListBoxItem>();
+        public Dictionary<Character, ListBoxItem> CharacterListItems { get; } = new Dictionary<Character, ListBoxItem>();
 
         /// <summary>
         /// 当前查看/编辑的角色
@@ -174,10 +184,10 @@ namespace CardWizard.View
                 if (c == default(Character)) continue;
                 AddToCharacters(c);
             }
-            if (CharacterCardPairs.Count != 0)
+            if (CharacterListItems.Count != 0)
             {
-                Current = CharacterCardPairs.Keys.First();
-                Window.List_Cards.SelectedItem = CharacterCardPairs[Current];
+                Current = CharacterListItems.Keys.First();
+                Window.List_Cards.SelectedItem = CharacterListItems[Current];
             }
             else
             {
@@ -197,10 +207,6 @@ namespace CardWizard.View
             // 角色属性的显示
             Window.BaseTraits_Headers.InitAsHeaders(from d in Config.DataModels where !d.Derived select d.Name, Translator);
             Window.DerivedTraits_Headers.InitAsHeaders(from d in Config.DataModels where d.Derived select d.Name, Translator);
-            // 属性的说明
-            var descriptions = from d in Config.DataModels select (d.Name, d.Description);
-            Window.BaseTraits_Headers.InitToolTips(descriptions);
-            Window.DerivedTraits_Headers.InitToolTips(descriptions);
             // 在更新角色信息后, 要刷新以下控件的显示状态
             Window.BaseTraits_Values.BindTraits(this, false);
             Window.DerivedTraits_Values.BindTraits(this, true);
@@ -211,9 +217,9 @@ namespace CardWizard.View
             // 绑定事件: 点击骰一次按钮时触发
             Window.Button_Roll_DMGBonus.Click += (o, e) =>
             {
-                var message = Translator.TryTranslate("Message.RollADMGBonus", out string sentence) ? sentence : "{1}";
+                var message = Translator.Translate("Message.RollADMGBonus", "{1}");
                 var formula = Window.Value_DamageBonus.Content.ToString();
-                var result = CalcForInt(FormatScript(null, formula));
+                var result = CalcTrait(null, formula);
                 Messenger.EnqueueFormat(message, Window.Value_DamageBonus.Content, result);
             };
             Window.Image_Avatar.Process(image =>
@@ -230,6 +236,40 @@ namespace CardWizard.View
             LuaHub.DoFile(Paths.ScriptStartup, global: true);
         }
 
+        #region Button Click Handler
+        /// <summary>
+        /// 新建按钮点击时触发的事件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Button_Create_Click(object sender, RoutedEventArgs e)
+        {
+            Current = Character.Create(Config.BaseModelDict, CalcTrait);
+            AddToCharacters(Current);
+            Window.List_Cards.SelectedItem = CharacterListItems[Current];
+            GetHandlerForReGenerateTraits(() => Current).Invoke(this, new RoutedEventArgs());
+        }
+
+        /// <summary>
+        /// 保存按钮点击时触发的事件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Button_Save_Click(object sender, RoutedEventArgs e)
+        {
+            string dest = Path.Combine(Paths.PathSave, Current.Name + Config.FileExtensionForCard);
+            var source = YamlKit.SaveFile(dest, Current);
+            if (Config.SaveTranslationDoc)
+            {
+                var deserializer = new YamlDotNet.Serialization.Deserializer();
+                var dict = deserializer.Deserialize<Dictionary<string, object>>(source);
+                Translator.TranslateKeys(dict);
+                YamlKit.SaveFile(Path.Combine(Paths.PathSave, Current.Name + Config.FileExtensionForCardDoc), dict);
+            }
+            var message = Translator.Translate("Message.Character.Saved", "Saved at {0}");
+            Messenger.EnqueueFormat(message, dest.Replace("\\", "/"));
+        }
+
         /// <summary>
         /// 生成图片时的操作
         /// </summary>
@@ -244,6 +284,7 @@ namespace CardWizard.View
             {
                 var c = (Color)ColorConverter.ConvertFromString(Config.PrintSettings_BackgroundColor);
                 source.Background = new SolidColorBrush(c);
+                // 等待控件属性的变化刷新
                 source.UpdateLayout();
                 // 期望的 DPI
                 var tDpi = Config.PrintSettings_Dpi;
@@ -254,55 +295,11 @@ namespace CardWizard.View
                 var tHeight = (tDpi / aDpi) * aSize.Height;
                 var dest = Path.Combine(Paths.PathSave, Current.Name + Config.FileExtensionForCardPic);
                 UIExtension.CapturePng(source, dest, (int)tWidth, (int)tHeight, tDpi, tDpi);
-                Messenger.EnqueueFormat(Translator.TryTranslate("Message.Character.SavedPic", out var v) ? v : "Saved at {0}", dest.Replace("\\", "/"));
+                Messenger.EnqueueFormat(Translator.Translate("Message.Character.SavedPic", "Saved at {0}"), dest.Replace("\\", "/"));
             });
             Window.InvestigatorView.Background = bg;
             Window.Button_Regenerate.Visibility = Visibility.Visible;
             Window.Button_Roll_DMGBonus.Visibility = Visibility.Visible;
-        }
-
-        /// <summary>
-        /// 玩家点击头像时触发的事件 (导入新的头像)
-        /// </summary>
-        /// <param name="o"></param>
-        /// <param name="e"></param>
-        private void Image_Avatar_Click(object o, System.Windows.Input.MouseButtonEventArgs e)
-        {
-            var openFiledialog = new OpenFileDialog
-            {
-                InitialDirectory = Directory.GetCurrentDirectory(),
-                CheckFileExists = true,
-                Multiselect = false,
-                DefaultExt = ".png",
-                Title = Translator.TryTranslate("Dialog.Import.Avatar.Title", out var text) ? text : "选择调查员的照片",
-            };
-            openFiledialog.ShowDialog(Window);
-            var result = openFiledialog.FileName;
-            if (!File.Exists(result)) return;
-            var ext = new FileInfo(result).Extension;
-            var dest = $"./Save/{Current.Name}{ext}";
-            // 如果文件已经存在, 要弹出确认窗口
-            if (File.Exists(dest))
-            {
-                var message = Translator.TryTranslate("Dialog.Import.Avatar.Confirmation", out var msg) ? msg : "是否确定用\n{0}\n覆盖现有文件?";
-                message = string.Format(message, result);
-                var confirmDialog = new DialogWindow(message)
-                {
-                    Owner = Window,
-                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                };
-                confirmDialog.ShowDialog();
-                if (confirmDialog.Result)
-                {
-                    File.Copy(result, dest, true);
-                    AvatarUpdate(Current, Window.Image_Avatar);
-                }
-            }
-            else
-            {
-                File.Copy(result, dest);
-                AvatarUpdate(Current, Window.Image_Avatar);
-            }
         }
 
         /// <summary>
@@ -329,6 +326,46 @@ namespace CardWizard.View
         }
 
         /// <summary>
+        /// 玩家点击头像时触发的事件 (导入新的头像)
+        /// </summary>
+        /// <param name="o"></param>
+        /// <param name="e"></param>
+        private void Image_Avatar_Click(object o, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            var openFiledialog = new OpenFileDialog
+            {
+                InitialDirectory = Directory.GetCurrentDirectory(),
+                CheckFileExists = true,
+                Multiselect = false,
+                DefaultExt = ".png",
+                Title = Translator.Translate("Dialog.Import.Avatar.Title", "选择调查员的照片"),
+            };
+            openFiledialog.ShowDialog(Window);
+            var result = openFiledialog.FileName;
+            if (string.IsNullOrWhiteSpace(result) || !File.Exists(result)) return;
+
+            var ext = new FileInfo(result).Extension;
+            var dest = $"./Save/{Current.Name}{ext}";
+            // 如果文件已经存在, 要弹出确认窗口
+            if (File.Exists(dest))
+            {
+                var message = Translator.Translate("Dialog.Import.Avatar.Confirmation", "是否确定用\n{0}\n覆盖现有文件?");
+                message = string.Format(message, result);
+                var confirmDialog = new DialogWindow(message)
+                {
+                    Owner = Window,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                };
+                confirmDialog.ShowDialog();
+                if (!confirmDialog.Result)
+                    return;
+            }
+            File.Copy(result, dest, true);
+            AvatarUpdate(Current, Window.Image_Avatar);
+        }
+        #endregion
+
+        /// <summary>
         /// 更新角色头像的显示
         /// </summary>
         /// <param name="c"></param>
@@ -342,11 +379,7 @@ namespace CardWizard.View
             }
             var path = $"{Paths.PathSave}/{c.Name}.png";
             var rawImage = !File.Exists(path) ? Resources.Image_Avatar_Empty : System.Drawing.Image.FromFile(path);
-            double width = image.Width, height = image.Height;
-            var bitmapImage = rawImage
-                                //.ZoomIn(width, height)
-                                .ToBitmapImage();
-            image.Source = bitmapImage;
+            image.Source = rawImage.ToBitmapImage();
         }
 
         /// <summary>
@@ -415,8 +448,7 @@ namespace CardWizard.View
                 if (fitem is FrameworkElement element)
                 {
                     var path = element.Tag?.ToString() ?? string.Empty;
-                    var hasText = transdict.TryTranslate(path, out var text);
-                    if (hasText)
+                    if (transdict.TryTranslate(path, out var text))
                     {
                         if (element is Image image)
                         {
@@ -427,6 +459,10 @@ namespace CardWizard.View
                             childContainer.Content = text;
                         }
                     }
+                    if (transdict.TryTranslate($"{path}.ToolTip", out text))
+                    {
+                        element.ToolTip = text;
+                    }
                     if (element is ContentControl control)
                     {
                         Localize(control, transdict, histories);
@@ -436,26 +472,16 @@ namespace CardWizard.View
         }
 
         /// <summary>
-        /// 刷新与此角色相关的控件的值
-        /// </summary>
-        /// <param name="character"></param>
-        private void OnInfoUpdate(Character character)
-        {
-            InfoUpdating?.Invoke(character);
-            InfoUpdated?.Invoke(character);
-        }
-
-        /// <summary>
-        /// 将指定的角色添加到 <see cref="CharacterCardPairs"/> 中
+        /// 将指定的角色添加到 <see cref="CharacterListItems"/> 中
         /// </summary>
         /// <param name="character"></param>
         public void AddToCharacters(Character character)
         {
-            if (CharacterCardPairs.ContainsKey(character) || character == null) { return; }
+            if (CharacterListItems.ContainsKey(character) || character == null) { return; }
             if (string.IsNullOrWhiteSpace(character.Name))
             {
-                var defaultName = Translator.TryTranslate("Name.Default", out var v) ? v : "Adam";
-                character.Name = $"{defaultName}#{CharacterCardPairs.Count}";
+                var defaultName = Translator.Translate("Name.Default", "Adam");
+                character.Name = $"{defaultName}#{CharacterListItems.Count}";
             }
             templates.TryGetValue(TMP_CARDSLISTITEM, out var rawTemplate);
             var template = rawTemplate as ListBoxItem;
@@ -464,7 +490,7 @@ namespace CardWizard.View
                  OnNameChanged(this, new PropertyChangedEventArgs(nameof(Character.Name)), character, item);
                  item.GotFocus += (o, e) =>
                  {
-                     var message = Translator.TryTranslate("Message.Character.Switched", out var v) ? v : "Switch to {0}";
+                     var message = Translator.Translate("Message.Character.Switched", "Switch to {0}");
                      Messenger.EnqueueFormat(message, character.Name);
                      Current = character;
                      OnInfoUpdate(Current);
@@ -472,7 +498,7 @@ namespace CardWizard.View
                  void UpdateNameText(object o, PropertyChangedEventArgs e) => OnNameChanged(o, e, character, item);
                  character.PropertyChanged += UpdateNameText;
                  item.Unloaded += (o, e) => character.PropertyChanged -= UpdateNameText;
-                 CharacterCardPairs.Add(character, item);
+                 CharacterListItems.Add(character, item);
              });
         }
 
@@ -490,7 +516,7 @@ namespace CardWizard.View
                 if (string.IsNullOrWhiteSpace(character.Name))
                 {
                     int index = Window.List_Cards.Items.IndexOf(item);
-                    var defaultName = Translator.TryTranslate("Name.Default", out var v) ? v : "Adam";
+                    var defaultName = Translator.Translate("Name.Default", "Adam");
                     item.Content = $"{defaultName}#{index}";
                 }
                 else { item.Content = character.Name; }
@@ -503,9 +529,9 @@ namespace CardWizard.View
         /// <param name="character"></param>
         public void RemoveFromCharacters(Character character)
         {
-            if (CharacterCardPairs.TryGetValue(character, out var item))
+            if (CharacterListItems.TryGetValue(character, out var item))
             {
-                CharacterCardPairs.Remove(character);
+                CharacterListItems.Remove(character);
                 Window.List_Cards.Items.Remove(item);
                 Window.List_Cards.UnregisterName(item.Name);
             }
@@ -543,19 +569,6 @@ namespace CardWizard.View
         }
 
         /// <summary>
-        /// 新建按钮点击时触发的事件
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void Button_Create_Click(object sender, RoutedEventArgs e)
-        {
-            Current = Character.Create(Config.BaseModelDict, CalcTrait);
-            AddToCharacters(Current);
-            Window.List_Cards.SelectedItem = CharacterCardPairs[Current];
-            GetHandlerForReGenerateTraits(() => Current).Invoke(this, new RoutedEventArgs());
-        }
-
-        /// <summary>
         /// 取得一个事件: 打开批量随机属性的面板
         /// </summary>
         /// <param name="getter"></param>
@@ -566,7 +579,7 @@ namespace CardWizard.View
             {
                 var character = getter?.Invoke();
                 if (character == null) return;
-                var childWindow = new BatchGenerationWindow(this)
+                var childWindow = new BatchGenerationWindow(Config, CalcTrait)
                 {
                     Owner = Window,
                     WindowStartupLocation = WindowStartupLocation.CenterOwner
@@ -594,47 +607,6 @@ namespace CardWizard.View
         }
 
         /// <summary>
-        /// 保存按钮点击时触发的事件
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void Button_Save_Click(object sender, RoutedEventArgs e)
-        {
-            string dest = Path.Combine(Paths.PathSave, Current.Name + Config.FileExtensionForCard);
-            var source = YamlKit.SaveFile(dest, Current);
-            if (Config.SaveTranslationDoc)
-            {
-                var deserializer = new YamlDotNet.Serialization.Deserializer();
-                var graph = deserializer.Deserialize<Dictionary<string, object>>(source);
-                TranslateDict(graph, Translator);
-                YamlKit.SaveFile(Path.Combine(Paths.PathSave, Current.Name + Config.FileExtensionForCardDoc), graph);
-            }
-            var message = Translator.TryTranslate("Message.Character.Saved", out var v) ? v : "Saved at {0}";
-            Messenger.EnqueueFormat(message, dest.Replace("\\", "/"));
-        }
-
-        /// <summary>
-        /// 用递归的方式对字典的键进行翻译
-        /// </summary>
-        /// <param name="target"></param>
-        /// <param name="translator">翻译器</param>
-        private static void TranslateDict(Dictionary<string, object> target, Translator translator)
-        {
-            var keys = target.Keys.ToArray();
-            foreach (var key in keys)
-            {
-                var value = target[key];
-                if (value is Dictionary<string, object> child)
-                {
-                    TranslateDict(child, translator);
-                }
-                target.Remove(key);
-                var newKey = translator.TryTranslate(key, out var msg) ? msg : key;
-                target[newKey] = value;
-            }
-        }
-
-        /// <summary>
         /// 骰点
         /// </summary>
         /// <param name="count"></param>
@@ -656,7 +628,7 @@ namespace CardWizard.View
         /// <param name="properties"></param>
         /// <param name="formula"></param>
         /// <returns></returns>
-        public string FormatScript(Dictionary<string, int> properties, string formula)
+        private string FormatScript(Dictionary<string, int> properties, string formula)
         {
             var segments = formula?.Split(";") ?? new string[] { string.Empty };
             var seg = segments[0];
@@ -691,8 +663,8 @@ namespace CardWizard.View
         /// <returns></returns>
         public int CalcForInt(string script)
         {
-            var r = LuaHub.DoString(script, "CALC");
-            return Convert.ToInt32(r[0]);
+            var r = LuaHub.DoString(script, "CALC").FirstOrDefault() ?? 0;
+            return Convert.ToInt32(r);
         }
 
         /// <summary>
@@ -701,7 +673,7 @@ namespace CardWizard.View
         /// <param name="traits"></param>
         /// <param name="formula"></param>
         /// <returns></returns>
-        private int CalcTrait(Dictionary<string, int> traits, string formula) => CalcForInt(FormatScript(traits, formula));
+        public int CalcTrait(Dictionary<string, int> traits, string formula) => CalcForInt(FormatScript(traits, formula));
 
         /// <summary>
         /// 导出当前的数据总线

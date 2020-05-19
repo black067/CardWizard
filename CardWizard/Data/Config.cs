@@ -68,22 +68,19 @@ namespace CardWizard.Data
         /// </summary>
         public List<DataModel> DataModels = new List<DataModel>()
         {
-            new DataModel() { Name = "STR", Formula = "3D6", Description = "力量值", Derived = false },
-            new DataModel() { Name = "CON", Formula = "3D6", Description = "体质值", Derived = false },
-            new DataModel() { Name = "POW", Formula = "3D6", Description = "意志值", Derived = false },
-            new DataModel() { Name = "DEX", Formula = "3D6", Description = "敏捷值", Derived = false },
-            new DataModel() { Name = "APP", Formula = "3D6", Description = "外貌值", Derived = false },
-            new DataModel() { Name = "SIZ", Formula = "2D6+6", Description = "体型值", Derived = false },
-            new DataModel() { Name = "INT", Formula = "2D6+6", Description = "智力值", Derived = false },
-            new DataModel() { Name = "EDU", Formula = "3D6+3", Description = "教育值", Derived = false },
-            new DataModel() { Name = KEY_ASSET, Formula = "1D10", Description = "资产", Derived = true},
-            new DataModel() { Name = "SAN", Formula = "POW*5", Description = @"This score is used as a percentile roll that presents your investigator’s ability to remain stoic in the face of horrors. As you encounter the monstrosities of the Cthulhu Mythos your SAN score fluctuates.", Derived = true },
-            new DataModel() { Name = "LUCK", Formula = "POW*5", Description = @"A Luck roll is often used to determine whether external circumstances are in your favour or against you.", Derived = true },
-            new DataModel() { Name = "IDEA", Formula = "INT*5", Description = @"当没有什么技能鉴定比较合适的时候，可以用这个鉴定来解决问题。
-将侦查技能留给那些不会立刻明白的特定线索或物品。当与人交往的时候仍然需要运用心理学。", Derived = true },
-            new DataModel() { Name = "KNOW", Formula = "EDU*5", Description = @"所有人都了解一些不同方面的知识。
-这个知识检定表现了调查员大脑中储存的，能够提供各种信息的可能性。
-因为没有人可以知道一切，知识检定永远不能到达99，哪怕一个调查员有21点教育。", Derived = true, Upper = 99},
+            new DataModel() { Name = "STR", Formula = "3D6", Derived = false },
+            new DataModel() { Name = "CON", Formula = "3D6", Derived = false },
+            new DataModel() { Name = "POW", Formula = "3D6", Derived = false },
+            new DataModel() { Name = "DEX", Formula = "3D6", Derived = false },
+            new DataModel() { Name = "APP", Formula = "3D6", Derived = false },
+            new DataModel() { Name = "SIZ", Formula = "2D6+6", Derived = false },
+            new DataModel() { Name = "INT", Formula = "2D6+6",Derived = false },
+            new DataModel() { Name = "EDU", Formula = "3D6+3", Derived = false },
+            new DataModel() { Name = "AST", Formula = "1D10", Derived = true},
+            new DataModel() { Name = "SAN", Formula = "POW*5", Derived = true, Upper = 99},
+            new DataModel() { Name = "LUCK", Formula = "POW*5", Derived = true },
+            new DataModel() { Name = "IDEA", Formula = "INT*5", Derived = true },
+            new DataModel() { Name = "KNOW", Formula = "EDU*5", Derived = true, Upper = 99},
         };
 
         [YamlIgnore]

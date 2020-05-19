@@ -16,11 +16,14 @@ namespace CardWizard.View
     {
         /// <summary>
         /// 值的集合
-        /// <para>只有在调用了方法: <see cref="InitAsDatas(Dictionary{string, int}, bool)"/> 之后, 才会被赋值</para>
+        /// <para>只有在调用了方法: <see cref="InitAsDatas(Dictionary{string, int}, bool)"/> 之后, 值才有意义</para>
         /// </summary>
         public Dictionary<string, int> Values { get; private set; }
 
-        private Dictionary<string, TextBox> Children { get; set; }
+        /// <summary>
+        /// 此控件管理的所有 <see cref="TextBox"/>
+        /// </summary>
+        public Dictionary<string, TextBox> Children { get; private set; }
 
         /// <summary>
         /// 数据提示的显示格式
@@ -36,8 +39,6 @@ namespace CardWizard.View
         {
             InitializeComponent();
         }
-
-        private MainManager Manager { get; set; }
 
         /// <summary>
         /// 作为一行数据进行初始化
@@ -70,6 +71,54 @@ namespace CardWizard.View
         }
 
         /// <summary>
+        /// 作为表头初始化
+        /// </summary>
+        /// <param name="headers"></param>
+        /// <param name="translator"></param>
+        public void InitAsHeaders(IEnumerable<string> headers, Translator translator)
+        {
+            var loopLimit = headers.Count();
+            void dosth(UIElement e, int i)
+            {
+                var item = headers.ElementAt(i);
+                if (e is FrameworkElement element)
+                {
+                    element.Tag = item;
+                    element.Cursor = System.Windows.Input.Cursors.Arrow;
+                    if (translator.TryTranslate($"{item}.Description", out var value))
+                    {
+                        element.ToolTip = value;
+                    }
+                }
+                if (e is TextBox box)
+                {
+                    box.Text = translator.Translate(item, item);
+                    box.SetValue(TextBox.IsReadOnlyProperty, true);
+                }
+            }
+            MainGrid.ForeachChild(dosth, loopLimit: loopLimit);
+            CleanExcessColumns(loopLimit);
+        }
+
+        /// <summary>
+        /// 作为属性面板显示时, 需要保存对 <see cref="MainManager"/> 的引用
+        /// </summary>
+        private MainManager Manager { get; set; }
+
+        /// <summary>
+        /// 刷新 <see cref="TextBox"/> 控件的 <see cref="TextBox.Text"/>
+        /// </summary>
+        /// <param name="box"></param>
+        /// <param name="key"></param>
+        /// <param name="character"></param>
+        private void UpdateBoxText(TextBox box, string key, Character character)
+        {
+            box.Text = character.GetTrait(key).ToString();
+            if (Manager != null)
+                box.ToolTip = string.Format(FORMAT_TOOLTIP, key, Manager.Current.GetTraitText(key), tooltipForTrait, Manager.Config.BaseModelDict[key].Formula);
+        }
+
+        /// <summary>
         /// 作为角色的属性面板进行初始化
         /// </summary>
         /// <param name="manager"></param>
@@ -77,12 +126,12 @@ namespace CardWizard.View
         public void BindTraits(MainManager manager, bool derived)
         {
             Manager = manager ?? throw new NullReferenceException();
+            Children = new Dictionary<string, TextBox>();
             var models = new Dictionary<string, DataModel>(from kvp in Manager.Config.BaseModelDict
                                                            where derived == kvp.Value.Derived
                                                            select kvp);
-            tooltipForTrait = Manager.Translator.TryTranslate("ToolTip.Trait", out var tip) ? tip : "= Initial + Growth + Adjustment";
+            tooltipForTrait = Manager.Translator.Translate("Trait.ToolTip", "= Initial + Growth + Adjustment");
             var keys = models.Keys.ToArray();
-            Children = new Dictionary<string, TextBox>();
             for (int i = 0, len = Math.Min(MainGrid.Children.Count, models.Count); i < len; i++)
             {
                 if (MainGrid.Children[i] is TextBox box)
@@ -92,7 +141,7 @@ namespace CardWizard.View
                     box.GotFocus += (o, e) =>
                     {
                         var key = box.DataContext.ToString();
-                        box.Text = manager.Current.GetTraitText(key);
+                        box.Text = Manager.Current.GetTraitText(key);
                     };
                     box.LostFocus += (o, e) => EndEditTraitBox(box);
                     Manager.InfoUpdating += c =>
@@ -100,18 +149,12 @@ namespace CardWizard.View
                         var key = box.DataContext.ToString();
                         box.Text = c.GetTraitText(key);
                     };
-                    UpdateBoxText(box, keys[i], manager.Current);
+                    UpdateBoxText(box, keys[i], Manager.Current);
                     Children.Add(keys[i], box);
                 }
             }
             Manager.TraitChanged += C_TraitChanged;
             CleanExcessColumns(keys.Length);
-        }
-
-        private void UpdateBoxText(TextBox box, string key, Character character)
-        {
-            box.Text = character.GetTrait(key).ToString();
-            box.ToolTip = string.Format(FORMAT_TOOLTIP, key, Manager.Current.GetTraitText(key), tooltipForTrait, Manager.Config.BaseModelDict[key].Formula);
         }
 
         private void C_TraitChanged(Character character, Character.TraitChangedEventArgs e)
@@ -129,9 +172,9 @@ namespace CardWizard.View
                 {
                     var cKey = m.Name;
                     if (!Children.ContainsKey(cKey)) { continue; }
-                    var @base = Manager.CalcForInt(Manager.FormatScript(character.Traits, m.Formula));
-                    var growth = Manager.CalcForInt(Manager.FormatScript(character.Growths, m.Formula));
-                    var adjustment = Manager.CalcForInt(Manager.FormatScript(character.Adjustment, m.Formula));
+                    var @base = Manager.CalcTrait(character.Traits, m.Formula);
+                    var growth = Manager.CalcTrait(character.Growths, m.Formula);
+                    var adjustment = Manager.CalcTrait(character.Adjustment, m.Formula);
                     character.SetTrait(cKey, @base, growth, adjustment);
                     UpdateBoxText(Children[cKey], cKey, character);
                 }
@@ -154,57 +197,6 @@ namespace CardWizard.View
             // 编辑完毕后, 还要更新角色的属性总计与伤害奖励的数据
             Manager.UpdateSumOfBaseTraits(Manager.Current);
             Manager.UpdateDamageBonus(Manager.Current);
-        }
-
-        /// <summary>
-        /// 作为表头初始化
-        /// </summary>
-        /// <param name="headers"></param>
-        /// <param name="localization"></param>
-        public void InitAsHeaders(IEnumerable<string> headers, Translator localization)
-        {
-            var loopLimit = headers.Count();
-            void dosth(UIElement e, int i)
-            {
-                var item = headers.ElementAt(i);
-                if (e is FrameworkElement element)
-                {
-                    element.Tag = item;
-                    element.Cursor = System.Windows.Input.Cursors.Arrow;
-                }
-                if (e is TextBox box)
-                {
-                    if (localization.TryTranslate(item, out var text))
-                    {
-                        box.Text = text;
-                        box.ToolTip = item;
-                    }
-                    else
-                    {
-                        box.Text = item;
-                    }
-                    box.SetValue(TextBox.IsReadOnlyProperty, true);
-                }
-            }
-            MainGrid.ForeachChild(dosth, loopLimit: loopLimit);
-            CleanExcessColumns(loopLimit);
-        }
-
-        /// <summary>
-        /// 添加提示信息
-        /// </summary>
-        /// <param name="tooltipPairs"></param>
-        public void InitToolTips(IEnumerable<(string k, string v)> tooltipPairs)
-        {
-            var tooltips = new Dictionary<string, string>(from tp in tooltipPairs select new KeyValuePair<string, string>(tp.k, tp.v));
-            void dosth(UIElement e, int i)
-            {
-                if (e is FrameworkElement ctr && tooltips.TryGetValue(ctr.Tag?.ToString() ?? string.Empty, out var value))
-                {
-                    ctr.ToolTip = value;
-                }
-            }
-            MainGrid.ForeachChild(dosth, loopLimit: tooltips.Count);
         }
 
         /// <summary>

@@ -41,6 +41,7 @@ namespace CardWizard.View
         /// <param name="manager"></param>
         public void InitializeBinding(MainManager manager)
         {
+            if (manager == null) throw new NullReferenceException();
             Manager = manager;
             // 角色名称的控制
             BindTextBox(Text_Name, nameof(Character.Name), Manager);
@@ -53,16 +54,15 @@ namespace CardWizard.View
             Combo_Era.ItemsSource = Manager.Translator.labelForEras;
             // 角色年龄的显示
             BindTextBox(Text_Age, nameof(Character.Age), Manager);
-            ValidText = Manager.Translator.TryTranslate("Valid", out var t) ? t : "✔";
-            InvalidText = Manager.Translator.TryTranslate("Invalid", out t) ? t : "✘";
+            ValidText = Manager.Translator.Translate("Valid", "✔");
+            InvalidText = Manager.Translator.Translate("Invalid", "❌");
             Label_Age_Check.Process(check =>
             {
                 Manager.InfoUpdated += c =>
                 {
                     var minAge = IsAgeValid(check, c);
-                    var tooltip = Manager.Translator.TryTranslate("ToolTip.Age.Min", out var m) ? m : "Minimum Age is {0}";
-                    tooltip = string.Format(tooltip, minAge);
-                    check.ToolTip = tooltip;
+                    var tooltip = Manager.Translator.Translate("Age.Min.ToolTip", "Minimum Age is {0}");
+                    check.ToolTip = string.Format(tooltip, minAge);
                     c.PropertyChanged -= CurrentAgeChanged;
                     c.PropertyChanged += CurrentAgeChanged;
                 };
@@ -70,7 +70,7 @@ namespace CardWizard.View
             Label_Age_Penalty.Process(label =>
             {
                 label.Content = "";
-                label.ToolTip = Manager.Translator.TryTranslate("ToolTip.Age.Penalty", out var msg) ? msg : "Your Age Penalty.";
+                //label.ToolTip = Manager.Translator.TryTranslate("Age.Penalty.ToolTip", out var msg) ? msg : "Your Age Penalty.";
             });
             // 角色出生地的控制
             BindTextBox(Text_Homeland, nameof(Character.Homeland), Manager);

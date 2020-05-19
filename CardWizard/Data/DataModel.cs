@@ -21,11 +21,6 @@ namespace CardWizard.Data
         public string Name { get => name; set => name = value; }
 
         /// <summary>
-        /// 描述
-        /// </summary>
-        public string Description { get => description; set => description = value; }
-
-        /// <summary>
         /// 生成公式
         /// </summary>
         public string Formula { get => formula; set => formula = value; }

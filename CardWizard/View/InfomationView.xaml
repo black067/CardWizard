@@ -114,10 +114,7 @@
                Style="{DynamicResource XLabel}"/>
 
         <Button Grid.Row="6" Content="选择职业" Tag="Occupation.Select" 
-                Margin="2,2,2,2"
-               Style="{DynamicResource XButtonStyle}" Grid.Column="1"/>
-        <Button Grid.Row="6" Content="×"
-                Margin="2,2,2,2"
-               Style="{DynamicResource XButtonStyle}" Grid.Column="2" FontSize="18" HorizontalAlignment="Stretch" Background="#FFF57575"/>
+                Margin="2,2,2,2" Grid.Column="1" Grid.ColumnSpan="2"
+                Style="{DynamicResource XButtonStyle}"/>
     </Grid>
 </UserControl>

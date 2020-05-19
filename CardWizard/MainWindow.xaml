@@ -129,7 +129,7 @@
                         <ColumnDefinition Width="320"/>
                     </Grid.ColumnDefinitions>
                     <!--页首的显示-->
-                    <Label  Style="{DynamicResource XLabel}" Grid.ColumnSpan="2" HorizontalContentAlignment="Right" VerticalContentAlignment="Stretch" Foreground="#FFACACAC">★ Call of Cthulhu 6th. ★</Label>
+                    <Label  Style="{DynamicResource XLabel}" Grid.ColumnSpan="2" HorizontalContentAlignment="Right" VerticalContentAlignment="Stretch" Foreground="#FFACACAC">- Call of Cthulhu 6th. -</Label>
                     <!--角色照片的显示-->
                     <Image x:Name="Image_Avatar" 
                            Grid.ColumnSpan="1" Grid.RowSpan="6" Grid.Column="1"  Grid.Row="1"
@@ -213,7 +213,7 @@
                     </Grid>
 
                     <!--页尾-->
-                    <Label Grid.Row="29" Grid.Column="0" Grid.ColumnSpan="2" Foreground="{DynamicResource PlaceholderForeground}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" >- end -</Label>
+                    <Label Grid.Row="29" Grid.Column="0" Grid.ColumnSpan="2" Foreground="{DynamicResource PlaceholderForeground}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" >- ★ -</Label>
                 </Grid>
             </Viewbox>
         </ScrollViewer>

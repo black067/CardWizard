@@ -33,7 +33,7 @@ namespace CardWizard.View
         /// 
         /// </summary>
         /// <param name="manager"></param>
-        public BatchGenerationWindow(MainManager manager)
+        public BatchGenerationWindow(Config config, Func<Dictionary<string, int>, string, int> TraitRoller)
         {
             InitializeComponent();
             Width = MinWidth;
@@ -42,23 +42,19 @@ namespace CardWizard.View
             Button_Confirm.Click += Button_Confirm_Click;
             Button_Cancel.Click += Button_Cancel_Click;
             Closed += ListWindow_Closed;
-            if (manager == null) throw new NullReferenceException();
-            var translator = manager.Translator;
-            var dataModels = manager.Config.DataModels;
-            Func<string, int> CalcForInt = manager.CalcForInt;
-            Func<Dictionary<string, int>, string, string> FormatScript = manager.FormatScript;
+            if (config == null) throw new NullReferenceException();
+            var translator = config.Translator;
+            var dataModels = config.DataModels;
             
             if (translator.TryTranslate($"{nameof(BatchGenerationWindow)}.{nameof(Title)}", out var titleText))
             {
                 Title = titleText;
             }
 
-            var datas = dataModels.ToDictionary(m => m.Name);
             // 初始化标题行
             Headers.Process(_ =>
             {
-                var properties = (from m in dataModels 
-                                  where !m.Derived || m.Name.EqualsIgnoreCase(Config.KEY_ASSET)
+                var properties = (from m in dataModels where Filter(m)
                                   select m.Name).ToList();
                 properties.Add("SUM");
                 Headers.InitAsHeaders(properties.ToArray(), translator);
@@ -81,33 +77,35 @@ namespace CardWizard.View
                     items.Add(listItem);
                 }
             }
-
-            int Roll(Dictionary<string, int> properties, string key) => CalcForInt(FormatScript(properties, datas[key].Formula));
             // 生成几组角色的属性
+            var datas = dataModels.ToDictionary(m => m.Name);
             for (int i = ListMain.Items.Count; i > 0; i--)
             {
                 var properties = new Dictionary<string, int>(
-                    from m in dataModels where !m.Derived || m.Name.EqualsIgnoreCase(Config.KEY_ASSET)
-                    select new KeyValuePair<string, int>(m.Name, 0));;
+                    from m in dataModels where Filter(m)
+                    select new KeyValuePair<string, int>(m.Name, 0));
                 foreach (var key in properties.Keys.ToArray())
                 {
-                    var value = Roll(properties, key);
+                    var value = TraitRoller(properties, datas[key].Formula);
                     properties[key] = Convert.ToInt32(value);
                 }
                 var sum = properties.Sum(kvp => kvp.Key != Config.KEY_ASSET ? kvp.Value : 0);
                 properties["SUM"] = sum;
                 items[i - 1].Process(item => {
-                    item.MouseDown += (o, e) =>
-                    {
-                        Selection = properties;
-                    };
+                    item.MouseDown += (o, e) => Selection = properties;
                     item.InitAsDatas(properties, false);
                 });
             }
 
             Selection = (ListMain.Items[0] as TraitsViewItem).Values;
-            GC.Collect();
         }
+
+        /// <summary>
+        /// 用来筛选可重生成的属性
+        /// </summary>
+        /// <param name="m"></param>
+        /// <returns></returns>
+        private static bool Filter(DataModel m) => !m.Derived || m.Name.EqualsIgnoreCase("AST");
 
         private void Button_Cancel_Click(object sender, RoutedEventArgs e)
         {
