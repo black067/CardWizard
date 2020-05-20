@@ -81,7 +81,7 @@ namespace CardWizard.View
             {
                 if (item is TraitsViewItem listItem)
                 {
-                    if (listItem.Tag.ToString() != "Age.Penalty")
+                    if (listItem.Tag?.ToString() != "Age.Penalty")
                     {
                         items.Add(listItem);
                     }
@@ -91,6 +91,8 @@ namespace CardWizard.View
                     }
                 }
             }
+            // 初始化年龄惩罚的显示列
+            InitAgePenaltyRow(Age_Penalty_Row);
             // 生成几组角色的属性
             var datas = dataModels.ToDictionary(m => m.Name);
             for (int i = items.Count - 1; i >= 0; i--)
@@ -108,10 +110,18 @@ namespace CardWizard.View
                 items[i].MouseDown += (o, e) => Selection = properties;
                 items[i].InitAsDatas(properties, false);
             }
+            Selection = items[0].Values;
         }
 
+        /// <summary>
+        /// 初始化年龄惩罚列
+        /// </summary>
+        /// <param name="traitsView"></param>
         private void InitAgePenaltyRow(TraitsViewItem traitsView)
         {
+            traitsView.InitAsHeaders( new string[] {
+                "年龄惩罚",
+            }, null);
         }
 
         /// <summary>

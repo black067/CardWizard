@@ -118,10 +118,12 @@ namespace CardWizard.Tools
         public T Select<T>(IEnumerable<T> collection, IEnumerable<float> weights, out float point, out float sum, out float[] probabilities)
         {
             point = 0;
+            sum = 0;
+            if (collection == null) { probabilities = Array.Empty<float>(); return default; }
             int count = collection.Count();
             probabilities = new float[count];
-            if (count <= 1) { sum = 0; return collection.FirstOrDefault(); }
-            if (weights == null || weights.Count() == 0)
+            if (count <= 1) { return collection.FirstOrDefault(); }
+            if (weights == null || !weights.Any())
             {
                 sum = count;
                 var index = Range(0, count);
@@ -157,71 +159,6 @@ namespace CardWizard.Tools
                 j++;
             }
             return collection.LastOrDefault();
-        }
-
-        /// <summary>
-        /// 解析掷骰公式, 比如 3D6+3
-        /// </summary>
-        /// <param name="formula"></param>
-        /// <returns></returns>
-        public static int Resolve(string formula)
-        {
-            formula = formula.Replace(" ", string.Empty).Replace("\t", string.Empty);
-            Random random = new Random();
-            Dictionary<char, Func<int, int, int>> operators = new Dictionary<char, Func<int, int, int>>()
-            {
-                { '+', (l, r) => l + r },
-                { '-', (l, r) => l - r },
-                { '*', (l, r) => l * r },
-                { '/', (l, r) => l / r },
-                { 'D', (l, r) => {
-                    int sum = 0;
-                    for (int m = l; m > 0; m --) sum += random.Next(1, r);
-                    return sum;
-                } },
-            };
-            // 1. 将公式按照元素分段
-            List<object> segments = new List<object>();
-            string current = string.Empty;
-            for (int i = 0, length = formula.Length; i < length; i++)
-            {
-                var c = formula[i];
-                // 如果是操作符
-                if (operators.ContainsKey(c))
-                {
-                    var cvalue = int.Parse(current);
-                    current = string.Empty;
-                    segments.Add(cvalue);
-                    segments.Add(c);
-                }
-                // 如果是数字
-                else if (char.IsDigit(c))
-                {
-                    current += c;
-                }
-            }
-            if (!string.IsNullOrWhiteSpace(current))
-            {
-                segments.Add(int.Parse(current));
-            }
-            // 2. 求值
-            Stack<char> optr = new Stack<char>();
-            Stack<int> opnd = new Stack<int>();
-            for (int i = 0, length = segments.Count; i < length; i++)
-            {
-                var seg = segments[i];
-                if (seg is char op)
-                {
-                    optr.Push(op);
-                }
-                else if (seg is int digit)
-                {
-                    opnd.Push(digit);
-                }
-            }
-            // 3. TODO
-            int result = 0;
-            return result;
         }
     }
 }

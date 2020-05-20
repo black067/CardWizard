@@ -1,48 +1,65 @@
-﻿DOC_DamageBonus = [[ 本程序的 DB 算法参考以下数据 (来自第六版规则书)
-STR+SIZ  DB
-2-12     -1D6
-13-16    -1D4
-17-24    0
-25-32    +1D4
-33-40    +1D6
-41-56    +2D6
-57-72    +3D6
-73-88    +4D6
-89-104   +5D6
-105-120  +6D6
-121-136  +7D6
-137-152  +8D6
-153-168  +9D6
-169-184  +10D6
-* 这之上, 每+16, 伤害奖励再增加1D6
+﻿DOC_DamageBonus = [[ DamageBonus 的算法参考以下数据 (来自第七版规则书)
+STR+SIZ		伤害加值		体格
+2-64		-2			-2
+65-84		-1			-1
+85-124		0			0
+125-164		+1d4		1
+165-204		+1d6		2
+205-284*	+2d6		3
+285-364		+3d6		4
+365-444		+4d6		5
+445-524		+5d6		6
+* 这之上, 每+80, 伤害奖励再增加1D6
 ]]
 
 --- 计算伤害奖励的脚本
 function DamageBonus(strength, size)
 	local result = 0
 	local sum = strength + size
-	-- 结果为 0 的情况
-	if (sum > 16 and sum <= 24) then return '0' end
+	-- 结果为 常数 的情况
+	if (sum > 84 and sum <= 124) then return '0' end
+	if (sum <= 64) then return '-2' end
+	if (sum <= 84) then return '-1' end
 	-- 骰子面数
 	local d = 6
-	if (sum > 12 and sum <= 16)
-	or (sum > 24 and sum <= 32) then d = 4 end
+	if (sum > 124 and sum <= 164) then d = 4 end
 	-- 系数
 	local c = 1
-	if sum <= 16 then c = -1
-	elseif sum > 32 then
-		c = sum / 16 - 1
+	if sum > 204 then
+		c = sum / 80 - 1
 	end
 	-- 返回计算结果
 	return string.format('%0.0fD%0.0f', c, d)
 end
 
+DOC_GetMOV = [[ GetMOV 算法参考以下数据 (来自第七版规则书)
+MOV 与 DEX, STR, SIZ 有关: 
+- MOV 7		DEX < SIZ and STR < SIZ
+- MOV 8		DEX >= SIZ or STR >= SIZ
+- MOV 9		DEX > SIZ and STR > SIZ
+MOV 的值还与年龄有关: 
+- 年龄在40-49岁之间: MOV -= 1
+- 年龄在50-59岁之间: MOV -= 2
+- 年龄在60-69岁之间: MOV -= 3
+- 年龄在70-79岁之间: MOV -= 4
+- 年龄在80-89岁之间: MOV -= 5
+]]
+
 --- 计算 MOV 的值
 function GetMOV(character)
-	return 7
+	local SIZ = character:GetTraitInitial('SIZ')
+	local DEX = character:GetTraitInitial('DEX')
+	local STR = character:GetTraitInitial('STR')
+	local AgePenalty = math.floor((character.Age - 40) / 10 + 1)
+	local movement = 7
+	if DEX > SIZ and STR > SIZ then movement = 9
+	elseif DEX >= SIZ or STR >= SIZ then movement = 8 
+	end
+	if AgePenalty > 0 then movement = movement - AgePenalty end
+	return movement
 end
 
-DOC_AssetOrignal = [[ 本程序的 初始资金 算法参考以下数据 (来自第六版规则书)
+DOC_AssetOrignal = [[ AssetOrignal 算法参考以下数据 (来自第六版规则书)
 1. 选择对应的游戏年代(1890s, 1920s 和 现代)
   - 1890s: 投1D10, 结果: 1=$500+房子&膳食, 2=$1000, 3=$1500, 4=$2000, 5=$2500, 6=$3000, 7=$4000, 8=$5000, 9=$5000, 10=$10000
   - 1920s: 投1D10, 结果: 1=$1500+房子&膳食, 2=$2500, 3=$3500, 4=$3500, 5=$4500, 6=$5500, 7=$6500, 8=$7500, 9=$10000, 10=$20000

@@ -122,16 +122,20 @@ namespace CallOfCthulhu
         public string GetTraitText(string key)
         {
             int initial = GetTraitInitial(key), growth = GetTraitGrowth(key), adjustment = GetTraitAdjustment(key);
-            string growthText = growth > 0 ? $"+{growth}" : growth.ToString();
-            string adjustmentText = adjustment > 0 ? $"+{adjustment}" : adjustment.ToString();
-            if (initial == 0 && growth == 0 && adjustment == 0) return "0";
-            if (initial == 0 && growth == 0 && adjustment != 0) return $"0+0{adjustmentText}";
-            if (initial == 0 && growth != 0 && adjustment == 0) return $"0{growthText}";
-            if (initial == 0 && growth != 0 && adjustment != 0) return $"0{growthText}{adjustmentText}";
-            if (initial != 0 && growth == 0 && adjustment == 0) return $"{initial}";
-            if (initial != 0 && growth == 0 && adjustment != 0) return $"{initial}+0{adjustmentText}";
-            if (initial != 0 && growth != 0 && adjustment == 0) return $"{initial}{growthText}";
-            return $"{initial}{growthText}{adjustmentText}";
+            string gtext = growth > 0 ? $"+{growth}" : growth.ToString(),
+                   atext = adjustment > 0 ? $"+{adjustment}" : adjustment.ToString();
+            int i = initial != 0 ? 1 : 0, g = growth != 0 ? 1 : 0, a = adjustment != 0 ? 1 : 0;
+            return (i << 2) + (g << 1) + a switch
+            {
+                0b_000 => "0",
+                0b_001 => $"0+0{atext}",
+                0b_010 => $"0{gtext}",
+                0b_011 => $"0{gtext}{atext}",
+                0b_100 => $"{initial}",
+                0b_101 => $"{initial}+0{atext}",
+                0b_110 => $"{initial}{gtext}",
+                _ => $"{initial}{gtext}{atext}",
+            };
         }
 
         /// <summary>
@@ -342,17 +346,18 @@ namespace CallOfCthulhu
         /// <param name="baseModelDict"></param>
         /// <param name="calculator"></param>
         /// <returns></returns>
-        public static Character Create(Dictionary<string, Trait> baseModelDict, Func<Dictionary<string, int>, string, int> calculator)
+        public static Character Create(Dictionary<string, Trait> baseModelDict, Func<Dictionary<string, int>, string, int> calculator = null)
         {
             var character = new Character()
             {
                 Traits = new Dictionary<string, int>(),
             };
-            if (calculator != null && baseModelDict != null)
+            if (baseModelDict != null)
             {
+                bool hasCalculator = calculator != null;
                 foreach (var prop in baseModelDict.Values)
                 {
-                    character.SetTraitInitial(prop.Name, calculator(character.Traits, prop.Formula));
+                    character.SetTraitInitial(prop.Name, hasCalculator ? calculator(character.Traits, prop.Formula) : 0);
                     character.SetTraitGrowth(prop.Name, 0);
                     character.SetTraitAdjustment(prop.Name, 0);
                 }

@@ -86,7 +86,14 @@ namespace CardWizard.Tools
         /// </summary>
         /// <param name="item"></param>
         public static void Enqueue(object item)
-            => Enqueue(item?.ToString());
+        {
+            if (item is Exception e)
+            {
+                Enqueue($"{e.Message}\n{e.StackTrace}");
+                return;
+            }
+            Enqueue(item?.ToString());
+        }
 
         /// <summary>
         /// 将多个物件转为字符串, 放入信息队列, 每一个都会触发入列事件 OnEnqueue

@@ -18,6 +18,8 @@ using System.Windows.Media;
 using System.Threading;
 using System.Threading.Tasks;
 using CallOfCthulhu;
+using System.Collections.ObjectModel;
+using System.Windows.Data;
 
 namespace CardWizard.View
 {
@@ -30,13 +32,6 @@ namespace CardWizard.View
         /// 管理的窗口主体
         /// </summary>
         public MainWindow Window { get; private set; }
-
-        /// <summary>
-        /// 缓存的控件模板
-        /// </summary>
-        private readonly Dictionary<string, UIElement> templates = new Dictionary<string, UIElement>();
-        private Character current;
-        private const string TMP_CARDSLISTITEM = "CardsListItem";
 
         /// <summary>
         /// 配置表
@@ -106,9 +101,11 @@ namespace CardWizard.View
         private void OnTraitChanged(Character c, TraitChangedEventArgs e) => TraitChanged?.Invoke(c, e);
 
         /// <summary>
-        /// 当前载入的所有角色
+        /// 已载入的所有角色
         /// </summary>
-        public Dictionary<Character, ListBoxItem> CharacterListItems { get; } = new Dictionary<Character, ListBoxItem>();
+        public ObservableCollection<Character> Characters { get; set; }
+
+        private Character current;
 
         /// <summary>
         /// 当前查看/编辑的角色
@@ -139,17 +136,11 @@ namespace CardWizard.View
             Window = window ?? throw new NullReferenceException();
             // 设置 Logger
             Messenger.OnEnqueue += Messenger_OnEnqueue;
-            // 保存界面中的预设
-            if (window.List_Cards.Items[0] is ListBoxItem templateListBoxItem)
+            // 如果项目路径下存在文件"DEBUG", 就执行以下下操作
+            if (File.Exists("DEBUG"))
             {
-                templates.Add(TMP_CARDSLISTITEM, templateListBoxItem);
-                templateListBoxItem.Visibility = Visibility.Hidden;
-                window.List_Cards.Items.Remove(templateListBoxItem);
+                YamlKit.SaveFile(Resources.FileConfig, new Config());
             }
-#if DEBUG
-            YamlKit.SaveFile(Resources.FileConfig, new Config());
-            //if (Directory.Exists("./Save")) Directory.Delete("./Save", true);
-#endif
             // 读取配置表
             Config = YamlKit.LoadFile<Config>(Resources.FileConfig).Process();
             // 设置定期 Garbage Collect
@@ -176,6 +167,7 @@ namespace CardWizard.View
             // 创建必要的文件夹
             Directory.CreateDirectory(Paths.PathSave);
             // 载入角色数据
+            Characters = new ObservableCollection<Character>();
             var files = Directory.GetFiles(Paths.PathSave);
             foreach (var item in files)
             {
@@ -185,10 +177,9 @@ namespace CardWizard.View
                 if (c == default(Character)) continue;
                 AddToCharacters(c);
             }
-            if (CharacterListItems.Count != 0)
+            if (Characters.Count != 0)
             {
-                Current = CharacterListItems.Keys.First();
-                Window.List_Cards.SelectedItem = CharacterListItems[Current];
+                Current = Characters.First();
             }
             else
             {
@@ -201,6 +192,7 @@ namespace CardWizard.View
             Window.Button_Save.Click += Button_Save_Click;
             Window.Button_Debug.Click += Button_Debug_Click;
             Window.Button_SavePic.Click += Button_SavePic_Click;
+            InitAsCardList(Window.List_Cards);
             // 角色基本信息的控制
             Window.InfoPanel.InitializeBinding(this);
             // 重生成角色属性的按钮
@@ -245,10 +237,22 @@ namespace CardWizard.View
         /// <param name="e"></param>
         private void Button_Create_Click(object sender, RoutedEventArgs e)
         {
-            Current = Character.Create(Config.BaseModelDict, CalcTrait);
-            AddToCharacters(Current);
-            Window.List_Cards.SelectedItem = CharacterListItems[Current];
-            GetHandlerForReGenerateTraits(() => Current).Invoke(this, new RoutedEventArgs());
+            var childWindow = new GenerationWindow(Config, CalcTrait)
+            {
+                Owner = Window,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
+            };
+            childWindow.ShowDialog();
+            if (childWindow.DialogResult ?? false)
+            {
+                Current = Character.Create(Config.BaseModelDict);
+                foreach (var kvp in childWindow.Selection)
+                {
+                    Current.SetTraitInitial(kvp.Key, kvp.Value);
+                }
+                RecalcTraitsInitial(Current, t => t.Derived);
+                AddToCharacters(Current);
+            }
         }
 
         /// <summary>
@@ -473,69 +477,37 @@ namespace CardWizard.View
         }
 
         /// <summary>
-        /// 将指定的角色添加到 <see cref="CharacterListItems"/> 中
+        /// 初始化卡牌显示列表
+        /// </summary>
+        /// <param name="box"></param>
+        private void InitAsCardList(ListBox box)
+        {
+            var binding = new Binding() { Source = Characters };
+            box.SetBinding(ItemsControl.ItemsSourceProperty, binding);
+            box.SelectedIndex = 0;
+            box.SelectionChanged += (o, e) =>
+            {
+                if (e.Source is ListBox b && b.SelectedItem is Character c)
+                {
+                    Current = c;
+                    OnInfoUpdate(Current);
+                }
+            };
+        }
+
+        /// <summary>
+        /// 将指定的角色添加到 <see cref="Characters"/> 中
         /// </summary>
         /// <param name="character"></param>
         public void AddToCharacters(Character character)
         {
-            if (CharacterListItems.ContainsKey(character) || character == null) { return; }
-            if (string.IsNullOrWhiteSpace(character.Name))
+            if (character == null) { return; }
+            if (string.IsNullOrWhiteSpace(character?.Name))
             {
                 var defaultName = Translator.Translate("Name.Default", "Adam");
-                character.Name = $"{defaultName}#{CharacterListItems.Count}";
+                character.Name = $"{defaultName} {Characters.Count}";
             }
-            templates.TryGetValue(TMP_CARDSLISTITEM, out var rawTemplate);
-            var template = rawTemplate as ListBoxItem;
-            ProcessKit.Process(Window.List_Cards.AddItem(template, $"Card_{character.GetHashCode()}"), item =>
-             {
-                 OnNameChanged(this, new PropertyChangedEventArgs(nameof(Character.Name)), character, item);
-                 item.GotFocus += (o, e) =>
-                 {
-                     var message = Translator.Translate("Message.Character.Switched", "Switch to {0}");
-                     Messenger.EnqueueFormat(message, character.Name);
-                     Current = character;
-                     OnInfoUpdate(Current);
-                 };
-                 void UpdateNameText(object o, PropertyChangedEventArgs e) => OnNameChanged(o, e, character, item);
-                 character.PropertyChanged += UpdateNameText;
-                 item.Unloaded += (o, e) => character.PropertyChanged -= UpdateNameText;
-                 CharacterListItems.Add(character, item);
-             });
-        }
-
-        /// <summary>
-        /// 当角色的名称改变时, 更改侧边按钮的内容, 使其显示当前角色的名称
-        /// </summary>
-        /// <param name="_"></param>
-        /// <param name="e"></param>
-        /// <param name="character"></param>
-        /// <param name="item"></param>
-        private void OnNameChanged(object _, PropertyChangedEventArgs e, Character character, ListBoxItem item)
-        {
-            if (e.PropertyName == nameof(Character.Name))
-            {
-                if (string.IsNullOrWhiteSpace(character.Name))
-                {
-                    int index = Window.List_Cards.Items.IndexOf(item);
-                    var defaultName = Translator.Translate("Name.Default", "Adam");
-                    item.Content = $"{defaultName}#{index}";
-                }
-                else { item.Content = character.Name; }
-            }
-        }
-
-        /// <summary>
-        /// 移除指定的角色
-        /// </summary>
-        /// <param name="character"></param>
-        public void RemoveFromCharacters(Character character)
-        {
-            if (CharacterListItems.TryGetValue(character, out var item))
-            {
-                CharacterListItems.Remove(character);
-                Window.List_Cards.Items.Remove(item);
-                Window.List_Cards.UnregisterName(item.Name);
-            }
+            Characters.Add(character);
         }
 
         /// <summary>
@@ -544,9 +516,8 @@ namespace CardWizard.View
         /// <param name="character"></param>
         /// <param name="selector"></param>
         /// <returns></returns>
-        public int SumTraits(Character character, Func<Trait, bool> selector) => (from prop in Config.DataModels
-                                                                                      where selector(prop)
-                                                                                      select character.GetTrait(prop.Name)).Sum();
+        public int SumTraits(Character character, Func<Trait, bool> selector) => (from prop in Config.DataModels where selector(prop)
+                                                                                  select character.GetTrait(prop.Name)).Sum();
 
         /// <summary>
         /// 刷新角色的基础属性统计标签
@@ -594,13 +565,7 @@ namespace CardWizard.View
                         if (Config.BaseModelDict.ContainsKey(kvp.Key))
                             character.SetTraitInitial(kvp.Key, kvp.Value);
                     }
-                    foreach (var model in Config.DataModels)
-                    {
-                        if (model.Derived)
-                        {
-                            character.SetTraitInitial(model.Name, CalcTrait(character.Traits, model.Formula));
-                        }
-                    }
+                    RecalcTraitsInitial(character, t => t.Derived);
                     OnInfoUpdate(character);
                 }
             }
@@ -652,15 +617,7 @@ namespace CardWizard.View
                 seg = seg.Replace(item.Value, $"{nameof(MainManager)}.{nameof(Current)}");
             }
             seg = $"return {seg}";
-            try
-            {
-                return seg;
-            }
-            catch (Exception e)
-            {
-                Messenger.EnqueueFormat("{0}\n{1}", e.Message, e.StackTrace);
-                return "return 0";
-            }
+            return seg;
         }
 
         /// <summary>
@@ -680,7 +637,26 @@ namespace CardWizard.View
         /// <param name="traits"></param>
         /// <param name="formula"></param>
         /// <returns></returns>
-        public int CalcTrait(Dictionary<string, int> traits, string formula) => CalcForInt(FormatScript(traits, formula));
+        public int CalcTrait(Dictionary<string, int> traits, string formula)
+        {
+            return CalcForInt(FormatScript(traits, formula));
+        }
+
+        /// <summary>
+        /// 重新计算角色属性的初始值
+        /// </summary>
+        /// <param name="character"></param>
+        /// <param name="filter"></param>
+        public void RecalcTraitsInitial(Character character, Func<Trait,bool> filter = null)
+        {
+            if (character == null) return;
+            if (filter == null) filter = m => true;
+            foreach (var model in Config.DataModels.Where(filter))
+            {
+                var value = CalcTrait(character.Traits, model.Formula);
+                character.SetTraitInitial(model.Name, value);
+            }
+        }
 
         /// <summary>
         /// 导出当前的数据总线

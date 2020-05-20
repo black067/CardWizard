@@ -74,7 +74,7 @@ namespace CardWizard.Data
             new Trait() { Name = "AST", Formula = "1D10", Derived = true},
             new Trait() { Name = "SAN", Formula = "$POW", Derived = true, Upper = 99},
             new Trait() { Name = "LUCK", Formula = "5*(3D6)", Derived = true },
-            new Trait() { Name = "MOV", Formula = "GetMOV($C)", Derived = true},
+            //new Trait() { Name = "MOV", Formula = "GetMOV($C)", Derived = true},
             new Trait() { Name = "MP", Formula = "$POW/5", Derived = true},
             new Trait() { Name = "HP", Formula = "($SIZ+$CON)/5", Derived = true},
         };

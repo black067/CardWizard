@@ -59,6 +59,7 @@ end";
             using LuaTable meta = Env.NewTable();
             meta.Set("__index", Env.Global);
             table.SetMetaTable(meta);
+            meta.Dispose();
             return Env.DoString(text, chunkName, table);
         }
 

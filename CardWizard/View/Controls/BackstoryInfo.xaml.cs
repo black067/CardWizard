@@ -21,6 +21,7 @@ namespace CardWizard.View
     /// </summary>
     public partial class BackstoryInfo : UserControl
     {
+
         private MainManager Manager { get; set; }
 
         private string ValidText;

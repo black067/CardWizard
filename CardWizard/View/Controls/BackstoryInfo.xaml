@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:CardWizard.View"
              mc:Ignorable="d" 
              d:DesignHeight="210" d:DesignWidth="280">
+    
     <Grid x:Name="MainGrid">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="96"/>

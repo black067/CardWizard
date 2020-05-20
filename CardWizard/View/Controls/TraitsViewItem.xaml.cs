@@ -38,6 +38,7 @@ namespace CardWizard.View
         public TraitsViewItem()
         {
             InitializeComponent();
+            Children = new Dictionary<string, TextBox>();
         }
 
         /// <summary>
@@ -64,6 +65,7 @@ namespace CardWizard.View
                 else if (item is TextBox box)
                 {
                     box.Text = values[i].ToString();
+                    Children.Add(keys[i], box);
                 }
                 if (!enableEdit) { item.IsEnabled = false; }
             }
@@ -78,6 +80,7 @@ namespace CardWizard.View
         public void InitAsHeaders(IEnumerable<string> headers, Translator translator)
         {
             var loopLimit = headers.Count();
+            bool hasTranslator = translator != null;
             void dosth(UIElement e, int i)
             {
                 var item = headers.ElementAt(i);
@@ -85,15 +88,16 @@ namespace CardWizard.View
                 {
                     element.Tag = item;
                     element.Cursor = System.Windows.Input.Cursors.Arrow;
-                    if (translator.TryTranslate($"{item}.Description", out var value))
+                    if (hasTranslator && translator.TryTranslate($"{item}.Description", out var value))
                     {
                         element.ToolTip = value;
                     }
                 }
                 if (e is TextBox box)
                 {
-                    box.Text = translator.Translate(item, item);
+                    box.Text = hasTranslator ? translator.Translate(item, item) : item;
                     box.SetValue(TextBox.IsReadOnlyProperty, true);
+                    Children.Add(item, box);
                 }
             }
             MainGrid.ForeachChild(dosth, loopLimit: loopLimit);
@@ -126,7 +130,7 @@ namespace CardWizard.View
         public void BindTraits(MainManager manager, bool derived)
         {
             Manager = manager ?? throw new NullReferenceException();
-            Children = new Dictionary<string, TextBox>();
+            //Children = new Dictionary<string, TextBox>();
             var models = new Dictionary<string, Trait>(from kvp in Manager.Config.BaseModelDict
                                                            where derived == kvp.Value.Derived
                                                            select kvp);
