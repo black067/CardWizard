@@ -1,4 +1,4 @@
-﻿using CallOfCthulhu.Models;
+﻿using CallOfCthulhu;
 
 namespace CardWizard.Data
 {

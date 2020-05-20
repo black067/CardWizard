@@ -1,4 +1,4 @@
-﻿namespace CallOfCthulhu.Models
+﻿namespace CallOfCthulhu
 {
     /// <summary>
     /// 角色属性的模型 (Characteristic)

@@ -16,7 +16,7 @@ using CardWizard.Tools;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Documents;
-using CallOfCthulhu.Models;
+using CallOfCthulhu;
 
 namespace CardWizard.View
 {

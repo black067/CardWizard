@@ -10,7 +10,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XLuaGeneral", "xlua\XLuaGeneral.csproj", "{491C5EA9-D96E-42E7-B093-511990466B6E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XLuaGeneral", "XLua\XLuaGeneral.csproj", "{491C5EA9-D96E-42E7-B093-511990466B6E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CallOfCthulhu", "CallOfCthulhu\CallOfCthulhu.csproj", "{D877134C-EC49-4519-BE59-844F770913E7}"
 EndProject

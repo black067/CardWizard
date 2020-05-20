@@ -53,7 +53,7 @@ namespace CardWizard.Tools
         {
             var ctor = typeof(T).GetConstructor(Type.EmptyTypes);
             if (ctor == null) { return default; }
-            var item = (T)ctor.Invoke(new object[0]);
+            var item = (T)ctor.Invoke(Array.Empty<object>());
             return item;
         }
 
@@ -94,11 +94,11 @@ namespace CardWizard.Tools
         /// 取得一个对象的拷贝, 被标记为 <see cref="YamlIgnoreAttribute"/> 的成员不会被复制
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="object"></param>
+        /// <param name="item"></param>
         /// <returns></returns>
-        public static T Clone<T>(T @object)
+        public static T Clone<T>(T item)
         {
-            var text = new Serializer().Serialize(@object);
+            var text = new Serializer().Serialize(item);
             return new Deserializer().Deserialize<T>(text);
         }
     }

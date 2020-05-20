@@ -1,5 +1,4 @@
-﻿using CallOfCthulhu.Models;
-using CardWizard.Data;
+﻿using CallOfCthulhu;
 using System;
 using System.Collections.Generic;
 using System.Linq;

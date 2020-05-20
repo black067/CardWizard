@@ -84,30 +84,24 @@ namespace CardWizard.Tools
         /// <summary>
         /// 将物件转为字符串, 放入信息队列, 会触发入列事件 OnEnqueue
         /// </summary>
-        /// <param name="msg"></param>
-        public static void Enqueue(object msg)
-            => Enqueue(msg.ToString());
+        /// <param name="item"></param>
+        public static void Enqueue(object item)
+            => Enqueue(item?.ToString());
 
         /// <summary>
         /// 将多个物件转为字符串, 放入信息队列, 每一个都会触发入列事件 OnEnqueue
         /// </summary>
         /// <param name="objects">多个物件</param>
         public static void Enqueue(params object[] objects)
-            => Enqueue(collection: objects);
-
-        /// <summary>
-        /// 将多个物件转为字符串, 放入信息队列, 每一个都会触发入列事件 OnEnqueue
-        /// </summary>
-        /// <param name="collection">物件集合</param>
-        public static void Enqueue(IEnumerable<object> collection)
         {
+            if (objects == null) return;
             var builder = new StringBuilder();
-            foreach (var item in collection)
+            foreach (var item in objects)
             {
                 builder.Append(item.ToString());
                 builder.Append(" ");
             }
-            Enqueue(msg: builder.ToString().Trim());
+            Enqueue(item: builder.ToString().Trim());
         }
 
         /// <summary>

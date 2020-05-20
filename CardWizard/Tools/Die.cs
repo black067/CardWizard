@@ -5,7 +5,7 @@ using System.Linq;
 namespace CardWizard.Tools
 {
     /// <summary>
-    /// 随机数工具
+    /// 随机数工具 (骰子)
     /// </summary>
     public class Die
     {

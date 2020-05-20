@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using YamlDotNet.Serialization;
+using System.Text.RegularExpressions;
 
-
-namespace CardWizard.Data
+namespace CallOfCthulhu
 {
     /// <summary>
     /// 本地化文本相关数据
@@ -144,8 +144,44 @@ namespace CardWizard.Data
             { "Message.Character.Switched", "已切换至调查员: {0}" },
         };
 
-        [YamlIgnore]
-        internal Dictionary<string, string> dictionaryIgnoreCase = new Dictionary<string, string>();
+        private Dictionary<string, string> dictionaryIgnoreCase = new Dictionary<string, string>();
+
+        /// <summary>
+        /// 将语句中的关键字 (被 '{' 与 '}' 环绕的词) 替换为 <paramref name="getters"/> 中获取的值
+        /// </summary>
+        /// <param name="sentence"></param>
+        /// <param name="getters"></param>
+        /// <returns></returns>
+        public static string MapKeywords(string sentence, Dictionary<string, Func<string>> getters)
+        {
+            var matches = Regex.Matches(sentence, @"\{[^\{\}]*\}");
+            for (int i = matches.Count - 1; i >= 0; i--)
+            {
+                var m = matches[i];
+                var r = m.Value.Trim('{', '}');
+                if (getters.Keys.Contains(r))
+                {
+                    sentence = Regex.Replace(sentence, m.Value, getters[r]());
+                }
+            }
+            return sentence;
+        }
+
+        /// <summary>
+        /// 替换翻译文本中的关键字
+        /// </summary>
+        public void Process()
+        {
+            var gettersdict = new Dictionary<string, Func<string>>(
+                from f in dictionary
+                select new KeyValuePair<string, Func<string>>(f.Key, () => f.Value));
+            foreach (var item in dictionary.Keys.ToArray())
+            {
+                var value = MapKeywords(dictionary[item], gettersdict);
+                dictionary[item] = value;
+                dictionaryIgnoreCase[item.ToUpper()] = value;
+            }
+        }
 
         /// <summary>
         /// 查询翻译后的文字

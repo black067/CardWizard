@@ -17,7 +17,7 @@ using Microsoft.Win32;
 using System.Windows.Media;
 using System.Threading;
 using System.Threading.Tasks;
-using CallOfCthulhu.Models;
+using CallOfCthulhu;
 
 namespace CardWizard.View
 {

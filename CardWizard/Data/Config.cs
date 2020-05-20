@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Reflection;
 using YamlDotNet.Serialization;
-using CallOfCthulhu.Models;
+using CallOfCthulhu;
 
 namespace CardWizard.Data
 {
@@ -74,11 +74,9 @@ namespace CardWizard.Data
             new Trait() { Name = "AST", Formula = "1D10", Derived = true},
             new Trait() { Name = "SAN", Formula = "$POW", Derived = true, Upper = 99},
             new Trait() { Name = "LUCK", Formula = "5*(3D6)", Derived = true },
-            //new Trait() { Name = "IDEA", Formula = "$INT*5", Derived = true },
             new Trait() { Name = "MOV", Formula = "GetMOV($C)", Derived = true},
             new Trait() { Name = "MP", Formula = "$POW/5", Derived = true},
             new Trait() { Name = "HP", Formula = "($SIZ+$CON)/5", Derived = true},
-            //new DataModel() { Name = "KNOW", Formula = "EDU*5", Derived = true, Upper = 99},
         };
 
         [YamlIgnore]
@@ -110,9 +108,16 @@ namespace CardWizard.Data
             {
                 Index = index;
             }
-
+            /// <summary>
+            /// 生成的顺序, 从 0 开始
+            /// </summary>
             public int Index { get; set; }
-
+            /// <summary>
+            /// 获取 <paramref name="target"/> 的所有字段信息, 按照此标签的 Index 排序
+            /// </summary>
+            /// <param name="target"></param>
+            /// <param name="bindingFlags"></param>
+            /// <returns></returns>
             public static FieldInfo[] SortField(object target, BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.Instance)
             {
                 var typeofProcessIndexAttr = typeof(ProcessIndexAttribute);
@@ -133,59 +138,27 @@ namespace CardWizard.Data
         }
 
         /// <summary>
-        /// 将语句中的关键字 (被 '{' 与 '}' 环绕的词) 替换为 <paramref name="getters"/> 中获取的值
-        /// </summary>
-        /// <param name="sentence"></param>
-        /// <param name="getters"></param>
-        /// <returns></returns>
-        protected static string MapKeywords(string sentence, Dictionary<string, Func<string>> getters)
-        {
-            var matches = Regex.Matches(sentence, @"\{[^\{\}]*\}");
-            for (int i = matches.Count - 1; i >= 0; i--)
-            {
-                var m = matches[i];
-                var r = m.Value.Trim('{', '}');
-                if (getters.Keys.Contains(r))
-                {
-                    sentence = Regex.Replace(sentence, m.Value, getters[r]());
-                }
-            }
-            return sentence;
-        }
-
-
-        /// <summary>
-        /// 处理数据
+        /// 对数据进行处理: 把文本中的关键字替换为实际值
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1304:指定 CultureInfo", Justification = "<挂起>")]
         public Config Process()
         {
-            var typeofProcessIndexAttr = typeof(ProcessIndexAttribute);
             var typeofStr = typeof(string);
             var target = Paths;
             var fields = ProcessIndexAttribute.SortField(target);
             var gettersdict = new Dictionary<string, Func<string>>(
-                from f in fields
-                where f.FieldType == typeofStr
+                from f in fields where f.FieldType == typeofStr
                 select new KeyValuePair<string, Func<string>>(f.Name,
                                                               () => f.GetValue(target)?.ToString() ?? string.Empty));
             foreach (var field in fields)
             {
                 if (field.FieldType != typeofStr) { continue; }
                 var value = field.GetValue(target).ToString();
-                value = MapKeywords(value, gettersdict);
+                value = Translator.MapKeywords(value, gettersdict);
                 field.SetValue(target, value);
             }
 
-            gettersdict = new Dictionary<string, Func<string>>(
-                from f in Translator.dictionary
-                select new KeyValuePair<string, Func<string>>(f.Key, () => f.Value));
-            foreach (var item in Translator.dictionary.Keys.ToArray())
-            {
-                var value = MapKeywords(Translator.dictionary[item], gettersdict);
-                Translator.dictionary[item] = value;
-                Translator.dictionaryIgnoreCase[item.ToUpper()] = value;
-            }
+            Translator.Process();
             return this;
         }
     }

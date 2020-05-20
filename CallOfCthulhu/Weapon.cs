@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 
-namespace CallOfCthulhu.Models
+namespace CallOfCthulhu
 {
     /// <summary>
     /// 武器的数据结构

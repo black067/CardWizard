@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 
 
-namespace CallOfCthulhu.Models
+namespace CallOfCthulhu
 {
     /// <summary>
     /// 职业

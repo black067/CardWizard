@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CallOfCthulhu.Models
+namespace CallOfCthulhu
 {
     /// <summary>
     /// 属性值发生变化时的事件消息
