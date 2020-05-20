@@ -171,7 +171,7 @@ namespace CardWizard.View
             // 创建 Lua 环境
             InitLuaHub();
             // 如果存在存储了计算公式的脚本文件, 执行
-            LuaHub.DoFile(Paths.ScriptFormula, global: true);
+            LuaHub.DoFile(Paths.ScriptFormula, isGlobal: true);
             // 创建必要的文件夹
             Directory.CreateDirectory(Paths.PathSave);
             // 载入角色数据
@@ -233,7 +233,7 @@ namespace CardWizard.View
             // 对界面进行本地化
             Localize(Window, Translator);
             // 如果存在启动脚本文件, 执行
-            LuaHub.DoFile(Paths.ScriptStartup, global: true);
+            LuaHub.DoFile(Paths.ScriptStartup, isGlobal: true);
         }
 
         #region Button Click Handler
@@ -313,7 +313,7 @@ namespace CardWizard.View
             {
                 try
                 {
-                    LuaHub.DoFile(Paths.ScriptDebug, global: false);
+                    LuaHub.DoFile(Paths.ScriptDebug, isGlobal: false);
                 }
 #pragma warning disable CA1031 // 不捕获常规异常类型
                 catch (Exception exception)
@@ -408,8 +408,8 @@ namespace CardWizard.View
             LuaHub.Set(nameof(Data.DataBus), DataBus);
             LuaHub.Set(nameof(Data.Config), Config);
             LuaHub.Set<Func<int, int, int>>(nameof(Roll), Roll);
+            GCDispatcher.Tick += (o, e) => LuaHub.EnvGC();
             Window.Closed += (o, e) => LuaHub.Dispose();
-            GCDispatcher.Tick += (o, e) => LuaHub.GC();
         }
 
         /// <summary>

@@ -9,6 +9,9 @@ namespace CardWizard.Tools
     {
         private LuaEnv Env { get; set; }
 
+        /// <summary>
+        /// 构造 <see cref="XLua"/> 的脚本运行环境
+        /// </summary>
         public XLuaHub()
         {
             Env = new LuaEnv();
@@ -26,11 +29,17 @@ end";
             DoString(code, global: true);
         }
 
-        public override void Dispose()
+        /// <summary>
+        /// 释放资源
+        /// </summary>
+        /// <param name="disposing"></param>
+        protected override void Dispose(bool disposing)
         {
+            if (isDisposed) return;
             Env.FullGc();
             Env.Dispose();
             Env = null;
+            isDisposed = true;
         }
 
         /// <summary>
@@ -73,17 +82,31 @@ end";
             return Env.DoString(source, chunkName, table);
         }
 
-
+        /// <summary>
+        /// 查询指定变量的值
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="path"></param>
+        /// <returns></returns>
         public override T Get<T>(string path)
         {
             return Env.Global.Get<T>(path);
         }
 
+        /// <summary>
+        /// 设置变量的值
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="path"></param>
+        /// <param name="value"></param>
         public override void Set<T>(string path, T value)
         {
             Env.Global.Set(path, value);
         }
 
-        public override void GC() => Env.GC();
+        /// <summary>
+        /// 在脚本运行环境中进行垃圾回收
+        /// </summary>
+        public override void EnvGC() => Env.GC();
     }
 }

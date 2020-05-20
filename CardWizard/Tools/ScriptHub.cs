@@ -29,31 +29,31 @@ namespace CardWizard.Tools
         /// </summary>
         /// <param name="text"></param>
         /// <param name="chunkName"></param>
-        /// <param name="global"></param>
+        /// <param name="isGlobal"></param>
         /// <returns></returns>
-        public abstract object[] DoString(string text, string chunkName = "CHUNK", bool global = false);
+        public abstract object[] DoString(string text, string chunkName = "CHUNK", bool isGlobal = false);
 
         /// <summary>
         /// 执行 二进制 Lua 字符串 
         /// </summary>
         /// <param name="source"></param>
         /// <param name="chunkName"></param>
-        /// <param name="global"></param>
+        /// <param name="isGlobal"></param>
         /// <returns></returns>
-        public abstract object[] DoString(byte[] source, string chunkName = "CHUNK", bool global = false);
+        public abstract object[] DoString(byte[] source, string chunkName = "CHUNK", bool isGlobal = false);
 
         /// <summary>
         /// 执行 Lua 脚本文件
         /// </summary>
         /// <param name="path"></param>
         /// <param name="chunkName"></param>
-        /// <param name="global"></param>
+        /// <param name="isGlobal"></param>
         /// <returns></returns>
-        public virtual object[] DoFile(string path, string chunkName = "CHUNK", bool global = false)
+        public virtual object[] DoFile(string path, string chunkName = "CHUNK", bool isGlobal = false)
         {
             if (File.Exists(path))
             {
-                return DoString(File.ReadAllText(path), chunkName, global);
+                return DoString(File.ReadAllText(path), chunkName, isGlobal);
             }
             return null;
         }
@@ -63,21 +63,36 @@ namespace CardWizard.Tools
         /// </summary>
         /// <param name="source"></param>
         /// <param name="chunkName"></param>
-        /// <param name="global"></param>
+        /// <param name="isGlobal"></param>
         /// <returns></returns>
-        public virtual object[] DoFile(byte[] source, string chunkName = "CHUNK", bool global = false)
+        public virtual object[] DoFile(byte[] source, string chunkName = "CHUNK", bool isGlobal = false)
         {
-            return DoString(source, chunkName, global);
+            return DoString(source, chunkName, isGlobal);
         }
 
         /// <summary>
-        /// 垃圾回收
+        /// 脚本运行环境的手动垃圾回收
         /// </summary>
-        public abstract void GC();
+        public abstract void EnvGC();
 
         /// <summary>
-        /// 释放管理器
+        /// 释放资源
         /// </summary>
-        public abstract void Dispose();
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// 是否已释放
+        /// </summary>
+        protected bool isDisposed;
+
+        /// <summary>
+        /// 释放资源
+        /// </summary>
+        /// <param name="disposing"></param>
+        protected abstract void Dispose(bool disposing);
     }
 }

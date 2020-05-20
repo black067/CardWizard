@@ -23,7 +23,7 @@ namespace CardWizard.Tools
             var keyType = CodeBuilder.ResolveType(keyTypeName);
             var valueType = CodeBuilder.ResolveType(valueTypeName);
             var dictType = typeof(Dictionary<,>).MakeGenericType(keyType, valueType);
-            return dictType.GetConstructor(Type.EmptyTypes).Invoke(new object[0]);
+            return dictType.GetConstructor(Type.EmptyTypes).Invoke(Array.Empty<object>());
         }
 
         /// <summary>

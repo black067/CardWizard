@@ -17,3 +17,6 @@ dotnet_diagnostic.CA1051.severity = silent
 
 # CA2227: 集合属性应为只读
 dotnet_diagnostic.CA2227.severity = none
+
+# CA1716: 标识符不应与关键字匹配
+dotnet_diagnostic.CA1716.severity = none
