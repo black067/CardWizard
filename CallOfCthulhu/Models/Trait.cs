@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace CardWizard.Data
+﻿namespace CallOfCthulhu.Models
 {
     /// <summary>
-    /// 角色属性的模型
+    /// 角色属性的模型 (Characteristic)
     /// </summary>
-    public class DataModel
+    public class Trait
     {
         private string name;
-        private string description;
         private string formula = "3D6";
         private bool derived = false;
         private int upper = 0;

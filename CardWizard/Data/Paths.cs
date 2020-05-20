@@ -1,4 +1,6 @@
-﻿namespace CardWizard.Data
+﻿using CallOfCthulhu.Models;
+
+namespace CardWizard.Data
 {
     /// <summary>
     /// 路径数据库, 缓存了应用的特殊路径

@@ -11,7 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using CardWizard.Data;
+using CallOfCthulhu.Models;
 using CardWizard.Tools;
 
 namespace CardWizard.View
@@ -80,7 +80,7 @@ namespace CardWizard.View
         /// <returns></returns>
         int IsAgeValid(TextBox check, Character c)
         {
-            var minAge = Manager.CalcForInt($"return GetMinAge({c.GetTraitBase("EDU")})");
+            var minAge = Manager.CalcForInt($"return GetMinAge({c.GetTraitInitial("EDU")})");
             if (c.Age < minAge)
             {
                 //check.Content = InvalidText;
@@ -105,7 +105,7 @@ namespace CardWizard.View
             if (!e.PropertyName.EqualsIgnoreCase(nameof(Character.Age))) return;
             // 判断年龄是否符合规则
             var minAge = IsAgeValid(Text_Age, Manager.Current);
-            var edu = Manager.Current.GetTraitBase("EDU");
+            var edu = Manager.Current.GetTraitInitial("EDU");
             var script = $"return AgeBonus({edu}, {Manager.Current.Age}, {minAge})";
             var table = (XLua.LuaTable)Manager.LuaHub.DoString(script).First();
             var bonus = new Dictionary<string, int>();

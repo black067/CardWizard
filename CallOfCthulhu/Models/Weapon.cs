@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace CardWizard.Data
+
+namespace CallOfCthulhu.Models
 {
     /// <summary>
     /// 武器的数据结构
@@ -50,46 +51,57 @@ namespace CardWizard.Data
             /// </summary>
             Misc,
         }
+
         /// <summary>
         /// 武器名称
         /// </summary>
         public string Name { get; set; }
+
         /// <summary>
         /// 武器类型
         /// </summary>
         public WEAPONTYPE WeaponType { get; set; }
+
         /// <summary>
         /// 武器描述
         /// </summary>
         public string Description { get; set; }
+
         /// <summary>
         /// 基本命中率公式
         /// </summary>
         public string Hitrate { get; set; }
+
         /// <summary>
         /// 伤害公式
         /// </summary>
         public string Damage { get; set; }
+
         /// <summary>
         /// 基础射程
         /// </summary>
         public string BaseRange { get; set; }
+
         /// <summary>
         /// 每轮攻击次数
         /// </summary>
         public string AttacksPerRound { get; set; }
+
         /// <summary>
         /// 装弹数
         /// </summary>
         public int Bullets { get; set; }
+
         /// <summary>
         /// 耐久度
         /// </summary>
         public int Resistance { get; set; }
+
         /// <summary>
         /// 在各个年代的价格
         /// </summary>
         public float[] Prices { get; set; }
+
         /// <summary>
         /// 客制化数据
         /// </summary>

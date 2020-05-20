@@ -1,4 +1,5 @@
-﻿using CardWizard.Data;
+﻿using CallOfCthulhu.Models;
+using CardWizard.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -127,7 +128,7 @@ namespace CardWizard.View
         {
             Manager = manager ?? throw new NullReferenceException();
             Children = new Dictionary<string, TextBox>();
-            var models = new Dictionary<string, DataModel>(from kvp in Manager.Config.BaseModelDict
+            var models = new Dictionary<string, Trait>(from kvp in Manager.Config.BaseModelDict
                                                            where derived == kvp.Value.Derived
                                                            select kvp);
             tooltipForTrait = Manager.Translator.Translate("Trait.ToolTip", "= Initial + Growth + Adjustment");
@@ -157,7 +158,7 @@ namespace CardWizard.View
             CleanExcessColumns(keys.Length);
         }
 
-        private void C_TraitChanged(Character character, Character.TraitChangedEventArgs e)
+        private void C_TraitChanged(Character character, TraitChangedEventArgs e)
         {
             var eKey = e.Key;
             if (Children.ContainsKey(eKey))
@@ -172,10 +173,10 @@ namespace CardWizard.View
                 {
                     var cKey = m.Name;
                     if (!Children.ContainsKey(cKey)) { continue; }
-                    var @base = Manager.CalcTrait(character.Traits, m.Formula);
+                    var initial = Manager.CalcTrait(character.Traits, m.Formula);
                     var growth = Manager.CalcTrait(character.Growths, m.Formula);
                     var adjustment = Manager.CalcTrait(character.Adjustment, m.Formula);
-                    character.SetTrait(cKey, @base, growth, adjustment);
+                    character.SetTrait(cKey, initial, growth, adjustment);
                     UpdateBoxText(Children[cKey], cKey, character);
                 }
             }

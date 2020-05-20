@@ -1,64 +1,15 @@
 ﻿using System;
-using System.Linq;
-using System.Collections;
 using System.Collections.Generic;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.ComponentModel;
-using YamlDotNet.Serialization;
-using System.Windows.Data;
+using System.Text.RegularExpressions;
 
-namespace CardWizard.Data
+namespace CallOfCthulhu.Models
 {
     /// <summary>
     /// 角色
     /// </summary>
-    public class Character : INotifyPropertyChanged
+    public partial class Character : INotifyPropertyChanged
     {
-        /// <summary>
-        /// 属性值发生变化时的事件消息
-        /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1034:嵌套类型应不可见", Justification = "<挂起>")]
-        public class TraitChangedEventArgs : EventArgs
-        {
-            /// <summary>
-            /// 原来的特点基础值
-            /// </summary>
-            public int OriginalBase { get; set; }
-            /// <summary>
-            /// 原来的特点成长值
-            /// </summary>
-            public int OriginalGrowth { get; set; }
-            /// <summary>
-            /// 新的特点基础值
-            /// </summary>
-            public int NewBase { get; set; }
-            /// <summary>
-            /// 新的特点成长值
-            /// </summary>
-            public int NewGrowth { get; set; }
-            /// <summary>
-            /// 原有的衰老惩罚值
-            /// </summary>
-            public int OriginalAdjustment { get; set; }
-            /// <summary>
-            /// 新的衰老惩罚值
-            /// </summary>
-            public int NewAdjustment { get; set; }
-            /// <summary>
-            /// 发生变化的特点名称
-            /// </summary>
-            public string Key { get; set; }
-            /// <summary>
-            /// 角色属性变动事件的参数
-            /// </summary>
-            /// <param name="key"></param>
-            public TraitChangedEventArgs(string key)
-            {
-                Key = key;
-            }
-        }
-
         private string name;
 
         private string era;
@@ -80,14 +31,14 @@ namespace CardWizard.Data
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public int GetTraitBase(string key) => Traits.TryGetValue(key, out int value) ? value : 0;
+        public int GetTraitInitial(string key) => Traits.TryGetValue(key, out int value) ? value : 0;
 
         /// <summary>
         /// 设置特点的基础值
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
-        public void SetTraitBase(string key, int value)
+        public void SetTraitInitial(string key, int value)
         {
             var original = Traits.ContainsKey(key) ? Traits[key] : 0;
             Traits[key] = value;
@@ -160,7 +111,7 @@ namespace CardWizard.Data
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public int GetTrait(string key) => GetTraitBase(key) + GetTraitGrowth(key) + GetTraitAdjustment(key);
+        public int GetTrait(string key) => GetTraitInitial(key) + GetTraitGrowth(key) + GetTraitAdjustment(key);
 
         /// <summary>
         /// 取得属性值的字符串表达式
@@ -170,17 +121,17 @@ namespace CardWizard.Data
         /// <returns></returns>
         public string GetTraitText(string key)
         {
-            int @base = GetTraitBase(key), growth = GetTraitGrowth(key), adjustment = GetTraitAdjustment(key);
+            int initial = GetTraitInitial(key), growth = GetTraitGrowth(key), adjustment = GetTraitAdjustment(key);
             string growthText = growth > 0 ? $"+{growth}" : growth.ToString();
             string adjustmentText = adjustment > 0 ? $"+{adjustment}" : adjustment.ToString();
-            if (@base == 0 && growth == 0 && adjustment == 0) return "0";
-            if (@base == 0 && growth == 0 && adjustment != 0) return $"0+0{adjustmentText}";
-            if (@base == 0 && growth != 0 && adjustment == 0) return $"0{growthText}";
-            if (@base == 0 && growth != 0 && adjustment != 0) return $"0{growthText}{adjustmentText}";
-            if (@base != 0 && growth == 0 && adjustment == 0) return $"{@base}";
-            if (@base != 0 && growth == 0 && adjustment != 0) return $"{@base}+0{adjustmentText}";
-            if (@base != 0 && growth != 0 && adjustment == 0) return $"{@base}{growthText}";
-            return $"{@base}{growthText}{adjustmentText}";
+            if (initial == 0 && growth == 0 && adjustment == 0) return "0";
+            if (initial == 0 && growth == 0 && adjustment != 0) return $"0+0{adjustmentText}";
+            if (initial == 0 && growth != 0 && adjustment == 0) return $"0{growthText}";
+            if (initial == 0 && growth != 0 && adjustment != 0) return $"0{growthText}{adjustmentText}";
+            if (initial != 0 && growth == 0 && adjustment == 0) return $"{initial}";
+            if (initial != 0 && growth == 0 && adjustment != 0) return $"{initial}+0{adjustmentText}";
+            if (initial != 0 && growth != 0 && adjustment == 0) return $"{initial}{growthText}";
+            return $"{initial}{growthText}{adjustmentText}";
         }
 
         /// <summary>
@@ -188,14 +139,14 @@ namespace CardWizard.Data
         /// </summary>
         /// <param name="valueText"></param>
         /// <returns></returns>
-        public static (int @base, int growth, int adjustment) SplitTraitText(string valueText)
+        public static (int initial, int growth, int adjustment) SplitTraitText(string valueText)
         {
-            var result = (@base: 0, growth: 0, adjustment: 0);
+            var result = (initial: 0, growth: 0, adjustment: 0);
             var matches = Regex.Matches(valueText, @"(\-|\+)?\d+(\.\d+)?");
             for (int i = 0, length = matches.Count; i < length; i++)
             {
                 var m = matches[i];
-                if (i == 0) result.@base = int.TryParse(m.Value, out int v) ? v : 0;
+                if (i == 0) result.initial = int.TryParse(m.Value, out int v) ? v : 0;
                 else if (i == 1) result.growth = int.TryParse(m.Value, out int v) ? v : 0;
                 else if (i == 2) result.adjustment = int.TryParse(m.Value, out int v) ? v : 0;
             }
@@ -210,8 +161,8 @@ namespace CardWizard.Data
         /// <param name="valueText"></param>
         public void SetTrait(string key, string valueText)
         {
-            var (@base, growth, adjustment) = SplitTraitText(valueText);
-            SetTraitBase(key, @base);
+            var (initial, growth, adjustment) = SplitTraitText(valueText);
+            SetTraitInitial(key, initial);
             SetTraitGrowth(key, growth);
             SetTraitAdjustment(key, adjustment);
         }
@@ -223,9 +174,9 @@ namespace CardWizard.Data
         /// <param name="base"></param>
         /// <param name="growth"></param>
         /// <param name="adjustment"></param>
-        public void SetTrait(string key, int @base, int growth, int adjustment)
+        public void SetTrait(string key, int initial, int growth, int adjustment)
         {
-            SetTraitBase(key, @base);
+            SetTraitInitial(key, initial);
             SetTraitGrowth(key, growth);
             SetTraitAdjustment(key, adjustment);
         }
@@ -348,43 +299,13 @@ namespace CardWizard.Data
         public Dictionary<string, int> InterestPoints { get; set; }
 
         /// <summary>
-        /// 个人技能
-        /// </summary>
-        [YamlIgnore]
-        public List<Skill> Skills { get; set; }
-
-        /// <summary>
         /// 角色的所有个人技能
         /// </summary>
         public List<string> skills = new List<string>();
 
         /// <summary>
-        /// 初始化角色的技能数据
-        /// </summary>
-        /// <param name="skillDict"></param>
-        public void InitializeSkills(Dictionary<string, Skill> skillDict)
-        {
-            Skills = new List<Skill>();
-            foreach (var item in skills)
-            {
-                if (skillDict != null && skillDict.ContainsKey(item))
-                {
-                    Skills.Add(skillDict[item]);
-                }
-                else
-                {
-                    Skills.Add(new Skill()
-                    {
-                        Name = item,
-                        BaseValue = 5,
-                    });
-                }
-            }
-        }
-
-        /// <summary>
         /// 角色名称等信息发生改变时, 触发的事件
-        /// <para>注意, 角色的特点数值变化需要监听事件 <see cref="TraitChanged"/> </para>
+        /// <para>注意, 角色的属性 (Characteristic) 数值变化需要监听事件 <see cref="TraitChanged"/> </para>
         /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -421,7 +342,7 @@ namespace CardWizard.Data
         /// <param name="baseModelDict"></param>
         /// <param name="calculator"></param>
         /// <returns></returns>
-        public static Character Create(Dictionary<string, DataModel> baseModelDict, Func<Dictionary<string, int>, string, int> calculator)
+        public static Character Create(Dictionary<string, Trait> baseModelDict, Func<Dictionary<string, int>, string, int> calculator)
         {
             var character = new Character()
             {
@@ -431,7 +352,7 @@ namespace CardWizard.Data
             {
                 foreach (var prop in baseModelDict.Values)
                 {
-                    character.SetTraitBase(prop.Name, calculator(character.Traits, prop.Formula));
+                    character.SetTraitInitial(prop.Name, calculator(character.Traits, prop.Formula));
                     character.SetTraitGrowth(prop.Name, 0);
                     character.SetTraitAdjustment(prop.Name, 0);
                 }

@@ -60,6 +60,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CallOfCthulhu\CallOfCthulhu.csproj" />
     <ProjectReference Include="..\xlua\XLuaGeneral.csproj" />
   </ItemGroup>
 

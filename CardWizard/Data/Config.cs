@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Reflection;
 using YamlDotNet.Serialization;
-
+using CallOfCthulhu.Models;
 
 namespace CardWizard.Data
 {
@@ -61,40 +61,40 @@ namespace CardWizard.Data
         /// <summary>
         /// 基础属性模型
         /// </summary>
-        public List<DataModel> DataModels = new List<DataModel>()
+        public List<Trait> DataModels = new List<Trait>()
         {
-            new DataModel() { Name = "STR", Formula = "5*(3D6)", Derived = false },
-            new DataModel() { Name = "CON", Formula = "5*(3D6)", Derived = false },
-            new DataModel() { Name = "DEX", Formula = "5*(3D6)", Derived = false },
-            new DataModel() { Name = "APP", Formula = "5*(3D6)", Derived = false },
-            new DataModel() { Name = "POW", Formula = "5*(3D6)", Derived = false },
-            new DataModel() { Name = "SIZ", Formula = "5*(2D6+6)", Derived = false },
-            new DataModel() { Name = "INT", Formula = "5*(2D6+6)",Derived = false },
-            new DataModel() { Name = "EDU", Formula = "5*(2D6+6)", Derived = false, Upper = 99},
-            new DataModel() { Name = "AST", Formula = "1D10", Derived = true},
-            new DataModel() { Name = "SAN", Formula = "$POW", Derived = true, Upper = 99},
-            new DataModel() { Name = "LUCK", Formula = "5*(3D6)", Derived = true },
-            new DataModel() { Name = "IDEA", Formula = "$INT*5", Derived = true },
-            new DataModel() { Name = "MOV", Formula = "GetMOV($C)", Derived = true},
-            new DataModel() { Name = "MP", Formula = "$POW/5", Derived = true},
-            new DataModel() { Name = "HP", Formula = "($SIZ+$CON)/5", Derived = true},
+            new Trait() { Name = "STR", Formula = "5*(3D6)", Derived = false },
+            new Trait() { Name = "CON", Formula = "5*(3D6)", Derived = false },
+            new Trait() { Name = "DEX", Formula = "5*(3D6)", Derived = false },
+            new Trait() { Name = "APP", Formula = "5*(3D6)", Derived = false },
+            new Trait() { Name = "POW", Formula = "5*(3D6)", Derived = false },
+            new Trait() { Name = "SIZ", Formula = "5*(2D6+6)", Derived = false },
+            new Trait() { Name = "INT", Formula = "5*(2D6+6)",Derived = false },
+            new Trait() { Name = "EDU", Formula = "5*(2D6+6)", Derived = false, Upper = 99},
+            new Trait() { Name = "AST", Formula = "1D10", Derived = true},
+            new Trait() { Name = "SAN", Formula = "$POW", Derived = true, Upper = 99},
+            new Trait() { Name = "LUCK", Formula = "5*(3D6)", Derived = true },
+            //new Trait() { Name = "IDEA", Formula = "$INT*5", Derived = true },
+            new Trait() { Name = "MOV", Formula = "GetMOV($C)", Derived = true},
+            new Trait() { Name = "MP", Formula = "$POW/5", Derived = true},
+            new Trait() { Name = "HP", Formula = "($SIZ+$CON)/5", Derived = true},
             //new DataModel() { Name = "KNOW", Formula = "EDU*5", Derived = true, Upper = 99},
         };
 
         [YamlIgnore]
-        private Dictionary<string, DataModel> baseModelDict;
+        private Dictionary<string, Trait> baseModelDict;
 
         /// <summary>
         /// 属性模型的字典
         /// </summary>
         [YamlIgnore]
-        public Dictionary<string, DataModel> BaseModelDict
+        public Dictionary<string, Trait> BaseModelDict
         {
             get
             {
                 if (baseModelDict == null)
                 {
-                    baseModelDict = new Dictionary<string, DataModel>(DataModels.Select(m => new KeyValuePair<string, DataModel>(m.Name, m)));
+                    baseModelDict = new Dictionary<string, Trait>(DataModels.Select(m => new KeyValuePair<string, Trait>(m.Name, m)));
                 }
                 return baseModelDict;
             }

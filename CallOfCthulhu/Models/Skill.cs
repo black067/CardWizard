@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Security.Cryptography;
 
-namespace CardWizard.Data
+namespace CallOfCthulhu.Models
 {
     /// <summary>
     /// 技能

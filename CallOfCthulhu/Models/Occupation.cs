@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 
-namespace CardWizard.Data
+
+namespace CallOfCthulhu.Models
 {
     /// <summary>
     /// 职业

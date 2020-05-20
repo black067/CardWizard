@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using YamlDotNet.Serialization;
 using CardWizard.Tools;
+using CallOfCthulhu.Models;
 
 namespace CardWizard.Data
 {

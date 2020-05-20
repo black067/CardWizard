@@ -17,6 +17,7 @@ using Microsoft.Win32;
 using System.Windows.Media;
 using System.Threading;
 using System.Threading.Tasks;
+using CallOfCthulhu.Models;
 
 namespace CardWizard.View
 {
@@ -95,14 +96,14 @@ namespace CardWizard.View
         /// <summary>
         /// 角色的属性值被改变时, 触发的事件
         /// </summary>
-        public event Action<Character, Character.TraitChangedEventArgs> TraitChanged;
+        public event Action<Character, TraitChangedEventArgs> TraitChanged;
 
         /// <summary>
         /// 对事件的包装
         /// </summary>
         /// <param name="c"></param>
         /// <param name="e"></param>
-        private void OnTraitChanged(Character c, Character.TraitChangedEventArgs e) => TraitChanged?.Invoke(c, e);
+        private void OnTraitChanged(Character c, TraitChangedEventArgs e) => TraitChanged?.Invoke(c, e);
 
         /// <summary>
         /// 当前载入的所有角色
@@ -543,7 +544,7 @@ namespace CardWizard.View
         /// <param name="character"></param>
         /// <param name="selector"></param>
         /// <returns></returns>
-        public int SumTraits(Character character, Func<DataModel, bool> selector) => (from prop in Config.DataModels
+        public int SumTraits(Character character, Func<Trait, bool> selector) => (from prop in Config.DataModels
                                                                                       where selector(prop)
                                                                                       select character.GetTrait(prop.Name)).Sum();
 
@@ -591,13 +592,13 @@ namespace CardWizard.View
                     foreach (var kvp in selection)
                     {
                         if (Config.BaseModelDict.ContainsKey(kvp.Key))
-                            character.SetTraitBase(kvp.Key, kvp.Value);
+                            character.SetTraitInitial(kvp.Key, kvp.Value);
                     }
                     foreach (var model in Config.DataModels)
                     {
                         if (model.Derived)
                         {
-                            character.SetTraitBase(model.Name, CalcTrait(character.Traits, model.Formula));
+                            character.SetTraitInitial(model.Name, CalcTrait(character.Traits, model.Formula));
                         }
                     }
                     OnInfoUpdate(character);

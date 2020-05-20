@@ -16,6 +16,7 @@ using CardWizard.Tools;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Documents;
+using CallOfCthulhu.Models;
 
 namespace CardWizard.View
 {
@@ -118,7 +119,7 @@ namespace CardWizard.View
         /// </summary>
         /// <param name="m"></param>
         /// <returns></returns>
-        private static bool Filter(DataModel m) => !m.Derived || m.Name.EqualsIgnoreCase("AST");
+        private static bool Filter(Trait m) => !m.Derived || m.Name.EqualsIgnoreCase("AST");
 
         private void Button_Cancel_Click(object sender, RoutedEventArgs e)
         {
