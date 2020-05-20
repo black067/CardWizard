@@ -395,9 +395,10 @@ namespace CardWizard.View
         {
             if (!string.IsNullOrEmpty(obj))
             {
-                if (!string.IsNullOrEmpty(Window.Logger.Text)) Window.Logger.AppendText("\n");
-                Window.Logger.AppendText(obj.Trim());
-                Window.Logger.ScrollToEnd();
+                var control = Window.Logger;
+                if (!string.IsNullOrEmpty(control.Text)) control.AppendText("\n");
+                control.AppendText(obj.Trim());
+                control.ScrollToEnd();
             }
             Messenger.Dequeue();
         }
@@ -611,13 +612,9 @@ namespace CardWizard.View
                 seg = seg.Replace($"${kvp.Key}", (properties.TryGetValue(kvp.Key, out int v) ? v : 0).ToString());
             }
 
-            matches = Regex.Matches(seg, @"\$C\b");
-            foreach (Match item in matches)
-            {
-                seg = seg.Replace(item.Value, $"{nameof(MainManager)}.{nameof(Current)}");
-            }
-            seg = $"return {seg}";
-            return seg;
+            seg = Regex.Replace(seg, @"\$C\b", $"{nameof(MainManager)}.{nameof(Current)}",
+                                RegexOptions.Multiline);
+            return $"return {seg}";
         }
 
         /// <summary>

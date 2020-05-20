@@ -46,6 +46,14 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        <!--定义 TextBlock 的样式-->
+        <Style x:Key="GeneralTextBlock" TargetType="TextBlock">
+            <Setter Property="Margin" Value="2,2,2,2"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Cursor" Value="IBeam"/>
+            <Setter Property="TextWrapping" Value="WrapWithOverflow"/>
+        </Style>
         <!-- 定义 TextBox 的 Placeholder 样式 -->
         <Style x:Key="TextField" TargetType="TextBox">
             <Style.Resources>
@@ -99,50 +107,5 @@
             <Setter Property="Margin" Value="2,2,2,2"/>
         </Style>
 
-        <!-- Label_Title 的自定义样式 -->
-        <Style x:Key="Label_Title" TargetType="Label">
-            <Setter Property="Foreground" Value="{DynamicResource ButtonForeground}"/>
-            <Setter Property="Height" Value="30"/>
-            <Setter Property="HorizontalContentAlignment" Value="Center"/>
-            <Setter Property="VerticalContentAlignment" Value="Center"/>
-        </Style>
-        
-        <!-- Label_Title 的自定义样式 -->
-        <Style x:Key="Label_Data" TargetType="Label">
-            <Setter Property="Height" Value="30"/>
-            <Setter Property="HorizontalContentAlignment" Value="Center"/>
-            <Setter Property="VerticalContentAlignment" Value="Center"/>
-        </Style>
-        
-        <!-- DataGridColumnHeader 的自定义样式 -->
-        <Style x:Key="DataGridColumnHeader_Custom" TargetType="DataGridColumnHeader">
-            <Setter Property="Background" Value="{DynamicResource MenuBackground}"/>
-            <Setter Property="Foreground" Value="{DynamicResource ButtonForeground}"/>
-            <Setter Property="Height" Value="30"/>
-            <Setter Property="HorizontalContentAlignment" Value="Center"/>
-        </Style>
-        <!-- DataGridRow 的自定义样式 -->
-        <Style x:Key="DataGridRow_Custom" TargetType="DataGridRow">
-            <Setter Property="HorizontalContentAlignment" Value="Center"/>
-            <Setter Property="VerticalContentAlignment" Value="Center"/>
-        </Style>
-        <!-- DataGridCell 的自定义样式 -->
-        <Style x:Key="DataGridCell_Custom" TargetType="DataGridCell">
-            <Setter Property="HorizontalContentAlignment" Value="Center"/>
-            <Setter Property="VerticalContentAlignment" Value="Center"/>
-        </Style>
-        <!-- DataGrid 的自定义样式 -->
-        <Style x:Key="DataGrid_Custom" TargetType="DataGrid">
-            <Setter Property="ColumnHeaderStyle" Value="{DynamicResource DataGridColumnHeader_Custom}"/>
-            <Setter Property="CellStyle" Value="{DynamicResource DataGridCell_Custom}"/>
-            <Setter Property="RowStyle" Value="{DynamicResource DataGridRow_Custom}"/>
-            <Setter Property="CanUserDeleteRows" Value="False"/>
-            <Setter Property="CanUserAddRows" Value="False"/>
-            <Setter Property="CanUserResizeRows" Value="False"/>
-            <Setter Property="CanUserSortColumns" Value="False"/>
-            <Setter Property="CanUserResizeColumns" Value="False"/>
-            <Setter Property="MinColumnWidth" Value="50"/>
-            <Setter Property="MinRowHeight" Value="30"/>
-        </Style>
     </Application.Resources>
 </Application>

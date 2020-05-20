@@ -11,21 +11,10 @@
         MinHeight="720" MinWidth="800"
         FontFamily="Consolas" 
         Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" Cursor="Arrow">
-    <Grid x:Name="MainGrid">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="30"/>
-            <RowDefinition/>
-            <RowDefinition Height="60" MinHeight="60">
-            </RowDefinition>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="128"/>
-            <ColumnDefinition/>
-        </Grid.ColumnDefinitions>
+    <DockPanel x:Name="MainDock">
         <!--菜单栏-->
         <Grid x:Name="MenuBar" 
-                Grid.ColumnSpan="{Binding ColumnDefinitions.Count, ElementName=MainGrid, Mode=OneWay}" 
-                Background="{DynamicResource MenuBackground}">
+                Background="{DynamicResource MenuBackground}" DockPanel.Dock="Top">
             <Grid.RowDefinitions>
                 <RowDefinition Height="30"/>
             </Grid.RowDefinitions>
@@ -62,27 +51,28 @@
                     BorderBrush="Transparent"/>
         </Grid>
         <!--日志输出窗口-->
-        <TextBox x:Name="Logger" 
-                HorizontalAlignment="Stretch" 
-                Grid.Row="2" 
-                TextWrapping="NoWrap" 
-                VerticalAlignment="Stretch" 
-                BorderBrush="{x:Null}" 
-                Margin="2,2,2,2"
-                Grid.ColumnSpan="{Binding ColumnDefinitions.Count, ElementName=MainGrid, Mode=OneWay}" 
-                Background="Transparent" 
-                VerticalContentAlignment="Bottom" 
-                MaxLines="100" 
-                IsReadOnly="True" 
-                IsUndoEnabled="False" 
-                Cursor="IBeam" 
-                SelectionOpacity="2" 
-                VerticalScrollBarVisibility="Auto" Foreground="{DynamicResource PlaceholderForeground}" BorderThickness="0,0,0,0" UndoLimit="0" IsTabStop="False" AllowDrop="False" />
-        <GridSplitter Grid.Row="2" Grid.ColumnSpan="3" VerticalAlignment="Top" HorizontalAlignment="Stretch" RenderTransformOrigin="0.5,0.5" Height="5"/>
+        <Grid DockPanel.Dock="Bottom">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <GridSplitter VerticalAlignment="Top" HorizontalAlignment="Stretch" Height="5" />
+            <TextBox x:Name="Logger" Height="60"
+                 TextWrapping="NoWrap" 
+                 HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                 VerticalContentAlignment="Bottom" 
+                 Margin="2,2,2,2" BorderThickness="0,0,0,0"
+                 BorderBrush="{x:Null}" 
+                 Background="Transparent" Foreground="{DynamicResource PlaceholderForeground}"
+                 MaxLines="100" IsReadOnly="True" IsUndoEnabled="False" Cursor="IBeam"
+                 VerticalScrollBarVisibility="Auto" IsTabStop="False" AllowDrop="False" DockPanel.Dock="Bottom"/>
+        </Grid>
         <!--左侧角色卡牌选择栏的显示-->
-        <ListBox x:Name="List_Cards" Grid.Row="1" 
+        <ListBox x:Name="List_Cards" Width="128"
                  Background="{DynamicResource ButtonBackground}" 
-                 Foreground="{DynamicResource ButtonForeground}" 
+                 Foreground="{DynamicResource MenuBackground}" 
                  BorderBrush="Transparent">
             <ListBox.ItemTemplate>
                 <DataTemplate>
@@ -92,7 +82,7 @@
             <!--<ListBoxItem>Casasd</ListBoxItem>-->
         </ListBox>
         <!--角色数据-->
-        <ScrollViewer x:Name="InvestigatorScrollViewer" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2">
+        <ScrollViewer x:Name="InvestigatorScrollViewer">
             <Viewbox x:Name="InvestigatorViewBox" HorizontalAlignment="Left" VerticalAlignment="Top">
                 <Grid x:Name="InvestigatorView" x:FieldModifier="public">
                     <Grid.RowDefinitions>
@@ -231,9 +221,11 @@
                            Grid.Row="29" Grid.Column="0" Grid.ColumnSpan="2" 
                            Foreground="{DynamicResource PlaceholderForeground}" 
                            HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
-                           HorizontalContentAlignment="Right" VerticalContentAlignment="Center" />
+                           HorizontalContentAlignment="Right" VerticalContentAlignment="Center"/>
+                    <cview:TraitBox Grid.RowSpan="3" Margin="35,0,35,18" Grid.Row="14" Foreground="{DynamicResource MenuBackground}" Grid.Column="1" 
+                                    Height="72" Width="180"/>
                 </Grid>
             </Viewbox>
         </ScrollViewer>
-    </Grid>
+    </DockPanel>
 </Window>

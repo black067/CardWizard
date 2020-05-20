@@ -147,7 +147,7 @@ namespace CardWizard.View
                         var key = box.DataContext.ToString();
                         box.Text = Manager.Current.GetTraitText(key);
                     };
-                    box.LostFocus += (o, e) => EndEditTraitBox(box);
+                    box.LostFocus += EndEditTraitBox;
                     Manager.InfoUpdating += c =>
                     {
                         var key = box.DataContext.ToString();
@@ -157,11 +157,11 @@ namespace CardWizard.View
                     Children.Add(keys[i], box);
                 }
             }
-            Manager.TraitChanged += C_TraitChanged;
+            Manager.TraitChanged += CurrentTraitChanged;
             CleanExcessColumns(keys.Length);
         }
 
-        private void C_TraitChanged(Character character, TraitChangedEventArgs e)
+        private void CurrentTraitChanged(Character character, TraitChangedEventArgs e)
         {
             var eKey = e.Key;
             if (Children.ContainsKey(eKey))
@@ -171,7 +171,9 @@ namespace CardWizard.View
             // 如果当前修改的是基础属性值, 检查是否需要更新派生属性值
             if (Manager.Config.BaseModelDict.TryGetValue(eKey, out var basemodel) && !basemodel.Derived)
             {
-                var models = from m in Manager.Config.DataModels where m.Derived && m.Formula.Contains(basemodel.Name, StringComparison.OrdinalIgnoreCase) select m;
+                var models = from m in Manager.Config.DataModels 
+                             where m.Derived && m.Formula.Contains(basemodel.Name, StringComparison.OrdinalIgnoreCase) 
+                             select m;
                 foreach (var m in models)
                 {
                     var cKey = m.Name;
@@ -189,18 +191,21 @@ namespace CardWizard.View
         /// 结束编辑时触发的事件
         /// </summary>
         /// <param name="box"></param>
-        private void EndEditTraitBox(TextBox box)
+        private void EndEditTraitBox(object o, RoutedEventArgs e)
         {
-            // box 的 DataContext 保存了特点名称
-            var key = box.DataContext.ToString();
-            // 基础属性值才可以被修改
-            (_, int growth, int adjustment) = Character.SplitTraitText(box.Text);
-            Manager.Current.SetTraitGrowth(key, growth);
-            Manager.Current.SetTraitAdjustment(key, adjustment);
-            UpdateBoxText(box, key, Manager.Current);
-            // 编辑完毕后, 还要更新角色的属性总计与伤害奖励的数据
-            Manager.UpdateSumOfBaseTraits(Manager.Current);
-            Manager.UpdateDamageBonus(Manager.Current);
+            if (o is TextBox box)
+            {
+                // box 的 DataContext 保存了特点名称
+                var key = box.DataContext.ToString();
+                // 基础属性值才可以被修改
+                (_, int growth, int adjustment) = Character.SplitTraitText(box.Text);
+                Manager.Current.SetTraitGrowth(key, growth);
+                Manager.Current.SetTraitAdjustment(key, adjustment);
+                UpdateBoxText(box, key, Manager.Current);
+                // 编辑完毕后, 还要更新角色的属性总计与伤害奖励的数据
+                Manager.UpdateSumOfBaseTraits(Manager.Current);
+                Manager.UpdateDamageBonus(Manager.Current);
+            }
         }
 
         /// <summary>

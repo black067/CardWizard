@@ -25,7 +25,7 @@
         <Border x:Name="border" Background="{DynamicResource MenuBackground}" Grid.ColumnSpan="{Binding ColumnDefinitions.Count, ElementName=MainGrid, Mode=OneWay}" />
         <local:TraitsViewItem x:Name="Headers"
                              Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="4"
-                             Background="{DynamicResource MenuBackground}" Foreground="White" Margin="5,0,5,0"/>
+                             Background="{DynamicResource MenuBackground}" Foreground="White" Margin="5,1,5,1"/>
         <ListBox x:Name="ListMain"
                  Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="4"
                  Background="{x:Null}" BorderBrush="{x:Null}" HorizontalContentAlignment="Stretch">

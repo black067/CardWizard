@@ -20,7 +20,7 @@ namespace CallOfCthulhu
         /// <summary>
         /// 新的特点基础值
         /// </summary>
-        public int NewBase { get; set; }
+        public int NewInitial { get; set; }
 
         /// <summary>
         /// 新的特点成长值
