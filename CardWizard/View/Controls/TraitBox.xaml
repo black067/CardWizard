@@ -17,7 +17,6 @@
             <Setter Property="InputScope" Value="Number"/>
             <Setter Property="MaxLength"  Value="4"/>
         </Style>
-        <SolidColorBrush x:Key="BorderBackground" Color="Transparent"/>
     </UserControl.Resources>
     <Grid x:Name="MainGrid">
         <Grid.ColumnDefinitions>
@@ -29,6 +28,9 @@
             <RowDefinition/>
             <RowDefinition/>
         </Grid.RowDefinitions>
+        <Grid.Resources>
+            <SolidColorBrush x:Key="BorderBackground" Color="Transparent"/>
+        </Grid.Resources>
         <Border Grid.Column="1" Grid.RowSpan="2" 
                 BorderBrush="{DynamicResource MenuBackground}" BorderThickness="2,2,1,2" Background="{DynamicResource BorderBackground}"/>
         <Border Grid.Column="2" CornerRadius="0,10,0,0" 
@@ -57,17 +59,20 @@
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
+            <Grid.Resources>
+                <Thickness x:Key="XLabelPadding">0,0,0,0</Thickness>
+            </Grid.Resources>
             <Label x:Name="Label_Initial" Tag="Initial" 
-                   Content="I"
-                   Style="{DynamicResource XLabel}" FontSize="6" Grid.Row="0" Margin="0,0,0,0"/>
+                   Content="初始值"
+                   Style="{DynamicResource XLabel}" FontSize="10" Grid.Row="0" Margin="0,0,0,0" Padding="{DynamicResource XLabelPadding}"/>
             <Label x:Name="Label_Adjustment" Tag="Adjustment" 
-                   Content="A" Grid.Row="1"
+                   Content="调整值" Grid.Row="1"
                    Style="{DynamicResource XLabel}" 
-                   FontSize="{Binding FontSize, ElementName=Label_Initial}" Margin="{Binding Margin, ElementName=Label_Initial}"/>
+                   FontSize="{Binding FontSize, ElementName=Label_Initial}" Margin="{Binding Margin, ElementName=Label_Initial}" Padding="{DynamicResource XLabelPadding}"/>
             <Label x:Name="Label_Growth" Tag="Growth" 
-                   Content="G" Grid.Row="2"
+                   Content="成长值" Grid.Row="2"
                    Style="{DynamicResource XLabel}"  
-                   FontSize="{Binding FontSize, ElementName=Label_Initial}" Margin="{Binding Margin, ElementName=Label_Initial}"/>
+                   FontSize="{Binding FontSize, ElementName=Label_Initial}" Margin="{Binding Margin, ElementName=Label_Initial}" Padding="{DynamicResource XLabelPadding}"/>
             <TextBox x:Name="Text_Initial" Style="{DynamicResource XInput}" Grid.Column="1">100</TextBox>
             <TextBox x:Name="Text_Adjustment" Style="{DynamicResource XInput}" Grid.Row="1" Grid.Column="1">100</TextBox>
             <TextBox x:Name="Text_Growth" Style="{DynamicResource XInput}" Grid.Row="2" Grid.Column="1">100</TextBox>
