@@ -22,6 +22,11 @@
             <Setter Property="Foreground" Value="Gray"/>
             <Setter Property="Cursor" Value="Arrow"/>
         </Style>
+        <Style x:Key="ComboGenceral" TargetType="ComboBox">
+            <Setter Property="Background" Value="WhiteSmoke"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource MenuBackground}"/>
+        </Style>
         <!-- 定义 Button 的样式 -->
         <Style x:Key="XButtonStyle" TargetType="Button">
             <Setter Property="Foreground" Value="White"/>
@@ -48,10 +53,8 @@
         </Style>
         <!--定义 TextBlock 的样式-->
         <Style x:Key="GeneralTextBlock" TargetType="TextBlock">
-            <Setter Property="Margin" Value="2,2,2,2"/>
             <Setter Property="HorizontalAlignment" Value="Center"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
-            <Setter Property="Cursor" Value="IBeam"/>
             <Setter Property="TextWrapping" Value="WrapWithOverflow"/>
         </Style>
         <!-- 定义 TextBox 的 Placeholder 样式 -->
@@ -95,16 +98,6 @@
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
             <Setter Property="HorizontalAlignment" Value="Left"/>
-        </Style>
-
-        <!-- TextBox_Readonly 的自定义样式 -->
-        <Style x:Key="TextBox_Readonly" TargetType="TextBox">
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Foreground" Value="{DynamicResource PlaceholderForeground}"/>
-            <Setter Property="BorderBrush" Value="Transparent"/>
-            <Setter Property="HorizontalContentAlignment" Value="Center"/>
-            <Setter Property="VerticalContentAlignment" Value="Center"/>
-            <Setter Property="Margin" Value="2,2,2,2"/>
         </Style>
 
     </Application.Resources>

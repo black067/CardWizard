@@ -92,7 +92,7 @@ namespace CardWizard.View
         /// <summary>
         /// 角色的属性值被改变时, 触发的事件
         /// </summary>
-        public event Action<Character, TraitChangedEventArgs> TraitChanged;
+        public event TraitChangedEventHandler TraitChanged;
 
         /// <summary>
         /// 对事件的包装
@@ -194,31 +194,27 @@ namespace CardWizard.View
             Window.Button_Debug.Click += Button_Debug_Click;
             Window.Button_SavePic.Click += Button_SavePic_Click;
             InitAsCardList(Window.List_Cards);
-            // 角色基本信息的控制
-            Window.InfoPanel.InitializeBinding(this);
-            // 重生成角色属性的按钮
+            // 角色基本信息面板的初始化
+            Window.Backstory.InitializeBinding(this);
+            // 属性重生成按钮
             Window.Button_Regenerate.Click += GetHandlerForReGenerateTraits(() => Current);
-            //// 角色属性的显示
-            //Window.BaseTraits_Headers.InitAsHeaders(from d in Config.DataModels where !d.Derived select d.Name, Translator);
-            //Window.DerivedTraits_Headers.InitAsHeaders(from d in Config.DataModels where d.Derived select d.Name, Translator);
-            //// 在更新角色信息后, 要刷新以下控件的显示状态
-            //Window.BaseTraits_Values.BindTraits(this, false);
-            //Window.DerivedTraits_Values.BindTraits(this, true);
-            var traitBoxes = new List<TraitBox>();
-            foreach (var item in Window.TraitsView.Children)
-            {
-                if (item is TraitBox box) traitBoxes.Add(box);
-            }
-            for (int i = 0, len = Math.Min(traitBoxes.Count, Config.DataModels.Count); i < len; i++)
-            {
-                var traitBox = traitBoxes[i];
-                var model = Config.DataModels[i];
-                var iTraitChanged = traitBox.BindToTrait(model.Name, OnTraitBoxEndEdit);
-                TraitChanged += iTraitChanged;
-                iTraitChanged.Invoke(Current, new TraitChangedEventArgs(model.Name));
-            }
+            HideOnCapturePic.Add(Window.Button_Regenerate);
             // 角色总属性的显示
+            void UpdateSumOfBaseTraits(Character c)
+            {
+                if (c == null) return;
+                Window.Value_Sum_Base_Traits.Content = SumTraits(c, d => !d.Derived);
+            }
             InfoUpdated += UpdateSumOfBaseTraits;
+
+            // 角色属性数值面板初始化
+            var traitBoxes = from UIElement c in Window.TraitsGrid.Children where c is TraitBox select c as TraitBox;
+            foreach (var box in traitBoxes)
+            {
+                var iTraitChanged = box.BindToTraitByTag(OnTraitBoxEndEdit);
+                TraitChanged += iTraitChanged;
+                iTraitChanged.Invoke(Current, new TraitChangedEventArgs(box.Key));
+            }
             // 角色伤害奖励的控制
             InfoUpdated += UpdateDamageBonus;
             // 绑定事件: 点击骰一次按钮时触发
@@ -229,6 +225,8 @@ namespace CardWizard.View
                 var result = CalcTrait(null, formula);
                 Messenger.EnqueueFormat(message, Window.Value_DamageBonus.Content, result);
             };
+            HideOnCapturePic.Add(Window.Button_Roll_DMGBonus);
+            // 头像绑定事件: 点击时可以选择图片导入
             Window.Image_Avatar.Process(image =>
             {
                 InfoUpdating += c => AvatarUpdate(c, image);
@@ -241,6 +239,8 @@ namespace CardWizard.View
             LuaHub.DoFile(Paths.ScriptStartup, isGlobal: true);
             // 对界面进行本地化
             Localize(Window, Translator);
+            // 垃圾回收
+            GC.Collect();
         }
 
         #region Button Click Handler
@@ -290,15 +290,26 @@ namespace CardWizard.View
         }
 
         /// <summary>
+        /// 在生成调查员图像文档时需要隐藏的控件
+        /// </summary>
+        public List<UIElement> HideOnCapturePic { get; set; } = new List<UIElement>();
+
+        /// <summary>
         /// 生成图片时的操作
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void Button_SavePic_Click(object sender, RoutedEventArgs e)
         {
-            Window.Button_Regenerate.Visibility = Visibility.Hidden;
-            Window.Button_Roll_DMGBonus.Visibility = Visibility.Hidden;
+            // 开始截屏前先缓存并更改部分元素的状态
+            var cacheVisibility = new Dictionary<UIElement, Visibility>();
+            foreach (var item in HideOnCapturePic)
+            {
+                cacheVisibility.Add(item, item.Visibility);
+                item.Visibility = Visibility.Hidden;
+            }
             var bg = Window.InvestigatorView.Background;
+            // 开始截屏
             Window.InvestigatorView.Process(source =>
             {
                 var c = (Color)ColorConverter.ConvertFromString(Config.PrintSettings_BackgroundColor);
@@ -316,9 +327,12 @@ namespace CardWizard.View
                 UIExtension.CapturePng(source, dest, (int)tWidth, (int)tHeight, tDpi, tDpi);
                 Messenger.EnqueueFormat(Translator.Translate("Message.Character.SavedPic", "Saved at {0}"), dest.Replace("\\", "/"));
             });
+            // 将被更改的元素还原
             Window.InvestigatorView.Background = bg;
-            Window.Button_Regenerate.Visibility = Visibility.Visible;
-            Window.Button_Roll_DMGBonus.Visibility = Visibility.Visible;
+            foreach (var kvp in cacheVisibility)
+            {
+                kvp.Key.Visibility = kvp.Value;
+            }
         }
 
         /// <summary>
@@ -467,7 +481,7 @@ namespace CardWizard.View
                     {
                         image.ToolTip = text;
                     }
-                    if (element is ContentControl childContainer)
+                    if (element is ContentControl childContainer && !(element is TraitBox))
                     {
                         childContainer.Content = text;
                     }
@@ -568,16 +582,6 @@ namespace CardWizard.View
         /// 刷新角色的基础属性统计标签
         /// </summary>
         /// <param name="c"></param>
-        public void UpdateSumOfBaseTraits(Character c)
-        {
-            if (c == null) return;
-            Window.Value_Sum_Base_Traits.Content = SumTraits(c, d => !d.Derived);
-        }
-
-        /// <summary>
-        /// 刷新角色的基础属性统计标签
-        /// </summary>
-        /// <param name="c"></param>
         public void UpdateDamageBonus(Character c)
         {
             if (c == null) return;
@@ -590,7 +594,7 @@ namespace CardWizard.View
         /// </summary>
         /// <param name="getter"></param>
         /// <returns></returns>
-        private RoutedEventHandler GetHandlerForReGenerateTraits(Func<Character> getter)
+        public RoutedEventHandler GetHandlerForReGenerateTraits(Func<Character> getter)
         {
             void regenerateprops(object o, RoutedEventArgs e)
             {

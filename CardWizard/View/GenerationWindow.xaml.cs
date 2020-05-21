@@ -31,11 +31,6 @@ namespace CardWizard.View
         public Dictionary<string, int> Selection { get; set; }
 
         /// <summary>
-        /// 年龄带来的属性变动显示在此处
-        /// </summary>
-        public TraitsViewItem Age_Penalty_Row;
-
-        /// <summary>
         /// 
         /// </summary>
         /// <param name="manager"></param>
@@ -81,18 +76,11 @@ namespace CardWizard.View
             {
                 if (item is TraitsViewItem listItem)
                 {
-                    if (listItem.Tag?.ToString() != "Age.Penalty")
-                    {
-                        items.Add(listItem);
-                    }
-                    else
-                    {
-                        Age_Penalty_Row = listItem;
-                    }
+                    items.Add(listItem);
                 }
             }
             // 初始化年龄惩罚的显示列
-            InitAgePenaltyRow(Age_Penalty_Row);
+            InitAgePenaltyBlock();
             // 生成几组角色的属性
             var datas = dataModels.ToDictionary(m => m.Name);
             for (int i = items.Count - 1; i >= 0; i--)
@@ -117,11 +105,10 @@ namespace CardWizard.View
         /// 初始化年龄惩罚列
         /// </summary>
         /// <param name="traitsView"></param>
-        private void InitAgePenaltyRow(TraitsViewItem traitsView)
+        private void InitAgePenaltyBlock()
         {
-            traitsView.InitAsHeaders( new string[] {
-                "年龄惩罚",
-            }, null);
+            // TODO 撰写年龄的输入框逻辑
+            AgeSettings.Visibility = Visibility.Hidden;
         }
 
         /// <summary>

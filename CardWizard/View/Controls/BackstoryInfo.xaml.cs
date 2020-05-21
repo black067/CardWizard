@@ -44,6 +44,7 @@ namespace CardWizard.View
         {
             if (manager == null) throw new NullReferenceException();
             Manager = manager;
+            var translator = Manager.Translator;
             // 角色名称的控制
             BindTextBox(Text_Name, nameof(Character.Name), Manager);
             // 角色时代背景的控制
@@ -52,19 +53,19 @@ namespace CardWizard.View
                 var binding = new Binding(nameof(Character.Era)) { Source = c };
                 Combo_Era.SetBinding(ComboBox.SelectedValueProperty, binding);
             };
-            Combo_Era.ItemsSource = Manager.Translator.labelForEras;
+            Combo_Era.ItemsSource = translator.labelForEras;
             // 角色年龄的显示
             BindTextBox(Text_Age, nameof(Character.Age), Manager);
-            ValidText = Manager.Translator.Translate("Valid", "✔");
-            InvalidText = Manager.Translator.Translate("Invalid", "❌");
+            ValidText = translator.Translate("Valid", "✔");
+            InvalidText = translator.Translate("Invalid", "❌");
             // 角色出生地的控制
             BindTextBox(Text_Homeland, nameof(Character.Homeland), Manager);
             // 角色学历的控制
             BindTextBox(Text_Education, nameof(Character.Education), Manager);
             // 角色性别的控制
-            var gender_male = manager.Translator.Translate("Gender.Male", "Male");
-            var gender_female = manager.Translator.Translate("Gender.Female", "Female");
-            var gender_others = manager.Translator.Translate("Gender.Others", "Others");
+            var gender_male = translator.Translate("Gender.Male", "Male");
+            var gender_female = translator.Translate("Gender.Female", "Female");
+            var gender_others = translator.Translate("Gender.Others", "Others");
             Combo_Gender.ItemsSource = new string[] { gender_male, gender_female, gender_others };
             Manager.InfoUpdating += c =>
             {
@@ -120,7 +121,7 @@ namespace CardWizard.View
             }
             if (bonus.TryGetValue("Adjustment", out int adjustment))
             {
-
+                Manager.Current.SetTraitAdjustment("EDU", adjustment);
             }
         }
 

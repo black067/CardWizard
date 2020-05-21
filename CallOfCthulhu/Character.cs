@@ -312,7 +312,7 @@ namespace CallOfCthulhu
         /// <summary>
         /// 角色的特点数值发生改变时, 触发的事件
         /// </summary>
-        public event Action<Character, TraitChangedEventArgs> TraitChanged;
+        public event TraitChangedEventHandler TraitChanged;
 
         /// <summary>
         /// 更新角色信息
@@ -347,6 +347,7 @@ namespace CallOfCthulhu
             var character = new Character()
             {
                 Traits = new Dictionary<string, int>(),
+                Age = 24,
             };
             if (baseModelDict != null)
             {
@@ -361,4 +362,12 @@ namespace CallOfCthulhu
             return character;
         }
     }
+
+    /// <summary>
+    /// 委托: 可绑定到 <see cref="Character.TraitChanged"/> 事件上, 用于监听角色属性数值的变化
+    /// </summary>
+    /// <param name="character"></param>
+    /// <param name="args"></param>
+    public delegate void TraitChangedEventHandler(Character character, TraitChangedEventArgs args);
+
 }

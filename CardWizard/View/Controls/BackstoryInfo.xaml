@@ -5,8 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CardWizard.View"
              mc:Ignorable="d" 
-             d:DesignHeight="210" d:DesignWidth="280">
-    
+             d:DesignHeight="240" d:DesignWidth="280">
     <Grid x:Name="MainGrid">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="96"/>
@@ -22,6 +21,7 @@
             <RowDefinition/>
             <RowDefinition/>
             <RowDefinition/>
+            <!--<RowDefinition/>-->
         </Grid.RowDefinitions>
         <!--时代-->
         <Label x:Name="Label_Era" 
@@ -32,8 +32,9 @@
                   FontSize="14"
                   Margin="{Binding Margin, ElementName=Label_Era}"
                   Grid.Column="1" Grid.ColumnSpan="3"
-                  HorizontalContentAlignment="Left" VerticalContentAlignment="Center" 
-                  Background="White"/>
+                  HorizontalContentAlignment="Left" VerticalContentAlignment="Center" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                  BorderBrush="{DynamicResource MenuBackground}" Background="White">
+        </ComboBox>
         <!--姓名-->
         <Label x:Name="Label_Name" 
                Content="Name" 

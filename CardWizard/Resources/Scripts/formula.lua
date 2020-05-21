@@ -47,6 +47,7 @@ MOV 的值还与年龄有关:
 
 --- 计算 MOV 的值
 function GetMOV(character)
+	if character == nil then return 5 end
 	local SIZ = character:GetTraitInitial('SIZ')
 	local DEX = character:GetTraitInitial('DEX')
 	local STR = character:GetTraitInitial('STR')
@@ -107,7 +108,7 @@ function AgeBonus(eduBase, age, minAge)
 	local ageBonus =  math.floor(delta / 10)
 	bonus['EDU'] = ageBonus
 	bonus['OccupationPoints'] = ageBonus
-	-- 计算衰老惩罚
+	-- 计算调整值
 	bonus['Adjustment'] = 0
 	local deltaForPenalty = age - 40
 	if deltaForPenalty >= 0 then

@@ -25,37 +25,7 @@ namespace CardWizard.View
     public partial class TraitBox : UserControl
     {
         private readonly TextBox[] texts;
-/*
-        public static readonly DependencyProperty TitleProperty
-            = DependencyProperty.RegisterAttached("Title",
-                                                  typeof(string),
-                                                  typeof(TraitBox),
-                                                  new PropertyMetadata("属性\nProp"),
-                                                  new ValidateValueCallback(o => o != null));
 
-        public static void SetTitle(UIElement element, string value)
-        {
-            if (element is TraitBox box)
-            {
-                box.Block_Key.Text = value;
-            }
-            element?.SetValue(TitleProperty, value);
-        }
-
-        public static string GetTitle(UIElement element)
-        {
-            return element?.GetValue(TitleProperty)?.ToString();
-        }
-
-        /// <summary>
-        /// 标题
-        /// </summary>
-        public string Title
-        {
-            get => GetTitle(this);
-            set => SetTitle(this, value);
-        }
-*/
         /// <summary>
         /// 与之绑定的属性名称
         /// </summary>
@@ -115,9 +85,14 @@ namespace CardWizard.View
         private bool IsEditing { get; set; }
 
         /// <summary>
+        /// 用户是否可以编辑
+        /// </summary>
+        public bool IsReadOnly { get; set; }
+
+        /// <summary>
         /// 结束输入时触发的事件
         /// </summary>
-        public event Action<Trait.Segment, string, int> InputFieldEndEdit;
+        public event EndEditBoxEventHandler InputFieldEndEdit;
 
         /// <summary>
         /// Constructor
@@ -135,6 +110,7 @@ namespace CardWizard.View
                 box.LostFocus += InputField_LostFocus;
             }
             UpdateValueView();
+            IsReadOnly = false;
         }
 
         private void InputField_GotFocus(object sender, RoutedEventArgs _)
@@ -161,6 +137,7 @@ namespace CardWizard.View
 
         private void TraitBox_ShowEditBoxes(object sender, EventArgs _)
         {
+            if (IsReadOnly) { return; }
             EditGrid.Visibility = Visibility.Visible;
             Label_Value.Visibility = Visibility.Hidden;
         }
@@ -191,10 +168,10 @@ namespace CardWizard.View
         /// </summary>
         /// <param name="key"></param>
         /// <param name="targetGetter"></param>
-        public Action<Character, TraitChangedEventArgs> BindToTrait(string key, Action<Trait.Segment, string, int> onEndEdit)
+        public TraitChangedEventHandler BindToTrait(string key, EndEditBoxEventHandler onEndEdit)
         {
             Key = key;
-            Block_Key.SetValue(TagProperty, $"{key}.TraitBox");
+            Block_Key.SetValue(TagProperty, $"{Key}.TraitBox");
             InputFieldEndEdit += onEndEdit;
             void ITraitChanged(Character c, TraitChangedEventArgs e)
             {
@@ -207,5 +184,24 @@ namespace CardWizard.View
             }
             return ITraitChanged;
         }
+
+        /// <summary>
+        /// 根据自身的 <see cref="TraitBox.Tag"/>, 绑定到指定的属性
+        /// </summary>
+        /// <param name="onEndEdit"></param>
+        /// <returns></returns>
+        public TraitChangedEventHandler BindToTraitByTag(EndEditBoxEventHandler onEndEdit)
+        {
+            var tag = Tag?.ToString();
+            return BindToTrait(tag, onEndEdit);
+        }
     }
+
+    /// <summary>
+    /// 委托: 可绑定到 <see cref="TraitBox.InputFieldEndEdit"/> 结束编辑的事件
+    /// </summary>
+    /// <param name="segment"></param>
+    /// <param name="traitName"></param>
+    /// <param name="value"></param>
+    public delegate void EndEditBoxEventHandler(Trait.Segment segment, string traitName, int value);
 }

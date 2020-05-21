@@ -5,12 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CardWizard.View"
         mc:Ignorable="d"
-        Title="ListWindow" MinWidth="660" MinHeight="420" FontFamily="Consolas">
+        Title="ListWindow" MinWidth="660" d:DesignHeight="380" FontFamily="Consolas">
     <Grid x:Name="MainGrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
             <RowDefinition/>
-            <RowDefinition Height="60"/>
+            <RowDefinition Height="64"/>
             <RowDefinition Height="60"/>
             <RowDefinition Height="10"/>
         </Grid.RowDefinitions>
@@ -34,27 +34,27 @@
             <local:TraitsViewItem Height="{Binding ActualHeight, ElementName=border, Mode=OneWay}"/>
             <local:TraitsViewItem Height="{Binding ActualHeight, ElementName=border, Mode=OneWay}"/>
             <local:TraitsViewItem Height="{Binding ActualHeight, ElementName=border, Mode=OneWay}"/>
-            <local:TraitsViewItem Height="{Binding ActualHeight, ElementName=border, Mode=OneWay}" Tag="Age.Penalty"/>
         </ListBox>
         <Grid x:Name="AgeSettings"
               Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="4">
             <Grid.RowDefinitions>
                 <RowDefinition/>
-                <RowDefinition/>
+                <RowDefinition Height="32"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
                 <ColumnDefinition/>
                 <ColumnDefinition Width="80"/>
                 <ColumnDefinition x:Name="last" Width="80"/>
             </Grid.ColumnDefinitions>
+            <TextBlock x:Name="Block_AgeBonus" Grid.ColumnSpan="99">
+                
+            </TextBlock>
             <Label x:Name="Label_Age" Tag="Age"
-               Grid.Row="1" Grid.Column= "3"
+               Grid.Row="99" Grid.Column= "1"
                Style="{DynamicResource XLabel}"
                Content="年龄"/>
             <TextBox x:Name="Text_Age" 
-                     Grid.Row="1" Grid.Column="4"
+                     Grid.Row="99" Grid.Column="99"
                      InputScope="Number"
                      Style="{DynamicResource TextField}" Cursor="IBeam">
             </TextBox>
