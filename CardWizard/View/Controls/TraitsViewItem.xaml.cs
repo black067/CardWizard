@@ -24,13 +24,13 @@ namespace CardWizard.View
         /// 此控件管理的所有 <see cref="TextBox"/>
         /// </summary>
         public Dictionary<string, TextBox> Children { get; private set; }
-
+/*
         /// <summary>
         /// 数据提示的显示格式
         /// </summary>
         private const string FORMAT_TOOLTIP = "{0} = {1}\n{2}\n{3}";
 
-        private string tooltipForTrait;
+        private string tooltipForTrait;*/
 
         /// <summary>
         /// 新建此控件
@@ -108,7 +108,7 @@ namespace CardWizard.View
         /// 作为属性面板显示时, 需要保存对 <see cref="MainManager"/> 的引用
         /// </summary>
         private MainManager Manager { get; set; }
-
+/*
         /// <summary>
         /// 刷新 <see cref="TextBox"/> 控件的 <see cref="TextBox.Text"/>
         /// </summary>
@@ -207,7 +207,7 @@ namespace CardWizard.View
                 Manager.UpdateDamageBonus(Manager.Current);
             }
         }
-
+*/
         /// <summary>
         /// 清理多余的列
         /// </summary>

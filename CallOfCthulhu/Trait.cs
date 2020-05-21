@@ -29,5 +29,24 @@
         /// 上限
         /// </summary>
         public int Upper { get => upper; set => upper = value; }
+
+        /// <summary>
+        /// 属性数值的段落
+        /// </summary>
+        public enum Segment
+        {
+            /// <summary>
+            /// 初始值/基础值
+            /// </summary>
+            INITIAL,
+            /// <summary>
+            /// 调整值
+            /// </summary>
+            ADJUSTMENT,
+            /// <summary>
+            /// 成长值
+            /// </summary>
+            GROWTH,
+        }
     }
 }

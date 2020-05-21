@@ -20,6 +20,7 @@ using System.Threading.Tasks;
 using CallOfCthulhu;
 using System.Collections.ObjectModel;
 using System.Windows.Data;
+using System.Windows.Documents;
 
 namespace CardWizard.View
 {
@@ -197,12 +198,25 @@ namespace CardWizard.View
             Window.InfoPanel.InitializeBinding(this);
             // 重生成角色属性的按钮
             Window.Button_Regenerate.Click += GetHandlerForReGenerateTraits(() => Current);
-            // 角色属性的显示
-            Window.BaseTraits_Headers.InitAsHeaders(from d in Config.DataModels where !d.Derived select d.Name, Translator);
-            Window.DerivedTraits_Headers.InitAsHeaders(from d in Config.DataModels where d.Derived select d.Name, Translator);
-            // 在更新角色信息后, 要刷新以下控件的显示状态
-            Window.BaseTraits_Values.BindTraits(this, false);
-            Window.DerivedTraits_Values.BindTraits(this, true);
+            //// 角色属性的显示
+            //Window.BaseTraits_Headers.InitAsHeaders(from d in Config.DataModels where !d.Derived select d.Name, Translator);
+            //Window.DerivedTraits_Headers.InitAsHeaders(from d in Config.DataModels where d.Derived select d.Name, Translator);
+            //// 在更新角色信息后, 要刷新以下控件的显示状态
+            //Window.BaseTraits_Values.BindTraits(this, false);
+            //Window.DerivedTraits_Values.BindTraits(this, true);
+            var traitBoxes = new List<TraitBox>();
+            foreach (var item in Window.TraitsView.Children)
+            {
+                if (item is TraitBox box) traitBoxes.Add(box);
+            }
+            for (int i = 0, len = Math.Min(traitBoxes.Count, Config.DataModels.Count); i < len; i++)
+            {
+                var traitBox = traitBoxes[i];
+                var model = Config.DataModels[i];
+                var iTraitChanged = traitBox.BindToTrait(model.Name, OnTraitBoxEndEdit);
+                TraitChanged += iTraitChanged;
+                iTraitChanged.Invoke(Current, new TraitChangedEventArgs(model.Name));
+            }
             // 角色总属性的显示
             InfoUpdated += UpdateSumOfBaseTraits;
             // 角色伤害奖励的控制
@@ -223,10 +237,10 @@ namespace CardWizard.View
             #endregion
             // 刷新界面
             OnInfoUpdate(Current);
-            // 对界面进行本地化
-            Localize(Window, Translator);
             // 如果存在启动脚本文件, 执行
             LuaHub.DoFile(Paths.ScriptStartup, isGlobal: true);
+            // 对界面进行本地化
+            Localize(Window, Translator);
         }
 
         #region Button Click Handler
@@ -436,43 +450,50 @@ namespace CardWizard.View
         /// <summary>
         /// 本地化控件及其子控件的文本
         /// </summary>
-        private static void Localize(ContentControl container,
-                                     Translator transdict,
-                                     Dictionary<string, ContentControl> histories = null)
+        private static void Localize(ContentControl container, Translator transdict,
+                                     HashSet<ContentControl> histories = null)
         {
-            if (histories == null)
+            if (histories == null) { histories = new HashSet<ContentControl>(); }
+            if (histories.Contains(container)) { return; }
+            else { histories.Add(container); }
+            var subElements = container.SelectAllSubElement();
+            var elements = from e in subElements where e is FrameworkElement select e as FrameworkElement;
+            foreach (var element in elements)
             {
-                histories = new Dictionary<string, ContentControl>();
-            }
-            if (histories.ContainsKey(container.Name)) { return; }
-            else { histories.Add(container.Name, container); }
-            var fields = container.GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Instance);
-            object fitem;
-            foreach (var field in fields)
-            {
-                fitem = field.GetValue(container);
-                if (fitem is FrameworkElement element)
+                var path = element.Tag?.ToString() ?? string.Empty;
+                if (transdict.TryTranslate(path, out var text))
                 {
-                    var path = element.Tag?.ToString() ?? string.Empty;
-                    if (transdict.TryTranslate(path, out var text))
+                    if (element is Image image)
                     {
-                        if (element is Image image)
+                        image.ToolTip = text;
+                    }
+                    if (element is ContentControl childContainer)
+                    {
+                        childContainer.Content = text;
+                    }
+                    if (element is TextBlock block)
+                    {
+                        block.Inlines.Clear();
+                        var segments = text.Split("#", 2, StringSplitOptions.RemoveEmptyEntries);
+                        var run = new Run(segments[0].Trim());
+                        if (segments.Length > 1)
                         {
-                            image.ToolTip = text;
+                            var styleDict = UIExtension.ResolveTextElementProperties(segments[1]);
+                            foreach (var kvp in styleDict)
+                            {
+                                run.SetValue(kvp.Key, kvp.Value);
+                            }
                         }
-                        if (element is ContentControl childContainer)
-                        {
-                            childContainer.Content = text;
-                        }
+                        block.Inlines.Add(run);
                     }
-                    if (transdict.TryTranslate($"{path}.ToolTip", out text))
-                    {
-                        element.ToolTip = text;
-                    }
-                    if (element is ContentControl control)
-                    {
-                        Localize(control, transdict, histories);
-                    }
+                }
+                if (transdict.TryTranslate($"{path}.ToolTip", out text))
+                {
+                    element.ToolTip = text;
+                }
+                if (element is ContentControl control)
+                {
+                    Localize(control, transdict, histories);
                 }
             }
         }
@@ -512,12 +533,35 @@ namespace CardWizard.View
         }
 
         /// <summary>
+        /// 属性编辑框结束编辑时触发的事件: 用新的值设置角色的属性值
+        /// </summary>
+        /// <param name="segment"></param>
+        /// <param name="traitName"></param>
+        /// <param name="value"></param>
+        private void OnTraitBoxEndEdit(Trait.Segment segment, string traitName, int value)
+        {
+            switch (segment)
+            {
+                case Trait.Segment.INITIAL:
+                    Current.SetTraitInitial(traitName, value);
+                    break;
+                case Trait.Segment.ADJUSTMENT:
+                    Current.SetTraitAdjustment(traitName, value);
+                    break;
+                default:
+                    Current.SetTraitGrowth(traitName, value);
+                    break;
+            }
+        }
+
+        /// <summary>
         /// 取得角色的总属性点数
         /// </summary>
         /// <param name="character"></param>
         /// <param name="selector"></param>
         /// <returns></returns>
-        public int SumTraits(Character character, Func<Trait, bool> selector) => (from prop in Config.DataModels where selector(prop)
+        public int SumTraits(Character character, Func<Trait, bool> selector) => (from prop in Config.DataModels
+                                                                                  where selector(prop)
                                                                                   select character.GetTrait(prop.Name)).Sum();
 
         /// <summary>
@@ -644,7 +688,7 @@ namespace CardWizard.View
         /// </summary>
         /// <param name="character"></param>
         /// <param name="filter"></param>
-        public void RecalcTraitsInitial(Character character, Func<Trait,bool> filter = null)
+        public void RecalcTraitsInitial(Character character, Func<Trait, bool> filter = null)
         {
             if (character == null) return;
             if (filter == null) filter = m => true;

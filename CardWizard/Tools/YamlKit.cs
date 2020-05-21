@@ -21,6 +21,44 @@ namespace CardWizard.Tools
         /// </summary>
         public const string EXTENSION_B = ".yml";
 
+        public static T Parse<T>(string text)
+        {
+            Deserializer deserializer = new Deserializer();
+            return deserializer.Deserialize<T>(text);
+        }
+
+        public enum ParseFail
+        {
+            Throw,
+            Ignore,
+            Print,
+        }
+
+        public static bool TryParse<T>(string text, out T item, ParseFail behavior = ParseFail.Ignore)
+        {
+            try
+            {
+                item = Parse<T>(text);
+                return true;
+            }
+            catch(Exception e)
+            {
+                switch (behavior)
+                {
+                    case ParseFail.Throw:
+                        throw;
+                    case ParseFail.Print:
+                        Messenger.Enqueue(e);
+                        break;
+                    case ParseFail.Ignore:
+                    default:
+                        break;
+                }
+            }
+            item = default;
+            return false;
+        }
+
         /// <summary>
         /// 从文件中反序列化数据获得类的实例
         /// </summary>

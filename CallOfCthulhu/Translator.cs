@@ -46,16 +46,19 @@ namespace CallOfCthulhu
             { "STR.Description", @"力量是调查员肌肉能力的量化。力量越高，调查员就能举起更重的东西或更强有力的抓住物体。
 该属性会决定调查员在近战中造成的伤害。
 力量降低为0时，调查员就成为了一个无法离开床铺的病号。 " },
+            { "STR.TraitBox", "力量\nSTR # FontSize: 16" },
             // 体质
             { "CON", "体质" },
             { "CON.Description", @"体质意味着健康、生气和活力。毒药和疾病会与 调查员的体质属性正面相斗。
 高体质的调查员会有更 多的生命值——能承受更多伤害和攻击。严重的物理损伤或魔法攻击有可能降低该属性，而当体质降为0时，调查员就死咯。" },
+            { "CON.TraitBox", "体质\nCON" },
             // 体型
             { "SIZ", "体型" },
             { "SIZ.Description", @"体型值将身高和体重整合成了一个数字。
 伸长脖子越过矮墙观望，或者挤进狭窄的空间，或者判定谁的头在蹲下时也会高处草堆一个截时，就看体型了。
 体型可以帮助决定生命值和伤害加值和体格。体型的减少通常意味着丢失肢体，当然这也意味着敏捷的减少。
 对于调查员来说，失去所有体型，应该意味着他消失了——只有上帝知道他在哪！" },
+            { "SIZ.TraitBox", "体型\nSIZ" },
             // 智力
             { "INT", "智力" },
             { "INT.Description", @"智力代表了这个调查员的学习能力，记忆力和分析力。以及他对周围事物的认知。为了帮助形容不同的局势，守秘人会将智力乘以各种倍数然后丢D100，要求检定结果等于或者小于这个数字。智力乘以5，是灵感。
@@ -217,14 +220,14 @@ namespace CallOfCthulhu
         /// 用递归的方式, 对目标字典的键进行翻译
         /// </summary>
         /// <param name="target"></param>
-        public void TranslateKeys(Dictionary<string, object> target)
+        public void TranslateKeys(IDictionary<string, object> target)
         {
             if (target == null) return;
             var keys = target.Keys.ToArray();
             foreach (var key in keys)
             {
                 var value = target[key];
-                if (value is Dictionary<string, object> child)
+                if (value is IDictionary<string, object> child)
                 {
                     TranslateKeys(child);
                 }

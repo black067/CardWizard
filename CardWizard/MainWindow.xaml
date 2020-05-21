@@ -72,7 +72,7 @@
         <!--左侧角色卡牌选择栏的显示-->
         <ListBox x:Name="List_Cards" Width="128"
                  Background="{DynamicResource ButtonBackground}" 
-                 Foreground="{DynamicResource MenuBackground}" 
+                 Foreground="{DynamicResource ButtonForeground}" 
                  BorderBrush="Transparent">
             <ListBox.ItemTemplate>
                 <DataTemplate>
@@ -157,16 +157,7 @@
                             <ColumnDefinition/>
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
-                        <!--基础属性的显示-->
-                        <cview:TraitsViewItem x:Name="BaseTraits_Headers" Grid.Row="0"
-                                              Grid.ColumnSpan="{Binding ColumnDefinitions.Count, ElementName=TraitsGrid, Mode=OneWay}"/>
-                        <cview:TraitsViewItem x:Name="BaseTraits_Values" Grid.Row="1" 
-                                              Grid.ColumnSpan="{Binding ColumnDefinitions.Count, ElementName=TraitsGrid, Mode=OneWay}"/>
-                        <!--派生属性的显示-->
-                        <cview:TraitsViewItem x:Name="DerivedTraits_Headers" Grid.Row="2" 
-                                              Grid.ColumnSpan="{Binding ColumnDefinitions.Count, ElementName=TraitsGrid, Mode=OneWay}"/>
-                        <cview:TraitsViewItem x:Name="DerivedTraits_Values" Grid.Row="3" 
-                                              Grid.ColumnSpan="{Binding ColumnDefinitions.Count, ElementName=TraitsGrid, Mode=OneWay}"/>
+
                         <!--总属性的显示-->
                         <Grid Grid.Row="4" Grid.Column="0">
                             <Grid.ColumnDefinitions>
@@ -214,7 +205,32 @@
                                 Tag="Card.Button.DMGBonus"/>
                         </Grid>
                     </Grid>
-
+                    <Grid x:Name="TraitsView" 
+                          Grid.Row="8" Grid.ColumnSpan="2" Grid.RowSpan="5" Margin="30,0,30,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Grid.Resources>
+                            <Thickness x:Key="TraitBoxMargin1">8,1,8,1</Thickness>
+                        </Grid.Resources>
+                        <cview:TraitBox Foreground="{DynamicResource MenuBackground}" Margin="{DynamicResource TraitBoxMargin1}"/>
+                        <cview:TraitBox Foreground="{DynamicResource MenuBackground}" Grid.Column="1" Margin="{DynamicResource TraitBoxMargin1}"/>
+                        <cview:TraitBox Foreground="{DynamicResource MenuBackground}" Grid.Column="2" Margin="{DynamicResource TraitBoxMargin1}"/>
+                        <cview:TraitBox Foreground="{DynamicResource MenuBackground}" Grid.Row="1" Margin="{DynamicResource TraitBoxMargin1}"/>
+                        <cview:TraitBox Foreground="{DynamicResource MenuBackground}" Grid.Row="1" Grid.Column="1" Margin="{DynamicResource TraitBoxMargin1}"/>
+                        <cview:TraitBox Foreground="{DynamicResource MenuBackground}" Grid.Row="1" Grid.Column="2" Margin="{DynamicResource TraitBoxMargin1}"/>
+                        <cview:TraitBox Foreground="{DynamicResource MenuBackground}" Grid.Row="2" Margin="{DynamicResource TraitBoxMargin1}"/>
+                        <cview:TraitBox Foreground="{DynamicResource MenuBackground}" Grid.Row="2" Grid.Column="1" Margin="{DynamicResource TraitBoxMargin1}"/>
+                        <cview:TraitBox Foreground="{DynamicResource MenuBackground}" Grid.Row="2" Grid.Column="2" Margin="{DynamicResource TraitBoxMargin1}"/>
+                    </Grid>
+                    
                     <!--页尾-->
                     <Label x:Name="Label_Page_Trail" Tag="Page.Trail"
                            Content="- Investigator -"
@@ -222,8 +238,6 @@
                            Foreground="{DynamicResource PlaceholderForeground}" 
                            HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
                            HorizontalContentAlignment="Right" VerticalContentAlignment="Center"/>
-                    <cview:TraitBox Grid.RowSpan="3" Margin="35,0,35,18" Grid.Row="14" Foreground="{DynamicResource MenuBackground}" Grid.Column="1" 
-                                    Height="72" Width="180"/>
                 </Grid>
             </Viewbox>
         </ScrollViewer>

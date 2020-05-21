@@ -9,6 +9,12 @@ using System.Threading.Tasks;
 using System.Drawing;
 using System.Drawing.Imaging;
 using Image = System.Drawing.Image;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.ComponentModel;
+using CardWizard.Tools;
+using System.Windows.Documents;
 
 namespace CardWizard.View
 {
@@ -17,55 +23,58 @@ namespace CardWizard.View
     /// </summary>
     public static class UIExtension
     {
-        /// <summary>
-        /// 取得控件的备份
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="graph"></param>
-        /// <returns></returns>
-        public static T DeepCopy<T>(this T graph)
+        public static Dictionary<DependencyProperty, object> ResolveTextElementProperties(string text)
         {
-            var doc = XamlWriter.Save(graph);
-            return (T)XamlReader.Parse(doc);
+            var dict = new Dictionary<DependencyProperty, object>();
+            if (YamlKit.TryParse<Dictionary<string, object>>(text, out var raw))
+            {
+                if (raw.TryGetValue("FontSize", out var fontsize))
+                {
+                    dict[TextElement.FontSizeProperty] = new FontSizeConverter().ConvertFrom(fontsize);
+                }
+                if (raw.TryGetValue("Foreground", out var foreground))
+                {
+                    dict[TextElement.ForegroundProperty] = new System.Windows.Media.ColorConverter().ConvertFrom(foreground);
+                }
+                if (raw.TryGetValue("Background", out var background))
+                {
+                    dict[TextElement.ForegroundProperty] = new System.Windows.Media.ColorConverter().ConvertFrom(background);
+                }
+            }
+            return dict;
         }
 
-        /// <summary>
-        /// 转换 UI 元素为文本, 可以用 <see cref="Parse{T}(string)"/> 将文本转换为 UI 元素
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="graph"></param>
-        /// <returns></returns>
-        public static string ToXaml<T>(this T graph)
-        {
-            return XamlWriter.Save(graph);
-        }
 
         /// <summary>
-        /// 将文本转换为 UI 元素
+        /// 查找所有子元素
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="xamlText"></param>
+        /// <param name="root"></param>
         /// <returns></returns>
-        public static T Parse<T>(string xamlText)
+        public static IEnumerable<Visual> SelectAllSubElement(this Visual root)
         {
-            return (T)XamlReader.Parse(xamlText);
-        }
-
-        /// <summary>
-        /// 向指定的列表框中添加子项目
-        /// </summary>
-        /// <param name="box"></param>
-        /// <param name="template"></param>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        public static T AddItem<T>(this ListBox box, T template, string name) where T : UIElement, new()
-        {
-            T item = template != null ? UIExtension.DeepCopy(template) : new T();
-            if (box == null) throw new NullReferenceException();
-            box.Items.Add(item);
-            box.RegisterName(name, item);
-            item.Visibility = Visibility.Visible;
-            return item;
+            if (root == null) return new List<Visual>();
+            var result = new List<Visual> { root };
+            switch (root)
+            {
+                case Panel panel:
+                    foreach (Visual item in panel.Children)
+                    {
+                        result.AddRange(SelectAllSubElement(item));
+                    }
+                    break;
+                case ContentControl contentControl:
+                    if (contentControl.Content is Visual visual)
+                    {
+                        result.AddRange(SelectAllSubElement(visual));
+                    }
+                    break;
+                case Decorator decorator:
+                    result.AddRange(SelectAllSubElement(decorator.Child));
+                    break;
+                default:
+                    break;
+            }
+            return result.Where(e => e != null);
         }
 
         /// <summary>

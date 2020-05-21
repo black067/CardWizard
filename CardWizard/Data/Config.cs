@@ -100,7 +100,7 @@ namespace CardWizard.Data
         }
 
         /// <summary>
-        /// 用于指定 <see cref="Process"/> 中, 处理此字段的顺序 (数字升序)
+        /// 标签: 在 <see cref="Process"/> 方法中, 处理此字段的顺序 (按照 <see cref="Index"/> 升序)
         /// </summary>
         [AttributeUsage(AttributeTargets.All, Inherited = false, AllowMultiple = true)]
         internal sealed class ProcessIndexAttribute : Attribute
