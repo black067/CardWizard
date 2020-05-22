@@ -10,6 +10,11 @@ namespace CallOfCthulhu
     /// </summary>
     public partial class Character : INotifyPropertyChanged
     {
+        /// <summary>
+        /// 默认的角色年龄
+        /// </summary>
+        public const int DEFAULT_AGE = 24;
+
         private string name;
 
         private string era;
@@ -347,7 +352,7 @@ namespace CallOfCthulhu
             var character = new Character()
             {
                 Traits = new Dictionary<string, int>(),
-                Age = 24,
+                Age = DEFAULT_AGE,
             };
             if (baseModelDict != null)
             {
@@ -369,5 +374,4 @@ namespace CallOfCthulhu
     /// <param name="character"></param>
     /// <param name="args"></param>
     public delegate void TraitChangedEventHandler(Character character, TraitChangedEventArgs args);
-
 }
