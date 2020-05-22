@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ICSharpCode.SharpZipLib.Zip;
+using System.Threading;
 
 namespace CardWizard.Tools
 {
@@ -80,6 +82,110 @@ namespace CardWizard.Tools
             info.MoveTo(file_crashed);
             file_latest.MoveTo(file);
             return true;
+        }
+
+        /// <summary>
+        /// 压缩文件时的缓冲区大小
+        /// </summary>
+        public static int BufferSizeForZipping { get; set; } = 4096;
+
+        /// <summary>
+        /// 压缩文件
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="filePaths"></param>
+        public static void Zip(string dest, string comments = "", params string[] filesToZip)
+        {
+            var dir = Path.GetDirectoryName(dest);
+            if (!string.IsNullOrWhiteSpace(dir))
+                Directory.CreateDirectory(dir);
+            void localZip()
+            {
+                using var source = new ZipOutputStream(File.Create(dest));
+                source.SetLevel(6);
+                if (!string.IsNullOrWhiteSpace(comments))
+                {
+                    source.SetComment(comments);
+                }
+                foreach (var item in filesToZip)
+                {
+                    if (!File.Exists(item)) continue;
+                    try
+                    {
+                        using var file = File.OpenRead(item);
+                        byte[] buffer = new byte[BufferSizeForZipping];
+                        var entry = new ZipEntry(Path.GetFileName(item)) { DateTime = DateTime.Now };
+                        source.PutNextEntry(entry);
+                        for (int sourceBytes = 1; sourceBytes > 0;)
+                        {
+                            sourceBytes = file.Read(buffer, 0, buffer.Length);
+                            source.Write(buffer, 0, sourceBytes);
+                        }
+                        source.CloseEntry();
+                    }
+                    catch
+                    {
+                        source.CloseEntry();
+                        throw;
+                    }
+                }
+
+            }
+            var thread = new Thread(localZip);
+            thread.Start();
+        }
+
+        /// <summary>
+        /// 解压
+        /// </summary>
+        /// <param name="sourceFile"></param>
+        /// <param name="destDir"></param>
+        public static void Extract(string sourceFile, string destDir = "")
+        {
+            if (!File.Exists(sourceFile))
+            {
+                throw new FileNotFoundException($"未能找到文件 {sourceFile}");
+            }
+            // 默认解压到同名文件夹内
+            if (string.IsNullOrWhiteSpace(destDir))
+            {
+                var folder = Path.GetFileNameWithoutExtension(sourceFile);
+                var info = Directory.CreateDirectory(Path.Combine(Directory.GetCurrentDirectory(), folder));
+                destDir = info.FullName;
+            }
+            void localExtract()
+            {
+                using var source = new ZipInputStream(File.OpenRead(sourceFile));
+                ZipEntry entry;
+                while ((entry = source.GetNextEntry()) != null)
+                {
+                    if (entry.IsDirectory) continue;
+
+                    var iDestDir = Path.Combine(destDir, Path.GetDirectoryName(entry.Name));
+                    if (!string.IsNullOrWhiteSpace(iDestDir))
+                    {
+                        Directory.CreateDirectory(iDestDir);
+                    }
+
+                    var iDestFile = Path.Combine(destDir, Path.GetFileName(entry.Name));
+                    if (string.IsNullOrWhiteSpace(iDestFile))
+                    {
+                        continue;
+                    }
+                    // 创建文件用于写入
+                    using var writer = File.Create(iDestFile);
+                    int size = BufferSizeForZipping;
+                    var buffer = new byte[size];
+                    while (true)
+                    {
+                        size = source.Read(buffer, 0, buffer.Length);
+                        if (size > 0) writer.Write(buffer, 0, size);
+                        else break;
+                    }
+                }
+            }
+            var thread = new Thread(localExtract);
+            thread.Start();
         }
     }
 }
