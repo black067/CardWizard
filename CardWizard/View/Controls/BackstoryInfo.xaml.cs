@@ -82,7 +82,7 @@ namespace CardWizard.View
         /// <returns></returns>
         int IsAgeValid(TextBox check, Character c)
         {
-            var minAge = Manager.CalcForInt($"return GetMinAge({c.GetTraitInitial("EDU")})");
+            var minAge = Manager.CalcForInt(c.Traits, $"return GetMinAge(EDU)");
             if (c.Age < minAge)
             {
                 //check.Content = InvalidText;

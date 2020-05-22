@@ -150,10 +150,6 @@ namespace CardWizard.View
                 Interval = new TimeSpan(0, 0, 0, Config.GCInterval),
                 Tag = $"{nameof(GC)}.{nameof(GC.Collect)}",
             };
-            GCDispatcher.Tick += (o, e) =>
-            {
-                GC.Collect();
-            };
             GCDispatcher.Start();
             // 根据 Config.PathosDatabase 创建目录
             CreateDirectories(Paths);
@@ -222,7 +218,7 @@ namespace CardWizard.View
             {
                 var message = Translator.Translate("Message.RollADMGBonus", "{1}");
                 var formula = Window.Value_DamageBonus.Content.ToString();
-                var result = CalcTrait(null, formula);
+                var result = CalcTrait(Current.Traits, formula);
                 Messenger.EnqueueFormat(message, Window.Value_DamageBonus.Content, result);
             };
             HideOnCapturePic.Add(Window.Button_Roll_DMGBonus);
@@ -638,41 +634,14 @@ namespace CardWizard.View
         }
 
         /// <summary>
-        /// 根据掷骰公式产生一个随机数
-        /// </summary>
-        /// <param name="properties"></param>
-        /// <param name="formula"></param>
-        /// <returns></returns>
-        private string FormatScript(Dictionary<string, int> properties, string formula)
-        {
-            var segments = formula?.Split(";") ?? new string[] { string.Empty };
-            var seg = segments[0];
-            // 找出所有 xDy
-            var matches = Regex.Matches(seg, @"[0-9]{1,}D[0-9]{1,}");
-            foreach (Match m in matches)
-            {
-                var segmentsJ = m.Value.Split('D');
-                seg = seg.Replace(m.Value, $"{nameof(Roll)}({segmentsJ[0]}, {segmentsJ[1]})");
-            }
-            if (properties == null) properties = new Dictionary<string, int>();
-            foreach (var kvp in Config.BaseModelDict)
-            {
-                seg = seg.Replace($"${kvp.Key}", (properties.TryGetValue(kvp.Key, out int v) ? v : 0).ToString());
-            }
-
-            seg = Regex.Replace(seg, @"\$C\b", $"{nameof(MainManager)}.{nameof(Current)}",
-                                RegexOptions.Multiline);
-            return $"return {seg}";
-        }
-
-        /// <summary>
         /// 计算一段脚本并返回 <see cref="int"/>
         /// </summary>
         /// <param name="script"></param>
         /// <returns></returns>
-        public int CalcForInt(string script)
+        public int CalcForInt(IDictionary variables, string script)
         {
-            var r = LuaHub.DoString(script, "CALC").FirstOrDefault() ?? 0;
+            using var subhub = LuaHub.CreateSubEnv(variables);
+            var r = subhub.DoString(script, "CALC", true).FirstOrDefault() ?? 0;
             return Convert.ToInt32(r);
         }
 
@@ -682,9 +651,20 @@ namespace CardWizard.View
         /// <param name="traits"></param>
         /// <param name="formula"></param>
         /// <returns></returns>
-        public int CalcTrait(Dictionary<string, int> traits, string formula)
+        public int CalcTrait(Dictionary<string, int> traitValues, string formula)
         {
-            return CalcForInt(FormatScript(traits, formula));
+            if (string.IsNullOrWhiteSpace(formula)) return 0;
+            var segments = formula.Split(";");
+            var seg = segments[0];
+            // 找出所有 xDy
+            var matches = Regex.Matches(seg, @"[0-9]{1,}D[0-9]{1,}");
+            foreach (Match m in matches)
+            {
+                var segmentsJ = m.Value.Split('D');
+                seg = seg.Replace(m.Value, $"{nameof(Roll)}({segmentsJ[0]}, {segmentsJ[1]})");
+            }
+            if (traitValues == null) throw new NullReferenceException();
+            return CalcForInt(traitValues, $"return {seg}");
         }
 
         /// <summary>
@@ -695,10 +675,18 @@ namespace CardWizard.View
         public void RecalcTraitsInitial(Character character, Func<Trait, bool> filter = null)
         {
             if (character == null) return;
-            if (filter == null) filter = m => true;
+            if (filter == null)
+            {
+                static bool filterDefault(Trait m) => true;
+                filter = filterDefault;
+            }
+            var variables = new Dictionary<string, int>(character.Traits)
+            {
+                { "AGE", character.Age }
+            };
             foreach (var model in Config.DataModels.Where(filter))
             {
-                var value = CalcTrait(character.Traits, model.Formula);
+                var value = CalcTrait(variables, model.Formula);
                 character.SetTraitInitial(model.Name, value);
             }
         }

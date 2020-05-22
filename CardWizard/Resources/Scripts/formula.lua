@@ -46,15 +46,12 @@ MOV 的值还与年龄有关:
 ]]
 
 --- 计算 MOV 的值
-function GetMOV(character)
-	if character == nil then return 5 end
-	local SIZ = character:GetTraitInitial('SIZ')
-	local DEX = character:GetTraitInitial('DEX')
-	local STR = character:GetTraitInitial('STR')
-	local AgePenalty = math.floor((character.Age - 40) / 10 + 1)
+function GetMOV(size, dexterity, strength, age)
+	if age == nil then age = CS.CallOfCthulhu.Character.DEFAULT_AGE end
+	local AgePenalty = math.floor((age - 40) / 10 + 1)
 	local movement = 7
-	if DEX > SIZ and STR > SIZ then movement = 9
-	elseif DEX >= SIZ or STR >= SIZ then movement = 8 
+	if dexterity > size and strength > size then movement = 9
+	elseif dexterity >= size or strength >= size then movement = 8 
 	end
 	if AgePenalty > 0 then movement = movement - AgePenalty end
 	return movement

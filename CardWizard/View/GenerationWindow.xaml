@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CardWizard.View"
         mc:Ignorable="d"
-        Title="ListWindow" MinWidth="660" d:DesignHeight="380" FontFamily="Consolas">
+        Title="ListWindow" MinWidth="660" MinHeight="380" d:DesignHeight="380" FontFamily="Consolas">
     <Grid x:Name="MainGrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>

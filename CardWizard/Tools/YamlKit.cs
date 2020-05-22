@@ -27,6 +27,9 @@ namespace CardWizard.Tools
             return deserializer.Deserialize<T>(text);
         }
 
+        /// <summary>
+        /// 在读取失败时的操作
+        /// </summary>
         public enum ParseFail
         {
             Throw,

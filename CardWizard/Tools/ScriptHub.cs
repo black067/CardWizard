@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.IO;
 
 namespace CardWizard.Tools
@@ -14,7 +15,15 @@ namespace CardWizard.Tools
         /// <typeparam name="T"></typeparam>
         /// <param name="path"></param>
         /// <param name="value"></param>
-        public abstract void Set<T>(string path, T value);
+        public abstract void Set<TKey, TValue>(TKey path, TValue value);
+
+        /// <summary>
+        /// 用字符串设置变量的值
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="path"></param>
+        /// <param name="value"></param>
+        public virtual void Set<T>(string path, T value) => Set<string, T>(path, value);
 
         /// <summary>
         /// 查询变量的值
@@ -22,7 +31,15 @@ namespace CardWizard.Tools
         /// <typeparam name="T"></typeparam>
         /// <param name="path"></param>
         /// <returns></returns>
-        public abstract T Get<T>(string path);
+        public abstract TValue Get<TKey, TValue>(TKey path);
+
+        /// <summary>
+        /// 用字符串查询变量的值
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public virtual T Get<T>(string path) => Get<string, T>(path);
 
         /// <summary>
         /// 执行 Lua 字符串
@@ -69,6 +86,12 @@ namespace CardWizard.Tools
         {
             return DoString(source, chunkName, isGlobal);
         }
+
+        /// <summary>
+        /// 构造一个子环境
+        /// </summary>
+        /// <returns></returns>
+        public abstract ScriptHub CreateSubEnv(IDictionary variables);
 
         /// <summary>
         /// 脚本运行环境的手动垃圾回收

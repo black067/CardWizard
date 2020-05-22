@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using XLua;
@@ -7,14 +8,31 @@ namespace CardWizard.Tools
 {
     public class XLuaHub : ScriptHub
     {
-        private LuaEnv Env { get; set; }
+        private static LuaEnv Env { get; set; }
+
+        private LuaTable global;
+
+        private LuaTable Global
+        {
+            get
+            {
+                global ??= Env.Global;
+                return global;
+            }
+            set
+            {
+                global = value;
+            }
+        }
+
+        private XLuaHub Parent { get; set; }
 
         /// <summary>
         /// 构造 <see cref="XLua"/> 的脚本运行环境
         /// </summary>
         public XLuaHub()
         {
-            Env = new LuaEnv();
+            Env ??= new LuaEnv();
             // 重载 print 方法
             var print = "print";
             var code = @$"
@@ -27,6 +45,12 @@ function {print}(...)
     CS.{typeof(Messenger).FullName}.{nameof(Messenger.Enqueue)}(msg)
 end";
             DoString(code, global: true);
+            Parent = null;
+        }
+
+        private XLuaHub(LuaTable table)
+        {
+            Global = table;
         }
 
         /// <summary>
@@ -36,10 +60,44 @@ end";
         protected override void Dispose(bool disposing)
         {
             if (isDisposed) return;
-            Env.FullGc();
-            Env.Dispose();
-            Env = null;
+            Global.Dispose();
+            if (Parent == null)
+            {
+                Env.FullGc();
+                Env.Dispose();
+            }
             isDisposed = true;
+        }
+
+        private static LuaTable GetSubTable(LuaEnv env)
+        {
+            LuaTable table = env.NewTable();
+            using LuaTable meta = env.NewTable();
+            meta.Set("__index", env.Global);
+            table.SetMetaTable(meta);
+            meta.Dispose();
+            return table;
+        }
+
+        /// <summary>
+        /// 构造一个子环境
+        /// </summary>
+        /// <param name="variables"></param>
+        /// <returns></returns>
+        public override ScriptHub CreateSubEnv(IDictionary variables = default)
+        {
+            var subhub = new XLuaHub(GetSubTable(Env))
+            {
+                Parent = this
+            };
+            if (variables != default)
+            {
+                foreach (var key in variables.Keys)
+                {
+                    subhub.Global.Set(key, variables[key]);
+                }
+            }
+            return subhub;
         }
 
         /// <summary>
@@ -53,14 +111,9 @@ end";
         {
             if (global)
             {
-                return Env.DoString(text, chunkName, Env.Global);
+                return Env.DoString(text, chunkName, Global);
             }
-            using LuaTable table = Env.NewTable();
-            using LuaTable meta = Env.NewTable();
-            meta.Set("__index", Env.Global);
-            table.SetMetaTable(meta);
-            meta.Dispose();
-            return Env.DoString(text, chunkName, table);
+            return Env.DoString(text, chunkName, GetSubTable(Env));
         }
 
         /// <summary>
@@ -74,13 +127,9 @@ end";
         {
             if (global)
             {
-                return Env.DoString(source, chunkName, Env.Global);
+                return Env.DoString(source, chunkName, Global);
             }
-            using LuaTable table = Env.NewTable();
-            using LuaTable meta = Env.NewTable();
-            meta.Set("__index", Env.Global);
-            table.SetMetaTable(meta);
-            return Env.DoString(source, chunkName, table);
+            return Env.DoString(source, chunkName, GetSubTable(Env));
         }
 
         /// <summary>
@@ -89,9 +138,9 @@ end";
         /// <typeparam name="T"></typeparam>
         /// <param name="path"></param>
         /// <returns></returns>
-        public override T Get<T>(string path)
+        public override TValue Get<TKey, TValue>(TKey path)
         {
-            return Env.Global.Get<T>(path);
+            return Global.Get<TKey, TValue>(path);
         }
 
         /// <summary>
@@ -100,9 +149,9 @@ end";
         /// <typeparam name="T"></typeparam>
         /// <param name="path"></param>
         /// <param name="value"></param>
-        public override void Set<T>(string path, T value)
+        public override void Set<TKey, TValue>(TKey path, TValue value)
         {
-            Env.Global.Set(path, value);
+            Global.Set(path, value);
         }
 
         /// <summary>
