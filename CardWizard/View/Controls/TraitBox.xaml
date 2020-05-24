@@ -7,8 +7,8 @@
              Focusable="True"
              xmlns:System="clr-namespace:System;assembly=System.Runtime"
              mc:Ignorable="d"
-             d:DesignWidth="144" d:DesignHeight="52"
-             Foreground="{DynamicResource ButtonForeground}" BorderBrush="{DynamicResource MenuBackground}" >
+             d:DesignWidth="144" d:DesignHeight="52" 
+             BorderBrush="{DynamicResource TraitBorderBrush}" Foreground="{DynamicResource MenuBackground}">
     <UserControl.Resources>
         <Style x:Key="XInput" TargetType="TextBox">
             <Setter Property="BorderThickness" Value="0,0,0,0"/>
@@ -17,14 +17,18 @@
             <Setter Property="HorizontalContentAlignment" Value="Right"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="InputScope" Value="Number"/>
-            <Setter Property="MaxLength"  Value="4"/>
+            <Setter Property="MaxLength"  Value="3"/>
+        </Style>
+        <Style x:Key="XBorder" TargetType="Border">
+            <Setter Property="BorderBrush" Value="{Binding BorderBrush, ElementName=userControl}"/>
         </Style>
     </UserControl.Resources>
     <Grid x:Name="MainGrid">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="42"/>
-            <ColumnDefinition/>
-            <ColumnDefinition Width="36"/>
+            <ColumnDefinition x:Name="GrowthMarkColumn" Width="0.5*"/>
+            <ColumnDefinition x:Name="LabelColumn" Width="1.4*"/>
+            <ColumnDefinition x:Name="ValueColumn" Width="1.4*"/>
+            <ColumnDefinition Width="0.6*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition/>
@@ -33,59 +37,68 @@
         <Grid.Resources>
             <SolidColorBrush x:Key="BorderBackground" Color="Transparent"/>
         </Grid.Resources>
-        <Border x:Name="BorderForValue" Grid.Column="1" Grid.RowSpan="2" 
-                BorderThickness="2,2,1,2" 
-                BorderBrush="{DynamicResource MenuBackground}" Background="{DynamicResource BorderBackground}"/>
-        <Border x:Name="BorderForHalf" Grid.Column="2" CornerRadius="0,10,0,0" 
-                BorderThickness="1,2,2,1" 
-                BorderBrush="{DynamicResource MenuBackground}" Background="{DynamicResource BorderBackground}"/>
-        <Border x:Name="BorderForOneFifth" Grid.Column="2" Grid.Row="1" 
-                BorderThickness="1,1,2,2" 
-                BorderBrush="{DynamicResource MenuBackground}" Background="{DynamicResource BorderBackground}"/>
-        <Border x:Name="BorderForSingle" Visibility="Hidden" Grid.Column="1" Grid.ColumnSpan="2" Grid.RowSpan="2" 
-                BorderThickness="2,2,2,2" CornerRadius="16,16,16,16" 
-                BorderBrush="{DynamicResource MenuBackground}" Background="{DynamicResource BorderBackground}"/>
-        <Label x:Name="Label_Value" 
-                 InputScope="Number" Grid.RowSpan="2" Grid.Column="1" 
-                 FontSize="22" HorizontalContentAlignment="Center" 
-                 Style="{DynamicResource XLabel}" BorderBrush="{x:Null}" 
-                 Background="{x:Null}" Foreground="{Binding Foreground, ElementName=userControl}" 
-               FontWeight="Bold" Margin="0,0,0,0">100</Label>
-        <Label x:Name="Label_ValueHalf" InputScope="Number" Grid.Column="2" 
-               Style="{DynamicResource XLabel}" FontSize="14" Padding="0,0,0,0">50</Label>
-        <Label x:Name="Label_ValueOneFifth" InputScope="Number" Grid.Row="1" 
-               Grid.Column="2" Style="{DynamicResource XLabel}" FontSize="14" Padding="0,0,0,0">20</Label>
-        <TextBlock x:Name="Block_Key" Style="{DynamicResource GeneralTextBlock}" Grid.RowSpan="2" FontSize="10" TextWrapping="WrapWithOverflow">
-            <Run>属性</Run><LineBreak/>
-            <Run>PROP</Run><LineBreak/>
-            <Run>副属性</Run><LineBreak/>
-            <Run>PROP</Run>
+        <CheckBox x:Name="GrowthMark" HorizontalAlignment="Center"/>
+        <TextBlock x:Name="Block_Key" Style="{DynamicResource GeneralTextBlock}" 
+                   Grid.Column="1" Grid.RowSpan="2"  HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center"
+                   FontSize="10" TextWrapping="WrapWithOverflow">
+            <Run FontSize="8">PROP</Run><LineBreak/>
+            <Run FontSize="12">属性</Run><LineBreak/>
+            <Run FontSize="8">PROP</Run><LineBreak/>
+            <Run FontSize="12">第二属性</Run>
         </TextBlock>
+        <Border x:Name="BorderForValue" Grid.Column="2" Grid.RowSpan="2" 
+                BorderThickness="2,2,1,2" 
+                Style="{DynamicResource XBorder}"/>
+        <Border x:Name="BorderForHalf" Grid.Column="3" CornerRadius="0,10,0,0" 
+                BorderThickness="1,2,2,1" 
+                Style="{DynamicResource XBorder}"/>
+        <Border x:Name="BorderForOneFifth" Grid.Column="3" Grid.Row="1" 
+                BorderThickness="1,1,2,2" 
+                Style="{DynamicResource XBorder}"/>
+        <Border x:Name="BorderForSingle" Grid.Column="1" Grid.ColumnSpan="2" Grid.RowSpan="2" 
+                CornerRadius="16,16,16,16"  Visibility="Hidden" 
+                BorderThickness="2,2,2,2" 
+                Style="{DynamicResource XBorder}"/>
+        <Label x:Name="Label_Value" Content="99"
+               InputScope="Number" Grid.RowSpan="2" Grid.Column="2" 
+               FontSize="30" HorizontalContentAlignment="Center" 
+               Style="{DynamicResource XLabel}" BorderBrush="{x:Null}" 
+               Background="{x:Null}" Foreground="{Binding Foreground, ElementName=userControl}" 
+               FontWeight="Bold" Margin="0,0,0,0"/>
+        <Label x:Name="Label_ValueHalf" Tag="Value.Half" Content="49"
+               InputScope="Number" Grid.Column="3" 
+               Style="{DynamicResource XLabel}" FontSize="14" Padding="0,0,0,0"/>
+        <Label x:Name="Label_ValueOneFifth" Tag="Value.OneFifth" Content="19"
+               InputScope="Number" Grid.Row="1" 
+               Grid.Column="3" Style="{DynamicResource XLabel}" FontSize="14" Padding="0,0,0,0"/>
         <Grid x:Name="EditGrid"
-              Grid.RowSpan="2" Grid.Column="1">
+              Grid.RowSpan="2" Grid.Column="2">
             <Grid.RowDefinitions>
                 <RowDefinition/>
                 <RowDefinition/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
+                <ColumnDefinition Width="1.2*"/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
             <Grid.Resources>
                 <Thickness x:Key="XLabelPadding">0,0,0,0</Thickness>
-                <Thickness x:Key="XLabelMargin">0,0,0,0</Thickness>
-                <System:Double x:Key="InputLabelFontSize">11</System:Double>
+                <Thickness x:Key="XLabelMargin">2,0,0,0</Thickness>
+                <System:Double x:Key="InputLabelFontSize">12</System:Double>
             </Grid.Resources>
             <Label x:Name="Label_Initial" Tag="Initial" 
                    Content="初始" Grid.Row="0" 
-                   Style="{DynamicResource XLabel}" FontSize="{DynamicResource InputLabelFontSize}" Margin="{DynamicResource XLabelMargin}" Padding="{DynamicResource XLabelPadding}"/>
+                   Style="{DynamicResource XLabel}" FontSize="{DynamicResource InputLabelFontSize}" 
+                   Margin="{DynamicResource XLabelMargin}" Padding="{DynamicResource XLabelPadding}"/>
             <Label x:Name="Label_Adjustment" Tag="Adjustment" 
                    Content="调整" Grid.Row="1"
-                   Style="{DynamicResource XLabel}" FontSize="{DynamicResource InputLabelFontSize}" Margin="{DynamicResource XLabelMargin}" Padding="{DynamicResource XLabelPadding}"/>
+                   Style="{DynamicResource XLabel}" FontSize="{DynamicResource InputLabelFontSize}" 
+                   Margin="{DynamicResource XLabelMargin}" Padding="{DynamicResource XLabelPadding}"/>
             <Label x:Name="Label_Growth" Tag="Growth" 
                    Content="成长" Grid.Row="2"
-                   Style="{DynamicResource XLabel}" FontSize="{DynamicResource InputLabelFontSize}" Margin="{DynamicResource XLabelMargin}" Padding="{DynamicResource XLabelPadding}"/>
+                   Style="{DynamicResource XLabel}" FontSize="{DynamicResource InputLabelFontSize}" 
+                   Margin="{DynamicResource XLabelMargin}" Padding="{DynamicResource XLabelPadding}"/>
             <TextBox x:Name="Text_Initial" Style="{DynamicResource XInput}" Grid.Column="1">100</TextBox>
             <TextBox x:Name="Text_Adjustment" Style="{DynamicResource XInput}" Grid.Row="1" Grid.Column="1">100</TextBox>
             <TextBox x:Name="Text_Growth" Style="{DynamicResource XInput}" Grid.Row="2" Grid.Column="1">100</TextBox>

@@ -9,12 +9,23 @@
         Title="Card Wizard" 
         Width="1080" d:DesignHeight="1080" 
         MinHeight="720" MinWidth="800"
-        FontFamily="Consolas" 
+        FontFamily="{DynamicResource WindowFontFamily}" 
         Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" Cursor="Arrow"
     xmlns:System="clr-namespace:System;assembly=System.Runtime">
     <Window.Resources>
         <Thickness x:Key="DefaultMargin">2,2,2,2</Thickness>
+        <Style x:Key="ValidityCheck" TargetType="Label">
+            <Setter Property="FontWeight" Value="ExtraBold"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="Padding" Value="5,0,5,0"/>
+            <Setter Property="Foreground" Value="WhiteSmoke"/>
+        </Style>
     </Window.Resources>
+    <Window.CommandBindings>
+        <CommandBinding Command="{x:Static local:MainWindow.CommandCreate}" Executed="CommandCreate_Executed"/>
+        <CommandBinding Command="{x:Static local:MainWindow.CommandSave}" Executed="CommandSave_Executed"/>
+        <CommandBinding Command="{x:Static local:MainWindow.CommandCapture}" Executed="CommandCapture_Executed"/>
+    </Window.CommandBindings>
     <Grid x:Name="MainDock">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="128"/>
@@ -26,8 +37,7 @@
             <RowDefinition Height="64"/>
         </Grid.RowDefinitions>
         <!--菜单栏-->
-        <Grid x:Name="MenuBar" 
-                Background="{DynamicResource MenuBackground}" Grid.ColumnSpan="2">
+        <Grid x:Name="MenuBar" Grid.ColumnSpan="2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="30"/>
             </Grid.RowDefinitions>
@@ -39,29 +49,27 @@
                 <ColumnDefinition/>
                 <ColumnDefinition Width="50"/>
             </Grid.ColumnDefinitions>
+            <Border Grid.ColumnSpan="99"
+                Background="{DynamicResource MenuBackground}"/>
             <Button x:Name="Button_Create" 
                     Style="{StaticResource XButtonStyle}" 
-                    Content="新建" 
-                    Background="Transparent" 
-                    BorderBrush="Transparent" Tag="MenuBar.Button.Create"/>
+                    Content="新建" Command="{x:Static local:MainWindow.CommandCreate}"
+                    Background="Transparent" BorderBrush="Transparent" Tag="MenuBar.Button.Create"/>
             <Button x:Name="Button_Save" 
                     Style="{StaticResource XButtonStyle}"  
                     Grid.Column="1"
-                    Content="保存" 
-                    Background="Transparent" 
-                    BorderBrush="Transparent" Tag="MenuBar.Button.Save"/>
+                    Content="保存" Command="{x:Static local:MainWindow.CommandSave}"
+                    Background="Transparent" BorderBrush="Transparent" Tag="MenuBar.Button.Save"/>
             <Button x:Name="Button_SavePic" 
                     Style="{StaticResource XButtonStyle}"  
                     Grid.Column="2"
-                    Content="生成图片" 
-                    Background="Transparent" 
-                    BorderBrush="Transparent" Tag="MenuBar.Button.SavePicture"/>
+                    Content="生成图片" Command="{x:Static local:MainWindow.CommandCapture}"
+                    Background="Transparent" BorderBrush="Transparent" Tag="MenuBar.Button.SavePicture"/>
             <Button x:Name="Button_Debug" 
                     Style="{StaticResource XButtonStyle}"  
                     Grid.Column="6"
                     Content="Debug" 
-                    Background="Transparent" 
-                    BorderBrush="Transparent"/>
+                    Background="Transparent" BorderBrush="Transparent"/>
         </Grid>
         <!--日志输出窗口-->
         <TextBox x:Name="Logger" Height="60"
@@ -99,10 +107,11 @@
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition/>
+                        <RowDefinition Height="40"/>
                         <RowDefinition Height="240"/>
-                        <RowDefinition Height="240"/>
-                        <RowDefinition Height="200"/>
-                        <RowDefinition Height="240"/>
+                        <RowDefinition Height="80"/>
+                        <RowDefinition Height="400"/>
+                        <RowDefinition Height="180"/>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
                     <!--页首的显示-->
@@ -112,65 +121,79 @@
                            HorizontalContentAlignment="Center" VerticalContentAlignment="Stretch" 
                            Foreground="#FFACACAC"
                            Tag="Page.Head" Cursor="Arrow" IsHitTestVisible="False"/>
-                    <!--角色基础信息的显示-->
-                    <cview:BackstoryInfo Grid.Row="1" Grid.Column="1" x:Name="Backstory"/>
+                    <!--<Border Grid.Row="1" Grid.Column="1" Grid.RowSpan="3" BorderThickness="2" Margin="1,2,1,0" BorderBrush="{DynamicResource MenuBackground}" CornerRadius="0,0,10,10"/>-->
+                    <!--背景信息的标题-->
+                    <Label Content="Document 档案" Tag="Investigator.Document.Title"
+                           Grid.ColumnSpan="1" Grid.Column="1" Grid.Row="1" Style="{DynamicResource XLabel}" 
+                           FontSize="22" Padding="0,0,0,0"
+                           Background="{DynamicResource MenuBackground}" Foreground="{DynamicResource ButtonForeground}"/>
+                    <Label x:Name="Label_Validity" Content="⚠"
+                           Grid.Column="1" Grid.Row="1" 
+                           HorizontalContentAlignment="Right" VerticalContentAlignment="Center" HorizontalAlignment="Right"
+                           Style="{DynamicResource ValidityCheck}" Padding="5,0,5,0" Margin="0,0,5,0"/>
+                    <!--角色背景信息的显示-->
+                    <cview:BackstoryInfo x:Name="Backstory" HorizontalAlignment="Stretch" 
+                                         Grid.Row="2" Grid.Column="1" Grid.RowSpan="2" 
+                                         VerticalContentAlignment="Stretch" VerticalAlignment="Stretch"/>
+                    <!--属性总计与重新生成按钮-->
+                    <Label Content="Characteristics" Tag="Investigator.Traits.Title"
+                               FontSize="22" Grid.Row="1" Grid.Column="2"
+                               Foreground="{DynamicResource ButtonForeground}"
+                               Style="{DynamicResource XLabel}" Background="{DynamicResource TraitBorderBrush}"/>
+                    <Button x:Name="Button_Regenerate" Tag="Card.Button.Regenerate" Content="🎲"
+                            Grid.Row="1" Grid.Column="2" Cursor="Hand"
+                            HorizontalAlignment="Right" Margin="6,6,8,6" 
+                            Width="{Binding ActualHeight, ElementName=Button_Regenerate, Mode=OneWay}" 
+                            Foreground="{DynamicResource ButtonForeground}" Style="{DynamicResource XButtonStyle}"
+                            FontSize="20" BorderThickness="0,0,0,0" Background="{x:Null}"/>
                     <!--角色属性的显示-->
-                    <Grid x:Name="TraitsGrid" Grid.Row="1" Grid.Column="2" Margin="2,0,2,0">
+                    <Grid x:Name="TraitsGrid" Grid.Row="2" Grid.Column="2" Margin="2,0,2,0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
                             <ColumnDefinition/>
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="42"/>
                             <RowDefinition/>
                             <RowDefinition/>
                             <RowDefinition/>
                         </Grid.RowDefinitions>
                         <Grid.Resources>
-                            <Style x:Key="TraitBoxStyle" TargetType="cview:TraitBox">
-                                <Setter Property="Margin" Value="0,0,0,0"/>
-                                <Setter Property="HorizontalAlignment" Value="Center"/>
-                                <Setter Property="VerticalAlignment" Value="Center"/>
-                                <Setter Property="Width" Value="144"/>
-                                <Setter Property="Height" Value="54"/>
-                            </Style>
                         </Grid.Resources>
-                        <Border Grid.ColumnSpan="99" Grid.RowSpan="99" 
+                        <!--<Border Grid.ColumnSpan="99" Grid.RowSpan="99" 
                                 BorderBrush="{DynamicResource ButtonBackground}"
-                                BorderThickness="2,2,2,2" OpacityMask="#7FFFFFFF"/>
-                        <!--属性总计与重新生成按钮-->
-                        <Label Content="Characteristics" Tag="Card.Label.Traits.Title"
-                                FontSize="18" Grid.ColumnSpan="{Binding ColumnDefinitions.Count, ElementName=TraitsGrid, Mode=OneWay}"
-                               Style="{DynamicResource XLabel}"></Label>
-                        <Label x:Name="Value_Sum_Base_Traits" 
-                               Content="999" FontSize="14"
-                               Grid.Row="0" Grid.Column="2"
-                               Style="{DynamicResource XLabel}" OpacityMask="#CC000000" HorizontalAlignment="Left"/>
-                        <Button x:Name="Button_Regenerate" Tag="Card.Button.Regenerate" Content="🔀"
-                                Grid.Row="0" Grid.Column="2"
-                                HorizontalAlignment="Right" Margin="6,6,8,6" Width="{Binding ActualHeight, ElementName=Button_Regenerate, Mode=OneWay}" 
-                                Background="#33FFFFFF" Foreground="{DynamicResource ButtonBackground}" FontSize="20" BorderThickness="0,0,0,0"/>
+                                BorderThickness="2,2,2,2" OpacityMask="#7FFFFFFF"/>-->
                         <!--属性数值格子-->
-                        <cview:TraitBox Tag="STR" Grid.Row="1" Style="{DynamicResource TraitBoxStyle}" Foreground="{DynamicResource MenuBackground}"/>
-                        <cview:TraitBox Tag="DEX" Grid.Row="1" Grid.Column="1" Style="{DynamicResource TraitBoxStyle}" Foreground="{DynamicResource MenuBackground}"/>
-                        <cview:TraitBox Tag="INT" Grid.Row="1" Grid.Column="2" Style="{DynamicResource TraitBoxStyle}" Foreground="{DynamicResource MenuBackground}"/>
-                        <cview:TraitBox Tag="CON" Grid.Row="2"  Style="{DynamicResource TraitBoxStyle}" Foreground="{DynamicResource MenuBackground}"/>
-                        <cview:TraitBox Tag="APP" Grid.Row="2" Grid.Column="1" Style="{DynamicResource TraitBoxStyle}" Foreground="{DynamicResource MenuBackground}"/>
-                        <cview:TraitBox Tag="POW" Grid.Row="2" Grid.Column="2" Style="{DynamicResource TraitBoxStyle}" Foreground="{DynamicResource MenuBackground}"/>
-                        <cview:TraitBox Tag="SIZ" Grid.Row="3"  Style="{DynamicResource TraitBoxStyle}" Foreground="{DynamicResource MenuBackground}"/>
-                        <cview:TraitBox Tag="EDU" Grid.Row="3" Grid.Column="1" Style="{DynamicResource TraitBoxStyle}" Foreground="{DynamicResource MenuBackground}"/>
-                        <cview:TraitBox Tag="MOV" Grid.Row="3" Grid.Column="2" Style="{DynamicResource TraitBoxStyle}" Foreground="{DynamicResource MenuBackground}"/>
+                        <cview:TraitBox Tag="STR" Grid.Row="0" Style="{DynamicResource TraitBoxStyle}" Foreground="{DynamicResource MenuBackground}"/>
+                        <cview:TraitBox Tag="DEX" Grid.Row="0" Grid.Column="1" Style="{DynamicResource TraitBoxStyle}" Foreground="{DynamicResource MenuBackground}"/>
+                        <cview:TraitBox Tag="INT" Grid.Row="0" Grid.Column="2" Style="{DynamicResource TraitBoxStyle}" Foreground="{DynamicResource MenuBackground}"/>
+                        <cview:TraitBox Tag="CON" Grid.Row="1"  Style="{DynamicResource TraitBoxStyle}" Foreground="{DynamicResource MenuBackground}"/>
+                        <cview:TraitBox Tag="APP" Grid.Row="1" Grid.Column="1" Style="{DynamicResource TraitBoxStyle}" Foreground="{DynamicResource MenuBackground}"/>
+                        <cview:TraitBox Tag="POW" Grid.Row="1" Grid.Column="2" Style="{DynamicResource TraitBoxStyle}" Foreground="{DynamicResource MenuBackground}"/>
+                        <cview:TraitBox Tag="SIZ" Grid.Row="2"  Style="{DynamicResource TraitBoxStyle}" Foreground="{DynamicResource MenuBackground}"/>
+                        <cview:TraitBox Tag="EDU" Grid.Row="2" Grid.Column="1" Style="{DynamicResource TraitBoxStyle}" Foreground="{DynamicResource MenuBackground}"/>
+                        <cview:TraitBox Tag="MOV" Grid.Row="2" Grid.Column="2" Style="{DynamicResource TraitBoxStyle}" Foreground="{DynamicResource MenuBackground}"/>
                     </Grid>
                     <!--角色照片的显示-->
-                    <Image x:Name="Image_Avatar" Grid.Column="3"  Grid.Row="1" VerticalAlignment="Center" Cursor="Hand" Source="/Resources/Image.Avatar.Empty.png"
-                            HorizontalAlignment="Center" Tag="Card.Image.Avatar" Margin="{DynamicResource DefaultMargin}">
+                    <!--<Grid Grid.Row="1" Grid.Column="3">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="40"/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Border Background="{DynamicResource TraitBorderBrush}" Margin="2" Opacity="0.5" CornerRadius="16,16,0,0"/>
+                        <Border BorderBrush="{DynamicResource TraitBorderBrush}" BorderThickness="1" Grid.RowSpan="2" Margin="2" Opacity="0.3" CornerRadius="16,16,16,16"/>
+                    </Grid>-->
+                    <Image x:Name="Image_Avatar" Tag="Card.Image.Avatar"
+                           Grid.Column="3"  Grid.Row="2" VerticalAlignment="Center" Cursor="Hand" 
+                           Source="/Resources/Image.Avatar.Empty.png"
+                           HorizontalAlignment="Center">
                         <Image.Effect>
                             <DropShadowEffect BlurRadius="3" Opacity="0.885" ShadowDepth="2"/>
                         </Image.Effect>
                     </Image>
-                    <!--伤害奖励的显示-->
-                    <Grid Grid.Row="4" Grid.Column="3">
+                    <Grid x:Name="SecondaryTraitsGrid"
+                          Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="2" 
+                          HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
                             <ColumnDefinition/>
@@ -179,32 +202,93 @@
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
                             <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <cview:TraitBox Tag="LUCK" Grid.Column="0" Grid.Row="0" Style="{DynamicResource TraitBoxStyle}" Foreground="{DynamicResource MenuBackground}"/>
+                        <cview:TraitBox Tag="SAN" Grid.Column="1" Grid.Row="0" Style="{DynamicResource TraitBoxStyle}" Foreground="{DynamicResource MenuBackground}"/>
+                        <cview:TraitBox Tag="MP" Grid.Column="2" Grid.Row="0" Style="{DynamicResource TraitBoxStyle}" Foreground="{DynamicResource MenuBackground}"/>
+                        <cview:TraitBox Tag="HP" Grid.Column="3" Grid.Row="0" Style="{DynamicResource TraitBoxStyle}" Foreground="{DynamicResource MenuBackground}"/>
+                    </Grid>
+                    <Grid x:Name="SkillsPanle" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="42"/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="144"/>
+                            <ColumnDefinition Width="144"/>
+                        </Grid.ColumnDefinitions>
+                        <Label Grid.Row="0" Content="Skills" Tag="Skills"
+                               Grid.Column="0" Grid.ColumnSpan="3" 
+                               HorizontalContentAlignment="Center" VerticalAlignment="Stretch" 
+                               Style="{DynamicResource XLabel}" FontSize="22" 
+                               Margin="0" Padding="0,0,0,0"/>
+                        <Label x:Name="OccupationPoints" Content="9999" Grid.Column="1" Style="{DynamicResource XLabel}" FontSize="16"/>
+                        <Label x:Name="InterestPoints" Content="9999" Grid.Column="2" Style="{DynamicResource XLabel}" FontSize="16"/>
+                        <WrapPanel x:Name="SkillsContainer" 
+                               Orientation="Vertical" 
+                               Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3">
+                            <WrapPanel.Resources>
+                                <Style x:Key="SkillBoxStyle" TargetType="cview:TraitBox">
+                                    <Setter Property="Margin" Value="8,8,8,8"/>
+                                </Style>
+                            </WrapPanel.Resources>
+                            <cview:TraitBox Style="{DynamicResource SkillBoxStyle}"/>
+                        </WrapPanel>
+                    </Grid>
+
+                    <!--伤害奖励与体格的显示-->
+                    <Border Grid.Row="5" Grid.Column="3" BorderThickness="1,1,1,1" Background="{DynamicResource MenuBackground}" Opacity="0.2" Margin="1,1,1,1"/>
+                    <Grid Grid.Row="5" Grid.Column="3" Margin="0,4,0,4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="9*"/>
+                            <ColumnDefinition Width="9*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
                             <RowDefinition/>
                             <RowDefinition/>
                             <RowDefinition/>
                         </Grid.RowDefinitions>
-                        <Label x:Name="Label_DamageBonus" Content="DamageBonus" 
-                               Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
-                               Style="{DynamicResource XLabel}" HorizontalContentAlignment="Center"
-                               Tag="Card.Label.DamageBonus"/>
-                        <Label x:Name="Value_DamageBonus"
-                               Content="10D6"
-                               Grid.Row="1" Grid.Column="3"
+                        <Grid.Resources>
+                        </Grid.Resources>
+                        <!--伤害加深的标签-->
+                        <TextBlock x:Name="Label_DamageBonus" Tag="DamageBonus.Block"
+                                   Grid.Row="0" 
+                                   Style="{DynamicResource GeneralTextBlock}" Height="45" Width="60" Foreground="{DynamicResource MenuBackground}">
+                            Damage<LineBreak/>
+                            Bonus<LineBreak/>
+                            <Run FontSize="15">伤害加深</Run></TextBlock>
+                        <Label x:Name="Value_DamageBonus" Content="10D6"
+                               Grid.Row="0" Grid.Column="1"
                                HorizontalContentAlignment="Left"
-                               Style="{DynamicResource XLabel}"/>
-                        <Button x:Name="Button_Roll_DMGBonus" Content="掷骰"
-                                Grid.Row="0" Grid.Column="3"
-                                Margin="{DynamicResource DefaultMargin}"
-                                Style="{StaticResource XButtonStyle}"
-                                Tag="Card.Button.DMGBonus"/>
+                               Style="{DynamicResource XLabel}" Margin="2,2,2,2" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                        <!--伤害加深掷骰按钮-->
+                        <Button x:Name="Button_Roll_DMGBonus" Content="🎲"
+                                Grid.Row="0" Grid.Column="1"
+                                Tag="Card.Button.DMGBonus" Cursor="Hand"
+                                HorizontalAlignment="Right" Margin="6,6,8,6" Width="{Binding ActualHeight, ElementName=Button_Regenerate, Mode=OneWay}" 
+                                Background="{x:Null}" Foreground="{DynamicResource MenuBackground}" FontSize="16" BorderThickness="0,0,0,0"/>
+                        <!--体格的标签-->
+                        <TextBlock x:Name="Label_Build" Tag="Build.Block"
+                                   Grid.Row="1"
+                                   Style="{DynamicResource GeneralTextBlock}" Height="32" Width="36" Foreground="{DynamicResource MenuBackground}">
+                            Build<LineBreak/>
+                            <Run FontSize="15">体格</Run>
+                        </TextBlock>
+                        <Label x:Name="Value_Build" Content="-2"
+                               Grid.Row="1" Grid.Column="1"
+                               HorizontalContentAlignment="Left"
+                               Style="{DynamicResource XLabel}" Margin="2,2,2,2" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                        <cview:TraitBox x:Name="Box_Dodge" Tag="DODGE" Grid.Row="3" Grid.ColumnSpan="2" Margin="12,4,12,4"/>
                     </Grid>
                     <!--页尾-->
                     <Label x:Name="Label_Page_Trail" Tag="Page.Trail"
                            Content="- Investigator -"
-                           Grid.Row="99" Grid.Column="0" Grid.ColumnSpan="{Binding ColumnDefinitions.Count, ElementName=InvestigatorView, Mode=OneWay}"
+                           Grid.Row="99" Grid.Column="0" 
+                           Grid.ColumnSpan="{Binding ColumnDefinitions.Count, ElementName=InvestigatorView, Mode=OneWay}"
                            Foreground="{DynamicResource PlaceholderForeground}" 
-                           HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
-                           HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Margin="{DynamicResource DefaultMargin}"/>
+                           HorizontalAlignment="Center" VerticalAlignment="Stretch" 
+                           HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Margin="2,8,2,8"/>
                 </Grid>
             </Viewbox>
         </ScrollViewer>

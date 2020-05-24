@@ -90,12 +90,24 @@ namespace CardWizard.View
         }
 
         /// <summary>
+        /// 角色的背景信息被改变时, 触发的事件
+        /// </summary>
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        /// <summary>
+        /// 用于绑定到角色: 角色的背景信息被改变时, 触发的事件
+        /// </summary>
+        /// <param name="c"></param>
+        /// <param name="e"></param>
+        private void OnPropertyChanged(object c, PropertyChangedEventArgs e) => PropertyChanged?.Invoke(c, e);
+
+        /// <summary>
         /// 角色的属性值被改变时, 触发的事件
         /// </summary>
         public event TraitChangedEventHandler TraitChanged;
 
         /// <summary>
-        /// 对事件的包装
+        /// 用于绑定到角色: 角色的属性值被改变时, 触发的事件
         /// </summary>
         /// <param name="c"></param>
         /// <param name="e"></param>
@@ -105,6 +117,11 @@ namespace CardWizard.View
         /// 已载入的所有角色
         /// </summary>
         public ObservableCollection<Character> Characters { get; set; }
+
+        /// <summary>
+        /// 角色与其档案文件
+        /// </summary>
+        private Dictionary<Character, string> CharacterFiles { get; set; } = new Dictionary<Character, string>();
 
         private Character current;
 
@@ -122,6 +139,7 @@ namespace CardWizard.View
                     if (value != null)
                     {
                         value.TraitChanged += OnTraitChanged;
+                        value.PropertyChanged += OnPropertyChanged;
                     }
                 }
                 current = value;
@@ -153,8 +171,9 @@ namespace CardWizard.View
             GCDispatcher.Start();
             // 根据 Config.PathosDatabase 创建目录
             CreateDirectories(Paths);
-            // 创建数据总线
+            // 初始化数据总线
             DataBus = new DataBus();
+            DataBus.LoadFrom(Paths.PathData);
             // 新建一个随机数工具
             Die = new Die();
             // 创建 Lua 环境
@@ -173,6 +192,7 @@ namespace CardWizard.View
                 var c = YamlKit.LoadFile<Character>(item);
                 if (c == default(Character)) continue;
                 AddToCharacters(c);
+                CharacterFiles.Add(c, item);
             }
             if (Characters.Count != 0)
             {
@@ -185,48 +205,49 @@ namespace CardWizard.View
             }
             #region 设置界面的交互逻辑
             // 给按钮绑定事件
-            Window.Button_Create.Click += Button_Create_Click;
-            Window.Button_Save.Click += Button_Save_Click;
-            Window.Button_Debug.Click += Button_Debug_Click;
-            Window.Button_SavePic.Click += Button_SavePic_Click;
+            Window.CommandCreateGestured += DoCreate;
+            Window.CommandSaveGestured += DoSave;
+            Window.Button_Debug.Click += DoDebug;
+            Window.CommandCaptureGestured += DoCapturePicture;
             InitAsCardList(Window.List_Cards);
             // 角色基本信息面板的初始化
             Window.Backstory.InitializeBinding(this);
             // 属性重生成按钮
             Window.Button_Regenerate.Click += GetHandlerForReGenerateTraits(() => Current);
-            HideOnCapturePic.Add(Window.Button_Regenerate);
-            // 角色总属性的显示
-            void UpdateSumOfBaseTraits(Character c)
-            {
-                if (c == null) return;
-                Window.Value_Sum_Base_Traits.Content = SumTraits(c, d => !d.Derived);
-            }
-            InfoUpdated += UpdateSumOfBaseTraits;
-
             // 角色属性数值面板初始化
-            var traitBoxes = from UIElement c in Window.TraitsGrid.Children where c is TraitBox select c as TraitBox;
+            Func<Character> charactergetter = () => Current;
+            var traitBoxes = (from UIElement c in Window.TraitsGrid.Children
+                              where c is TraitBox
+                              select c as TraitBox).ToList();
+            traitBoxes.AddRange(from UIElement c in Window.SecondaryTraitsGrid.Children
+                                where c is TraitBox
+                                select c as TraitBox);
+            traitBoxes.Add(Window.Box_Dodge);
             foreach (var box in traitBoxes)
             {
-                var iTraitChanged = box.BindToTraitByTag(OnTraitBoxEndEdit);
+                var iTraitChanged = box.BindToTraitByTag(charactergetter, OnCharacterTraitEdited);
                 TraitChanged += iTraitChanged;
-                iTraitChanged.Invoke(Current, new TraitChangedEventArgs(box.Key));
+                InfoUpdated += GetHandlerForTraitBox(iTraitChanged, box.Key);
             }
             // 角色伤害奖励的控制
             InfoUpdated += UpdateDamageBonus;
+            // TODO: 显示角色技能 (完成了相关的工作后再取消隐藏)
+            Window.SkillsPanle.Visibility = Visibility.Hidden;
+            // 监控角色的属性变化
+            TraitChanged += MainManager_TraitChanged;
             // 绑定事件: 点击骰一次按钮时触发
             Window.Button_Roll_DMGBonus.Click += (o, e) =>
             {
                 var message = Translator.Translate("Message.RollADMGBonus", "{1}");
                 var formula = Window.Value_DamageBonus.Content.ToString();
-                var result = CalcTrait(Current.Traits, formula);
+                var result = CalcTrait(Current.Initials, formula);
                 Messenger.EnqueueFormat(message, Window.Value_DamageBonus.Content, result);
             };
-            HideOnCapturePic.Add(Window.Button_Roll_DMGBonus);
             // 头像绑定事件: 点击时可以选择图片导入
             Window.Image_Avatar.Process(image =>
             {
                 InfoUpdating += c => AvatarUpdate(c, image);
-                image.MouseDown += Image_Avatar_Click;
+                image.MouseDown += DoImportAvatar;
             });
             #endregion
             // 刷新界面
@@ -245,9 +266,9 @@ namespace CardWizard.View
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Button_Create_Click(object sender, RoutedEventArgs e)
+        private void DoCreate(object sender, RoutedEventArgs e)
         {
-            var childWindow = new GenerationWindow(Config, CalcTrait)
+            var childWindow = new GenerationWindow(this, CalcTrait)
             {
                 Owner = Window,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner
@@ -255,13 +276,15 @@ namespace CardWizard.View
             childWindow.ShowDialog();
             if (childWindow.DialogResult ?? false)
             {
-                Current = Character.Create(Config.BaseModelDict);
+                var newer = Character.Create(Config.BaseModelDict);
+                var selection = childWindow.Selection;
+                selection.Remove("SUM");
                 foreach (var kvp in childWindow.Selection)
                 {
-                    Current.SetTraitInitial(kvp.Key, kvp.Value);
+                    newer.SetTraitInitial(kvp.Key, kvp.Value);
                 }
-                RecalcTraitsInitial(Current, t => t.Derived);
-                AddToCharacters(Current);
+                RecalcTraitsInitial(newer, t => t.Derived);
+                AddToCharacters(newer);
             }
         }
 
@@ -270,9 +293,32 @@ namespace CardWizard.View
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Button_Save_Click(object sender, RoutedEventArgs e)
+        private void DoSave(object sender, RoutedEventArgs e)
         {
-            string dest = Path.Combine(Paths.PathSave, Current.Name + Config.FileExtensionForCard);
+            string dest;
+            if (!CharacterFiles.TryGetValue(Current, out dest))
+            {
+                dest = Path.Combine(Paths.PathSave, Current.Name + Config.FileExtensionForCard);
+                if (File.Exists(dest))
+                {
+                    var d = new SaveFileDialog()
+                    {
+                        CheckFileExists = true,
+                        DefaultExt = Config.FileExtensionForCard,
+                        AddExtension = true,
+                        Title = "Save As..."
+                    };
+                    d.ShowDialog(Window);
+                    if (!string.IsNullOrWhiteSpace(d.FileName))
+                    {
+                        dest = d.FileName;
+                    }
+                    else
+                    {
+                        return;
+                    }
+                }
+            }
             var source = YamlKit.SaveFile(dest, Current);
             if (Config.SaveTranslationDoc)
             {
@@ -283,6 +329,7 @@ namespace CardWizard.View
             }
             var message = Translator.Translate("Message.Character.Saved", "Saved at {0}");
             Messenger.EnqueueFormat(message, dest.Replace("\\", "/"));
+            CharacterFiles[Current] = dest;
         }
 
         /// <summary>
@@ -295,7 +342,7 @@ namespace CardWizard.View
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Button_SavePic_Click(object sender, RoutedEventArgs e)
+        private void DoCapturePicture(object sender, RoutedEventArgs e)
         {
             // 开始截屏前先缓存并更改部分元素的状态
             var cacheVisibility = new Dictionary<UIElement, Visibility>();
@@ -336,7 +383,7 @@ namespace CardWizard.View
         /// </summary>
         /// <param name="o"></param>
         /// <param name="e"></param>
-        private void Button_Debug_Click(object o, RoutedEventArgs e)
+        private void DoDebug(object o, RoutedEventArgs e)
         {
             if (File.Exists(Paths.ScriptDebug))
             {
@@ -359,7 +406,7 @@ namespace CardWizard.View
         /// </summary>
         /// <param name="o"></param>
         /// <param name="e"></param>
-        private void Image_Avatar_Click(object o, System.Windows.Input.MouseButtonEventArgs e)
+        private void DoImportAvatar(object o, System.Windows.Input.MouseButtonEventArgs e)
         {
             var openFiledialog = new OpenFileDialog
             {
@@ -378,15 +425,11 @@ namespace CardWizard.View
             // 如果文件已经存在, 要弹出确认窗口
             if (File.Exists(dest))
             {
-                var message = Translator.Translate("Dialog.Import.Avatar.Confirmation", "是否确定用\n{0}\n覆盖现有文件?");
+                var message = Translator.Translate("Dialog.Overwrite.Confirmation", "是否确定用\n{0}\n覆盖现有文件?");
                 message = string.Format(message, result);
-                var confirmDialog = new DialogWindow(message)
-                {
-                    Owner = Window,
-                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                };
-                confirmDialog.ShowDialog();
-                if (!confirmDialog.Result)
+                var confirmDialog = new DialogWindow(message);
+                confirmDialog.ShowDialog(Window);
+                if (!(bool)confirmDialog.DialogResult)
                     return;
             }
             File.Copy(result, dest, true);
@@ -460,50 +503,62 @@ namespace CardWizard.View
         /// <summary>
         /// 本地化控件及其子控件的文本
         /// </summary>
-        private static void Localize(ContentControl container, Translator transdict,
-                                     HashSet<ContentControl> histories = null)
+        public static void Localize(ContentControl container, Translator translator, HashSet<Visual> histories = null)
         {
-            if (histories == null) { histories = new HashSet<ContentControl>(); }
-            if (histories.Contains(container)) { return; }
-            else { histories.Add(container); }
-            var subElements = container.SelectAllSubElement();
-            var elements = from e in subElements where e is FrameworkElement select e as FrameworkElement;
-            foreach (var element in elements)
+            static void translate(FrameworkElement element, Translator translator)
             {
                 var path = element.Tag?.ToString() ?? string.Empty;
-                if (transdict.TryTranslate(path, out var text))
+                if (translator.TryTranslate(path, out var text))
                 {
-                    if (element is Image image)
+                    switch (element)
                     {
-                        image.ToolTip = text;
-                    }
-                    if (element is ContentControl childContainer && !(element is TraitBox))
-                    {
-                        childContainer.Content = text;
-                    }
-                    if (element is TextBlock block)
-                    {
-                        block.Inlines.Clear();
-                        var segments = text.Split("#", 2, StringSplitOptions.RemoveEmptyEntries);
-                        var run = new Run(segments[0].Trim());
-                        if (segments.Length > 1)
-                        {
-                            var styleDict = UIExtension.ResolveTextElementProperties(segments[1]);
-                            foreach (var kvp in styleDict)
-                            {
-                                run.SetValue(kvp.Key, kvp.Value);
-                            }
-                        }
-                        block.Inlines.Add(run);
+                        case Image image: image.ToolTip = text; break;
+                        case Label label: label.Content = text; break;
+                        case Button button: button.Content = text; break;
+                        case Window window: window.Title = text; break;
+                        case TextBlock block:
+                            var inlines = UIExtension.ResolveTextElements(text);
+                            if (inlines.Count() == 0) break;
+                            block.Inlines.Clear();
+                            block.Inlines.AddRange(inlines);
+                            break;
                     }
                 }
-                if (transdict.TryTranslate($"{path}.ToolTip", out text))
+                // 查询是否存在这个子控件的提示信息, 若有, 添加 ToolTip
+                var tooltipKey = $"{path}.ToolTip";
+                if (translator.TryTranslate(tooltipKey, out text))
                 {
-                    element.ToolTip = text;
+                    var toolTip = new ToolTip();
+                    toolTip.BeginInit();
+                    toolTip.Style = (Style)Application.Current.FindResource("XToolTip");
+                    toolTip.Content = text;
+                    toolTip.EndInit();
+                    element.RegisterName(tooltipKey.Replace('.', '_'), toolTip);
+                    element.ToolTip = toolTip;
                 }
+            }
+
+            // 创建历史记录, 避免重复操作元素
+            if (histories == null) { histories = new HashSet<Visual>(); }
+            if (histories.Contains(container)) { return; }
+            else
+            {
+                translate(container, translator);
+                histories.Add(container);
+            }
+            // 查询所有的子控件
+            var subElements = container.SelectAllSubElement();
+            var elements = from e in subElements where e is FrameworkElement select e as FrameworkElement;
+            // 遍历子控件, 尝试对其本地化
+            foreach (var element in elements)
+            {
+                if (histories.Contains(element)) continue;
+                translate(element, translator);
+                histories.Add(element);
+
                 if (element is ContentControl control)
                 {
-                    Localize(control, transdict, histories);
+                    Localize(control, translator, histories);
                 }
             }
         }
@@ -511,18 +566,25 @@ namespace CardWizard.View
         /// <summary>
         /// 初始化卡牌显示列表
         /// </summary>
-        /// <param name="box"></param>
-        private void InitAsCardList(ListBox box)
+        /// <param name="listBox"></param>
+        private void InitAsCardList(ListBox listBox)
         {
             var binding = new Binding() { Source = Characters };
-            box.SetBinding(ItemsControl.ItemsSourceProperty, binding);
-            box.SelectedIndex = 0;
-            box.SelectionChanged += (o, e) =>
+            listBox.SetBinding(ItemsControl.ItemsSourceProperty, binding);
+            listBox.SelectedIndex = 0;
+            listBox.SelectionChanged += (o, e) =>
             {
                 if (e.Source is ListBox b && b.SelectedItem is Character c)
                 {
                     Current = c;
                     OnInfoUpdate(Current);
+                }
+            };
+            Characters.CollectionChanged += (o, e) =>
+            {
+                if (e.NewItems?.Count > 0)
+                {
+                    listBox.SelectedItem = e.NewItems[0];
                 }
             };
         }
@@ -543,36 +605,61 @@ namespace CardWizard.View
         }
 
         /// <summary>
+        /// 角色属性数值变动时触发的事件
+        /// </summary>
+        /// <param name="character"></param>
+        /// <param name="args"></param>
+        private void MainManager_TraitChanged(Character character, TraitChangedEventArgs args)
+        {
+            var key = args.Key;
+            var model = Config.BaseModelDict[key];
+            if (model.Derived) return;
+            if (key.EqualsIgnoreCase("STR") || key.EqualsIgnoreCase("SIZ"))
+                UpdateDamageBonus(character);
+            var source = args.Segment switch
+            {
+                Trait.Segment.INITIAL => character.Initials,
+                Trait.Segment.GROWTH => character.Growths,
+                Trait.Segment.ADJUSTMENT => character.Adjustments,
+                _ => null,
+            };
+            if (source == null) return;
+
+            foreach (var m in Config.DataModels)
+            {
+                if (!m.Formula.Contains(key)) continue;
+                var value = CalcTrait(source, m.Formula);
+                OnCharacterTraitEdited(character, args.Segment, m.Name, value);
+            }
+        }
+
+        /// <summary>
         /// 属性编辑框结束编辑时触发的事件: 用新的值设置角色的属性值
         /// </summary>
         /// <param name="segment"></param>
         /// <param name="traitName"></param>
         /// <param name="value"></param>
-        private void OnTraitBoxEndEdit(Trait.Segment segment, string traitName, int value)
+        private void OnCharacterTraitEdited(Character character, Trait.Segment segment, string traitName, int value)
         {
-            switch (segment)
+            var model = Config.BaseModelDict[traitName];
+            int i = Current.GetTraitInitial(traitName),
+                a = Current.GetTraitAdjustment(traitName),
+                g = Current.GetTraitGrowth(traitName);
+            var (after, func) = segment switch
             {
-                case Trait.Segment.INITIAL:
-                    Current.SetTraitInitial(traitName, value);
-                    break;
-                case Trait.Segment.ADJUSTMENT:
-                    Current.SetTraitAdjustment(traitName, value);
-                    break;
-                default:
-                    Current.SetTraitGrowth(traitName, value);
-                    break;
+                Trait.Segment.INITIAL => (value + a + g, (Action<string, int>)Current.SetTraitInitial),
+                Trait.Segment.ADJUSTMENT => (value + i + g, Current.SetTraitAdjustment),
+                Trait.Segment.GROWTH => (value + i + a, Current.SetTraitGrowth),
+                _ => (0, null),
+            };
+            if (model.Upper > 0 && after > model.Upper)
+            {
+                value = model.Upper - (after - value);
+                var message = Translator.Translate("Message.Trait.Overflow", "{0} 的值不能超过 {1}");
+                Messenger.EnqueueFormat(message, model.Name, model.Upper);
             }
+            func?.Invoke(traitName, value);
         }
-
-        /// <summary>
-        /// 取得角色的总属性点数
-        /// </summary>
-        /// <param name="character"></param>
-        /// <param name="selector"></param>
-        /// <returns></returns>
-        public int SumTraits(Character character, Func<Trait, bool> selector) => (from prop in Config.DataModels
-                                                                                  where selector(prop)
-                                                                                  select character.GetTrait(prop.Name)).Sum();
 
         /// <summary>
         /// 刷新角色的基础属性统计标签
@@ -582,7 +669,24 @@ namespace CardWizard.View
         {
             if (c == null) return;
             var scrtipt = string.Format("return DamageBonus({0}, {1})", c.GetTrait("STR"), c.GetTrait("SIZ"));
-            Window.Value_DamageBonus.Content = LuaHub.DoString(scrtipt).First().ToString();
+            var results = LuaHub.DoString(scrtipt);
+            Window.Value_DamageBonus.Content = results.First().ToString();
+            Window.Value_Build.Content = Convert.ToInt32(results.ElementAt(1));
+        }
+
+        /// <summary>
+        /// 取得一个事件: 更新属性显示盒的面板
+        /// </summary>
+        /// <param name="handler"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        private static Action<Character> GetHandlerForTraitBox(TraitChangedEventHandler handler, string key)
+        {
+            void updated(Character c)
+            {
+                handler.Invoke(c, new TraitChangedEventArgs(key));
+            }
+            return updated;
         }
 
         /// <summary>
@@ -596,7 +700,7 @@ namespace CardWizard.View
             {
                 var character = getter?.Invoke();
                 if (character == null) return;
-                var childWindow = new GenerationWindow(Config, CalcTrait)
+                var childWindow = new GenerationWindow(this, CalcTrait)
                 {
                     Owner = Window,
                     WindowStartupLocation = WindowStartupLocation.CenterOwner
@@ -680,7 +784,7 @@ namespace CardWizard.View
                 static bool filterDefault(Trait m) => true;
                 filter = filterDefault;
             }
-            var variables = new Dictionary<string, int>(character.Traits)
+            var variables = new Dictionary<string, int>(character.Initials)
             {
                 { "AGE", character.Age }
             };

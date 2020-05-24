@@ -34,7 +34,7 @@ namespace CardWizard.View
         /// 
         /// </summary>
         /// <param name="manager"></param>
-        public GenerationWindow(Config config, Func<Dictionary<string, int>, string, int> TraitRoller)
+        public GenerationWindow(MainManager manager, Func<Dictionary<string, int>, string, int> TraitRoller)
         {
             InitializeComponent();
             Width = MinWidth;
@@ -43,15 +43,9 @@ namespace CardWizard.View
             Button_Confirm.Click += Button_Confirm_Click;
             Button_Cancel.Click += Button_Cancel_Click;
             Closed += ListWindow_Closed;
-            if (config == null) throw new NullReferenceException();
-            var translator = config.Translator;
-            var dataModels = config.DataModels;
-
-            if (translator.TryTranslate($"{nameof(GenerationWindow)}.{nameof(Title)}", out var titleText))
-            {
-                Title = titleText;
-            }
-
+            if (manager == null) throw new NullReferenceException();
+            var translator = manager.Translator;
+            var dataModels = manager.Config.DataModels;
             // 初始化标题行
             Headers.Process(_ =>
             {
@@ -60,15 +54,6 @@ namespace CardWizard.View
                                   select m.Name).ToList();
                 properties.Add("SUM");
                 Headers.InitAsHeaders(properties.ToArray(), translator);
-            });
-            // 提示语句
-            MessageBox.Process(control =>
-            {
-                var tkey = control.DataContext?.ToString() ?? string.Empty;
-                if (translator.TryTranslate(tkey, out var message))
-                {
-                    control.Text = message;
-                }
             });
             // 列表
             List<TraitsViewItem> items = new List<TraitsViewItem>();
@@ -99,6 +84,8 @@ namespace CardWizard.View
                 items[i].InitAsDatas(properties, false);
             }
             Selection = items[0].Values;
+
+            MainManager.Localize(this, translator);
         }
 
         /// <summary>

@@ -75,6 +75,9 @@ namespace CardWizard.Tools
 
         /// <summary>
         /// 生成编译单元
+        /// <para>
+        /// <paramref name="propertyTypePairs"/> 的值类型可以是 <see cref="Type"/> 或 <see cref="string"/> (类型名称)
+        /// </para>
         /// </summary>
         /// <param name="propertyTypePairs"></param>
         /// <returns></returns>
@@ -229,6 +232,11 @@ namespace CardWizard.Tools
             return file_full;
         }
 
+        /// <summary>
+        /// 读取 .cs 文件, 生成 <see cref="Assembly"/>
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns></returns>
         public static Assembly GenerateAssembly(string file)
         {
             using CSharpCodeProvider provider = new CSharpCodeProvider();
@@ -257,7 +265,8 @@ namespace CardWizard.Tools
         /// 检查并取得字符串的类型;
         /// <para>支持以下缩写
         ///  <see cref="int"/>, <see cref="float"/>, <see cref="double"/>, <see cref="bool"/>,
-        ///  <see cref="string"/>, <see cref="char"/>, <see cref="byte"/>, <see cref="short"/>
+        ///  <see cref="string"/>, <see cref="char"/>, <see cref="byte"/>, <see cref="short"/>, 
+        ///  <see cref="object"/>
         /// </para>
         /// <para>以及 <see cref="List{T}"/> where T : 上述所有类型 </para>
         /// <para>找不到对应类型的字符串会用反射查询, 仍找不到时会返回 typeof(<see cref="string"/>) </para>

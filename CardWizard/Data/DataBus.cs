@@ -73,37 +73,42 @@ namespace CardWizard.Data
         /// <para>如果是文件夹, 会读取文件夹内的所有子目录与子文件</para>
         /// </summary>
         /// <param name="path"></param>
-        public void LoadAll(string path)
+        public void LoadFrom(string path)
         {
+            if (string.IsNullOrWhiteSpace(path)) return;
+            // 如果是目录
             if (Directory.Exists(path))
             {
-                var pathos = Directory.GetFiles(path);
-                pathos.ToList().AddRange(Directory.GetDirectories(path));
-                foreach (var p in pathos)
+                var paths = Directory.GetFiles(path).ToList();
+                paths.AddRange(Directory.GetDirectories(path));
+                foreach (var p in paths)
                 {
-                    LoadAll(p);
+                    LoadFrom(p);
                 }
                 return;
             }
-            if (path == null) { return; }
-            if (path.StartsWith(nameof(Weapon)))
+            // 如果是文件
+            else if (File.Exists(path))
             {
-                SolveRaw<Weapon>(path);
-            }
-            else if (path.StartsWith(nameof(Occupation)))
-            {
-                SolveRaw<Occupation>(path);
-            }
-            else if (path.StartsWith(nameof(Skill)))
-            {
-                SolveRaw<Skill>(path);
+                if (path.StartsWith(nameof(Weapon)))
+                {
+                    SolveRaw<Weapon>(path);
+                }
+                else if (path.StartsWith(nameof(Occupation)))
+                {
+                    SolveRaw<Occupation>(path);
+                }
+                else if (path.StartsWith(nameof(Skill)))
+                {
+                    SolveRaw<Skill>(path);
+                }
             }
         }
-        
+
         private void SolveRaw<T>(string path)
         {
             var datas = YamlKit.LoadFile<IEnumerable<T>>(path);
-            if (datas == null || datas.Any()) return;
+            if (datas == null || !datas.Any()) return;
             foreach (var item in datas)
             {
                 CacheData(item);
@@ -116,17 +121,13 @@ namespace CardWizard.Data
         /// <param name="item"></param>
         public void CacheData(object item)
         {
-            if (item is Occupation occupation)
+            switch (item)
             {
-                Occupations[occupation.Name] = occupation;
-            }
-            else if (item is Skill skill)
-            {
-                Skills[skill.Name] = skill;
-            }
-            else if (item is Weapon weapon)
-            {
-                Weapons[weapon.Name] = weapon;
+                case Weapon w: Weapons[w.Name] = w; break;
+                case Skill s: Skills[s.Name] = s; break;
+                case Occupation o: Occupations[o.Name] = o; break;
+                default:
+                    break;
             }
         }
     }

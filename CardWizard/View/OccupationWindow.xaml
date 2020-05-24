@@ -4,9 +4,100 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CardWizard.View"
-        mc:Ignorable="d"
-        Title="OccupationWindow" Height="450" Width="800">
+        xmlns:system="clr-namespace:System;assembly=System.Runtime"
+        mc:Ignorable="d" Tag="OccupationWindow.Title"
+        Title="OccupationWindow" Height="450" Width="680" FontFamily="{DynamicResource WindowFontFamily}" WindowStartupLocation="CenterOwner">
+    <Window.Resources>
+        <SolidColorBrush x:Key="OccupationBackground" Color="#26457ECF"/>
+        <SolidColorBrush x:Key="MouseOverBackground" Color="WhiteSmoke"/>
+        <system:String x:Key="TagForSelected">selected</system:String>
+        <Style x:Key="OBlock" TargetType="TextBlock">
+            <Setter Property="MaxWidth" Value="320"/>
+            <Setter Property="TextWrapping" Value="WrapWithOverflow"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{DynamicResource PlaceholderForeground}"/>
+            <Setter Property="Margin" Value="0,0,0,0"/>
+            <Setter Property="Padding" Value="8,8,8,8"/>
+            <Setter Property="Focusable" Value="True"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource MouseOverBackground}"/>
+                </Trigger>
+                <Trigger Property="Tag" Value="{StaticResource TagForSelected}">
+                    <Setter Property="Background" Value="{DynamicResource OccupationBackground}"/>
+                    <Setter Property="Foreground" Value="{DynamicResource MenuBackground}"></Setter>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="10"/>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="10"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="10"/>
+            <RowDefinition/>
+            <RowDefinition Height="64"/>
+            <RowDefinition Height="10"/>
+        </Grid.RowDefinitions>
         
+        <WrapPanel Name="MainPanel" Grid.Row="1" Grid.Column="1">
+            <TextBlock Style="{DynamicResource OBlock}" Tag="selected"> 
+                <Run FontWeight="Bold" FontSize="16">医生</Run>
+                <LineBreak/>
+                钻研学习医学科学技术，挽救生命，以治病为业。
+                <LineBreak/>
+                <Run FontWeight="Bold" FontSize="16">技能</Run>
+                <LineBreak/>
+                急救, 其它语言(拉丁文), 医学, 心理学, 科学(生物学), 科学(药学), CUSTOM_PRO, CUSTOM_PRO
+                <LineBreak/>
+                <Run FontWeight="Bold" FontSize="16">职业技能点数</Run>
+                <LineBreak/>
+                EDU * 4
+            </TextBlock>
+            <TextBlock Style="{DynamicResource OBlock}">
+                <Run FontWeight="Bold" FontSize="16">警探</Run>
+                <LineBreak/>
+                钻研学习医学科学技术，挽救生命，以治病为业。
+                <LineBreak/>
+                <Run FontWeight="Bold" FontSize="16">技能</Run>
+                <LineBreak/>
+                急救, 其它语言(拉丁文), 医学, 心理学, 科学(生物学), 科学(药学), CUSTOM_PRO, CUSTOM_PRO
+                <LineBreak/>
+                <Run FontWeight="Bold" FontSize="16">职业技能点数</Run>
+                <LineBreak/>
+                EDU * 2 + math.max(DEX, STR) * 2
+            </TextBlock>
+
+        </WrapPanel>
+        
+        <Grid x:Name="OperatorsGrid" Grid.Row="2" Grid.Column="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="128"/>
+                <ColumnDefinition Width="64"/>
+                <ColumnDefinition Width="128"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <TextBlock Tag="OccupationWindow.Message" Visibility="Hidden"
+                       Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1" Grid.RowSpan="2">选择一个职业
+            </TextBlock>
+            <Button x:Name="Button_Confirm" Tag="Occupations.Button.Confirm" 
+                    Content="确定"
+                    Style="{DynamicResource XButtonStyle}" 
+                Grid.Row="2" Grid.Column="3"/>
+            <Button x:Name="Button_Cancel" Tag="Occupations.Button.Cancel" 
+                    Content="取消"
+                    Style="{DynamicResource XButtonStyle}" 
+                Grid.Row="2" Grid.Column="1"/>
+        </Grid>
+        
+
     </Grid>
 </Window>

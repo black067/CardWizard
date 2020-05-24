@@ -26,6 +26,8 @@ namespace CardWizard.View
     {
         private readonly TextBox[] texts;
 
+        private Func<Character> CharacterGetter { get; set; }
+
         /// <summary>
         /// 与之绑定的属性名称
         /// </summary>
@@ -126,12 +128,14 @@ namespace CardWizard.View
             UpdateValueView();
             if (sender is TextBox box && texts.Contains(box))
             {
+                var c = CharacterGetter();
+                if (c == null) return;
                 if (box.Equals(Text_Initial))
-                    InputFieldEndEdit?.Invoke(Trait.Segment.INITIAL, Key, ValueInitial);
+                    InputFieldEndEdit?.Invoke(CharacterGetter(), Trait.Segment.INITIAL, Key, ValueInitial);
                 else if (box.Equals(Text_Adjustment))
-                    InputFieldEndEdit?.Invoke(Trait.Segment.ADJUSTMENT, Key, ValueAdjustment);
+                    InputFieldEndEdit?.Invoke(CharacterGetter(), Trait.Segment.ADJUSTMENT, Key, ValueAdjustment);
                 else
-                    InputFieldEndEdit?.Invoke(Trait.Segment.GROWTH, Key, ValueGrowth);
+                    InputFieldEndEdit?.Invoke(CharacterGetter(), Trait.Segment.GROWTH, Key, ValueGrowth);
             }
         }
 
@@ -168,11 +172,13 @@ namespace CardWizard.View
         /// </summary>
         /// <param name="key"></param>
         /// <param name="targetGetter"></param>
-        public TraitChangedEventHandler BindToTrait(string key, EndEditBoxEventHandler onEndEdit)
+        public TraitChangedEventHandler BindToTrait(Func<Character> getter, string key, EndEditBoxEventHandler onEndEdit)
         {
             Key = key;
-            Block_Key.SetValue(TagProperty, $"{Key}.TraitBox");
+            CharacterGetter = getter;
+            Block_Key.SetValue(TagProperty, $"{Key}.Block");
             InputFieldEndEdit += onEndEdit;
+            GrowthMarkColumn.Width = new GridLength(0, GridUnitType.Star);
             void ITraitChanged(Character c, TraitChangedEventArgs e)
             {
                 if (!e.Key.EqualsIgnoreCase(Key)) { return; }
@@ -190,10 +196,10 @@ namespace CardWizard.View
         /// </summary>
         /// <param name="onEndEdit"></param>
         /// <returns></returns>
-        public TraitChangedEventHandler BindToTraitByTag(EndEditBoxEventHandler onEndEdit)
+        public TraitChangedEventHandler BindToTraitByTag(Func<Character> getter, EndEditBoxEventHandler onEndEdit)
         {
             var tag = Tag?.ToString();
-            return BindToTrait(tag, onEndEdit);
+            return BindToTrait(getter, tag, onEndEdit);
         }
     }
 
@@ -203,5 +209,5 @@ namespace CardWizard.View
     /// <param name="segment"></param>
     /// <param name="traitName"></param>
     /// <param name="value"></param>
-    public delegate void EndEditBoxEventHandler(Trait.Segment segment, string traitName, int value);
+    public delegate void EndEditBoxEventHandler(Character characterGetter, Trait.Segment segment, string traitName, int value);
 }

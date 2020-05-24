@@ -81,7 +81,7 @@ namespace CardWizard.View
                 {
                     element.Tag = item;
                     element.Cursor = System.Windows.Input.Cursors.Arrow;
-                    if (hasTranslator && translator.TryTranslate($"{item}.Description", out var value))
+                    if (hasTranslator && translator.TryTranslate($"{item}.ToolTip", out var value))
                     {
                         element.ToolTip = value;
                     }

@@ -50,8 +50,9 @@ namespace CardWizard.View
         /// 作为 Dialog 窗口显示
         /// </summary>
         /// <param name="owner"></param>
+        /// <param name="startupLocation"></param>
         /// <returns></returns>
-        public bool? ShowDialog(Window owner)
+        public bool? ShowDialog(Window owner, WindowStartupLocation startupLocation = WindowStartupLocation.CenterOwner)
         {
             Owner = owner;
             return ShowDialog();

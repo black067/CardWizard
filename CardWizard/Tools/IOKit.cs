@@ -85,6 +85,40 @@ namespace CardWizard.Tools
         }
 
         /// <summary>
+        /// 查询目录下的所有文件
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="recursiveLimit"></param>
+        /// <returns></returns>
+        public static List<FileInfo> GetAllFiles(string path, int recursiveLimit = 0)
+        {
+            static List<FileInfo> localGetAllFiles(string path, int i, int max, List<FileInfo> empty)
+            {
+                if (max > 0 && i > max) return empty;
+                var files = new List<FileInfo>();
+                // 是目录
+                if (Directory.Exists(path))
+                {
+                    var subfiles = Directory.GetFiles(path);
+                    files.AddRange(from f in subfiles select new FileInfo(f));
+                    var subpaths = Directory.GetDirectories(path);
+                    foreach (var subpath in subpaths)
+                    {
+                        files.AddRange(localGetAllFiles(subpath, i + 1, max, empty));
+                    }
+                }
+                // 是文件
+                else if (File.Exists(path))
+                {
+                    files.Add(new FileInfo(path));
+                }
+                return files;
+            }
+            return localGetAllFiles(path, 0, recursiveLimit, Array.Empty<FileInfo>().ToList());
+        }
+        
+
+        /// <summary>
         /// 压缩文件时的缓冲区大小
         /// </summary>
         public static int BufferSizeForZipping { get; set; } = 4096;
@@ -94,7 +128,7 @@ namespace CardWizard.Tools
         /// </summary>
         /// <param name="path"></param>
         /// <param name="filePaths"></param>
-        public static void Zip(string dest, string comments = "", params string[] filesToZip)
+        public static Thread Zip(string dest, string comments = "", params string[] filesToZip)
         {
             var dir = Path.GetDirectoryName(dest);
             if (!string.IsNullOrWhiteSpace(dir))
@@ -106,6 +140,16 @@ namespace CardWizard.Tools
                 if (!string.IsNullOrWhiteSpace(comments))
                 {
                     source.SetComment(comments);
+                }
+                var filesFinal = new List<FileInfo>();
+                foreach (var item in filesToZip.ToList())
+                {
+
+                    FileAttributes attr = File.GetAttributes(item);
+                    if (attr.HasFlag(FileAttributes.Directory))
+                    {
+
+                    }
                 }
                 foreach (var item in filesToZip)
                 {
@@ -129,18 +173,18 @@ namespace CardWizard.Tools
                         throw;
                     }
                 }
-
             }
             var thread = new Thread(localZip);
             thread.Start();
+            return thread;
         }
 
         /// <summary>
-        /// 解压
+        /// 解压指定的文件到目标路径下, 目标路径默认是与压缩包同名的文件夹
         /// </summary>
         /// <param name="sourceFile"></param>
         /// <param name="destDir"></param>
-        public static void Extract(string sourceFile, string destDir = "")
+        public static Thread Extract(string sourceFile, string destDir = "")
         {
             if (!File.Exists(sourceFile))
             {
@@ -186,6 +230,7 @@ namespace CardWizard.Tools
             }
             var thread = new Thread(localExtract);
             thread.Start();
+            return thread;
         }
     }
 }

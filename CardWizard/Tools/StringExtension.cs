@@ -93,9 +93,11 @@ namespace CardWizard.Tools
         public static string CombineToString<T>(this IEnumerable<T> self, string separator, Func<T, string> converter)
         {
             List<string> after = new List<string>();
+            bool hasConverter = converter != null;
             foreach (var item in self)
             {
-                after.Add(converter.Invoke(item));
+                if (item == null) continue;
+                after.Add(hasConverter ? converter.Invoke(item) : item.ToString());
             }
             return string.Join(separator, self);
         }

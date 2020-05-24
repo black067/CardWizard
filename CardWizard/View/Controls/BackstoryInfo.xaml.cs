@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Windows;
@@ -21,12 +22,11 @@ namespace CardWizard.View
     /// </summary>
     public partial class BackstoryInfo : UserControl
     {
-
         private MainManager Manager { get; set; }
 
-        private string ValidText;
+        private string InvalidMark { get; set; }
 
-        private string InvalidText;
+        private Label AgeBonusMark { get; set; }
 
         /// <summary>
         /// Constructor
@@ -34,6 +34,7 @@ namespace CardWizard.View
         public BackstoryInfo()
         {
             InitializeComponent();
+            InvalidMark = (string)Application.Current.FindResource("AgeBonusMark");
         }
 
         /// <summary>
@@ -54,10 +55,15 @@ namespace CardWizard.View
                 Combo_Era.SetBinding(ComboBox.SelectedValueProperty, binding);
             };
             Combo_Era.ItemsSource = translator.labelForEras;
+            // 角色职业
+            Button_Occupation.Click += Button_Occupation_Click;
             // 角色年龄的显示
             BindTextBox(Text_Age, nameof(Character.Age), Manager);
-            ValidText = translator.Translate("Valid", "✔");
-            InvalidText = translator.Translate("Invalid", "❌");
+            AgeBonusMark = Manager.Window.Label_Validity;
+            manager.PropertyChanged += CurrentAgeChanged;
+            manager.InfoUpdated += c => IsAgeValid(AgeBonusMark, c);
+            // 角色现居地点的显示
+            BindTextBox(Text_Address, nameof(Character.Address), Manager);
             // 角色出生地的控制
             BindTextBox(Text_Homeland, nameof(Character.Homeland), Manager);
             // 角色学历的控制
@@ -74,24 +80,42 @@ namespace CardWizard.View
             };
         }
 
+        private void Button_Occupation_Click(object sender, RoutedEventArgs e)
+        {
+            var window = new OccupationWindow(Manager.Config.OccupationModels, Manager.Translator)
+            {
+                Owner = Manager.Window,
+            };
+            MainManager.Localize(window, Manager.Translator);
+            if ((bool)window.ShowDialog() && window.Selection is Occupation occupation)
+            {
+                Manager.Current.Occupation = occupation.Name;
+                Button_Occupation.Content = occupation.Name;
+                if (Button_Occupation.ToolTip is ToolTip tip)
+                {
+                    var tiptext = occupation.ToString();
+                    tiptext = Translator.MapKeywords(tiptext, Manager.Translator.ToKeywordsMap());
+                    tip.Content = tiptext;
+                }
+            }
+        }
+
         /// <summary>
         /// 检查角色的年龄是否满足最小年龄的要求
         /// </summary>
         /// <param name="check"></param>
         /// <param name="c"></param>
         /// <returns></returns>
-        int IsAgeValid(TextBox check, Character c)
+        static int IsAgeValid(Label check, Character c)
         {
-            var minAge = Manager.CalcForInt(c.Traits, $"return GetMinAge(EDU)");
+            int minAge = 1;
             if (c.Age < minAge)
             {
-                //check.Content = InvalidText;
-                check.BorderBrush = (SolidColorBrush)Application.Current.FindResource("InvalidForeground");
+                check.Visibility = Visibility.Visible;
             }
             else
             {
-                //check.Content = ValidText;
-                check.Foreground = (SolidColorBrush)Application.Current.FindResource("ValidForeground");
+                check.Visibility = Visibility.Hidden;
             }
             return minAge;
         }
@@ -106,22 +130,54 @@ namespace CardWizard.View
             // 改变的值不是年龄, 直接中断
             if (!e.PropertyName.EqualsIgnoreCase(nameof(Character.Age))) return;
             // 判断年龄是否符合规则
-            var minAge = IsAgeValid(Text_Age, Manager.Current);
-            var edu = Manager.Current.GetTraitInitial("EDU");
-            var script = $"return AgeBonus({edu}, {Manager.Current.Age}, {minAge})";
-            var table = (XLua.LuaTable)Manager.LuaHub.DoString(script).First();
-            var bonus = new Dictionary<string, int>();
-            foreach (var key in table.GetKeys<string>())
+            var minAge = IsAgeValid(AgeBonusMark, Manager.Current);
+            //var edu = Manager.Current.GetTraitInitial("EDU");
+            //var script = $"return AgeBonus({edu}, {Manager.Current.Age}, {minAge})";
+            //var table = (XLua.LuaTable)Manager.LuaHub.DoString(script).First();
+            //var bonus = new Dictionary<string, int>();
+            //foreach (var key in table.GetKeys<string>())
+            //{
+            //    bonus[key] = Convert.ToInt32(table.Get<object>(key));
+            //}
+            //if (bonus.TryGetValue("EDU", out int eduGrowth))
+            //{
+            //    Manager.Current.SetTraitGrowth("EDU", eduGrowth);
+            //}
+            //if (bonus.TryGetValue("Adjustment", out int adjustment))
+            //{
+            //    Manager.Current.SetTraitAdjustment("EDU", adjustment);
+            //}
+        }
+
+        internal class AgeRangeRule : ValidationRule
+        {
+            public int Min { get; set; }
+            public int Max { get; set; }
+
+            public AgeRangeRule()
             {
-                bonus[key] = Convert.ToInt32(table.Get<object>(key));
             }
-            if (bonus.TryGetValue("EDU", out int eduGrowth))
+
+            public override ValidationResult Validate(object value, CultureInfo cultureInfo)
             {
-                Manager.Current.SetTraitGrowth("EDU", eduGrowth);
-            }
-            if (bonus.TryGetValue("Adjustment", out int adjustment))
-            {
-                Manager.Current.SetTraitAdjustment("EDU", adjustment);
+                int age = 0;
+
+                try
+                {
+                    if (((string)value).Length > 0)
+                        age = Int32.Parse((String)value);
+                }
+                catch (Exception e)
+                {
+                    return new ValidationResult(false, $"Illegal characters or {e.Message}");
+                }
+
+                if ((age < Min) || (age > Max))
+                {
+                    return new ValidationResult(false,
+                      $"Please enter an age in the range: {Min}-{Max}.");
+                }
+                return ValidationResult.ValidResult;
             }
         }
 
@@ -137,8 +193,9 @@ namespace CardWizard.View
             {
                 var binding = new Binding(path)
                 {
-                    Source = c
+                    Source = c,
                 };
+                if (path == nameof(Character.Age)) binding.ValidationRules.Add(new AgeRangeRule() { Min = 1, Max = 99 });
                 box.SetBinding(TextBox.TextProperty, binding);
             };
             #region 单击时将内容全选

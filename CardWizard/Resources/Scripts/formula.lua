@@ -15,21 +15,26 @@ STR+SIZ		伤害加值		体格
 --- 计算伤害奖励的脚本
 function DamageBonus(strength, size)
 	local result = 0
+	local build = 0
 	local sum = strength + size
 	-- 结果为 常数 的情况
-	if (sum > 84 and sum <= 124) then return '0' end
-	if (sum <= 64) then return '-2' end
-	if (sum <= 84) then return '-1' end
+	if (sum > 84 and sum <= 124) then return '0', build end
+	if (sum <= 64) then return '-2', -2 end
+	if (sum <= 84) then return '-1', -1 end
 	-- 骰子面数
 	local d = 6
-	if (sum > 124 and sum <= 164) then d = 4 end
+	if (sum > 124 and sum <= 164) then 
+		d = 4
+		build = 1
+	end
 	-- 系数
 	local c = 1
 	if sum > 204 then
 		c = sum / 80 - 1
+		build = c + 1
 	end
 	-- 返回计算结果
-	return string.format('%0.0fD%0.0f', c, d)
+	return string.format('%0.0fD%0.0f', c, d), build
 end
 
 DOC_GetMOV = [[ GetMOV 算法参考以下数据 (来自第七版规则书)

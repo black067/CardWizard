@@ -8,34 +8,19 @@ namespace CallOfCthulhu
     public class TraitChangedEventArgs : EventArgs
     {
         /// <summary>
-        /// 原来的特点基础值
+        /// 被修改的段落
         /// </summary>
-        public int OriginalBase { get; set; }
+        public Trait.Segment Segment { get; set; }
 
         /// <summary>
-        /// 原来的特点成长值
+        /// 原来的值
         /// </summary>
-        public int OriginalGrowth { get; set; }
+        public int OriginValue { get; set; }
 
         /// <summary>
-        /// 新的特点基础值
+        /// 新的值
         /// </summary>
-        public int NewInitial { get; set; }
-
-        /// <summary>
-        /// 新的特点成长值
-        /// </summary>
-        public int NewGrowth { get; set; }
-
-        /// <summary>
-        /// 原有的衰老惩罚值
-        /// </summary>
-        public int OriginalAdjustment { get; set; }
-
-        /// <summary>
-        /// 新的衰老惩罚值
-        /// </summary>
-        public int NewAdjustment { get; set; }
+        public int NewValue { get; set; }
 
         /// <summary>
         /// 发生变化的特点名称

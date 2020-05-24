@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:CardWizard.View" x:Name="userControl"
              x:Class="CardWizard.View.TraitsViewItem"
              mc:Ignorable="d" 
-             d:DesignHeight="30" d:DesignWidth="600" Focusable="True">
+             d:DesignHeight="30" d:DesignWidth="660" Focusable="True">
     <UserControl.Resources>
         <Style x:Key="TraitsInputField" TargetType="TextBox">
             <Setter Property="BorderBrush" Value="Transparent"/>
@@ -20,6 +20,7 @@
     <Grid x:Name="MainGrid">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="60"/>
+            <ColumnDefinition/>
             <ColumnDefinition/>
             <ColumnDefinition/>
             <ColumnDefinition/>
@@ -47,8 +48,10 @@
         <TextBox Grid.Column="7"
                  Style="{DynamicResource TraitsInputField}"/>
         <TextBox Grid.Column="8"
-                 Style="{DynamicResource TraitsInputField}"/>
+                 Style="{DynamicResource TraitsInputField}" Cursor="IBeam"/>
         <TextBox Grid.Column="9"
+                 Style="{DynamicResource TraitsInputField}"/>
+        <TextBox Grid.Column="10"
                  Style="{DynamicResource TraitsInputField}"/>
     </Grid>
 </UserControl>

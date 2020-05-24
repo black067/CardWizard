@@ -4,8 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CardWizard.View"
-        mc:Ignorable="d"
-        Title="ListWindow" MinWidth="660" MinHeight="380" d:DesignHeight="380" FontFamily="Consolas">
+        mc:Ignorable="d" Tag="GenerationWindow.Title"
+        Title="ListWindow" MinWidth="720" MinHeight="380" d:DesignHeight="380" FontFamily="Consolas">
     <Grid x:Name="MainGrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
@@ -59,15 +59,15 @@
                      Style="{DynamicResource TextField}" Cursor="IBeam">
             </TextBox>
         </Grid>
-        <TextBlock x:Name="MessageBox" DataContext="Message_Regenerate"
+        <TextBlock x:Name="MessageBox" DataContext="Message_Regenerate" Tag="GenerationWindow.Message"
                    Text="选择一组数据作为角色的基础属性"
-               Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2"
-               Margin="0,2,0,2" Background="{x:Null}" IsEnabled="False">
+                   Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2"
+                   Margin="0,2,0,2" Background="{x:Null}" IsEnabled="False">
         </TextBlock>
-        <Button x:Name="Button_Confirm" Content="确定" 
+        <Button x:Name="Button_Confirm" Content="确定" Tag="Confirm"
                 Style="{DynamicResource XButtonStyle}" 
                 Grid.Column="4" Grid.Row="3" Grid.ColumnSpan="1" Height="30" VerticalAlignment="Bottom" Margin="40,0,0,0"/>
-        <Button x:Name="Button_Cancel" Content="取消" 
+        <Button x:Name="Button_Cancel" Content="取消" Tag="Cancel"
                 Style="{DynamicResource XButtonStyle}" 
                 Grid.Column="3" Grid.Row="3" Grid.ColumnSpan="1" Height="30" VerticalAlignment="Bottom" Margin="40,0,0,0"/>
     </Grid>

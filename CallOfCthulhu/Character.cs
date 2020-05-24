@@ -25,9 +25,12 @@ namespace CallOfCthulhu
 
         private string education;
 
-        private Occupation occupation;
+        private string occupation;
 
         private string homeland;
+
+        private string[] skills;
+        private string address;
 
         #region 角色属性值与其成长值的获取与赋值
 
@@ -36,7 +39,7 @@ namespace CallOfCthulhu
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public int GetTraitInitial(string key) => Traits.TryGetValue(key, out int value) ? value : 0;
+        public int GetTraitInitial(string key) => Initials.TryGetValue(key, out int value) ? value : 0;
 
         /// <summary>
         /// 设置特点的基础值
@@ -45,12 +48,13 @@ namespace CallOfCthulhu
         /// <param name="value"></param>
         public void SetTraitInitial(string key, int value)
         {
-            var original = Traits.ContainsKey(key) ? Traits[key] : 0;
-            Traits[key] = value;
+            var original = Initials.ContainsKey(key) ? Initials[key] : 0;
+            Initials[key] = value;
             UpdateTrait(new TraitChangedEventArgs(key)
             {
-                OriginalBase = original,
-                NewInitial = value,
+                Segment = Trait.Segment.INITIAL,
+                NewValue = value,
+                OriginValue = original,
             });
         }
 
@@ -77,8 +81,9 @@ namespace CallOfCthulhu
             Growths[key] = value;
             UpdateTrait(new TraitChangedEventArgs(key)
             {
-                OriginalGrowth = original,
-                NewGrowth = value,
+                Segment = Trait.Segment.GROWTH,
+                NewValue = value,
+                OriginValue = original,
             });
         }
 
@@ -89,8 +94,8 @@ namespace CallOfCthulhu
         /// <returns></returns>
         public int GetTraitAdjustment(string key)
         {
-            if (Adjustment == null) return 0;
-            return Adjustment.TryGetValue(key, out int v) ? v : 0;
+            if (Adjustments == null) return 0;
+            return Adjustments.TryGetValue(key, out int v) ? v : 0;
         }
 
         /// <summary>
@@ -101,13 +106,14 @@ namespace CallOfCthulhu
         /// <returns></returns>
         public void SetTraitAdjustment(string key, int value)
         {
-            if (Adjustment == null) Adjustment = new Dictionary<string, int>();
-            int original = Adjustment.ContainsKey(key) ? Adjustment[key] : 0;
-            Adjustment[key] = value;
+            if (Adjustments == null) Adjustments = new Dictionary<string, int>();
+            int original = Adjustments.ContainsKey(key) ? Adjustments[key] : 0;
+            Adjustments[key] = value;
             UpdateTrait(new TraitChangedEventArgs(key)
             {
-                OriginalAdjustment = original,
-                NewAdjustment = value,
+                Segment = Trait.Segment.ADJUSTMENT,
+                NewValue = value,
+                OriginValue = original,
             });
         }
 
@@ -117,60 +123,6 @@ namespace CallOfCthulhu
         /// <param name="key"></param>
         /// <returns></returns>
         public int GetTrait(string key) => GetTraitInitial(key) + GetTraitGrowth(key) + GetTraitAdjustment(key);
-
-        /// <summary>
-        /// 取得属性值的字符串表达式
-        /// <para>形如: {base}+{growth}</para>
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        public string GetTraitText(string key)
-        {
-            int initial = GetTraitInitial(key), growth = GetTraitGrowth(key), adjustment = GetTraitAdjustment(key);
-            string growthText = growth > 0 ? $"+{growth}" : growth.ToString();
-            string adjustmentText = adjustment > 0 ? $"+{adjustment}" : adjustment.ToString();
-            if (initial == 0 && growth == 0 && adjustment == 0) return "0";
-            if (initial == 0 && growth == 0 && adjustment != 0) return $"0+0{adjustmentText}";
-            if (initial == 0 && growth != 0 && adjustment == 0) return $"0{growthText}";
-            if (initial == 0 && growth != 0 && adjustment != 0) return $"0{growthText}{adjustmentText}";
-            if (initial != 0 && growth == 0 && adjustment == 0) return $"{initial}";
-            if (initial != 0 && growth == 0 && adjustment != 0) return $"{initial}+0{adjustmentText}";
-            if (initial != 0 && growth != 0 && adjustment == 0) return $"{initial}{growthText}";
-            return $"{initial}{growthText}{adjustmentText}";
-        }
-
-        /// <summary>
-        /// 分割记录了角色特点的字符串
-        /// </summary>
-        /// <param name="valueText"></param>
-        /// <returns></returns>
-        public static (int initial, int growth, int adjustment) SplitTraitText(string valueText)
-        {
-            var result = (initial: 0, growth: 0, adjustment: 0);
-            var matches = Regex.Matches(valueText, @"(\-|\+)?\d+(\.\d+)?");
-            for (int i = 0, length = matches.Count; i < length; i++)
-            {
-                var m = matches[i];
-                if (i == 0) result.initial = int.TryParse(m.Value, out int v) ? v : 0;
-                else if (i == 1) result.growth = int.TryParse(m.Value, out int v) ? v : 0;
-                else if (i == 2) result.adjustment = int.TryParse(m.Value, out int v) ? v : 0;
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// 解析字符串, 设置特点的值
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="valueText"></param>
-        public void SetTrait(string key, string valueText)
-        {
-            var (initial, growth, adjustment) = SplitTraitText(valueText);
-            SetTraitInitial(key, initial);
-            SetTraitGrowth(key, growth);
-            SetTraitAdjustment(key, adjustment);
-        }
 
         /// <summary>
         /// 设置特点的值
@@ -255,13 +207,26 @@ namespace CallOfCthulhu
         /// <summary>
         /// 职业
         /// </summary>
-        public Occupation Occupation
+        public string Occupation
         {
             get => occupation;
             set
             {
                 occupation = value;
                 UpdateData(nameof(Occupation));
+            }
+        }
+
+        /// <summary>
+        /// 角色的现居地
+        /// </summary>
+        public string Address
+        {
+            get => address;
+            set
+            {
+                address = value;
+                UpdateData(nameof(Address));
             }
         }
 
@@ -279,34 +244,32 @@ namespace CallOfCthulhu
         }
 
         /// <summary>
-        /// 角色的属性值
+        /// 技能列表
         /// </summary>
-        public Dictionary<string, int> Traits { get; set; }
+        public string[] Skills
+        {
+            get => skills;
+            set
+            {
+                skills = value;
+                UpdateData(nameof(Skills));
+            }
+        }
 
         /// <summary>
-        /// 特点成长值
+        /// 角色属性初始值
+        /// </summary>
+        public Dictionary<string, int> Initials { get; set; }
+
+        /// <summary>
+        /// 角色属性成长值
         /// </summary>
         public Dictionary<string, int> Growths { get; set; }
 
         /// <summary>
-        /// 衰老惩罚
+        /// 角色属性调整值
         /// </summary>
-        public Dictionary<string, int> Adjustment { get; set; }
-
-        /// <summary>
-        /// 职业点数
-        /// </summary>
-        public Dictionary<string, int> OccupationPoints { get; set; }
-
-        /// <summary>
-        /// 兴趣点数
-        /// </summary>
-        public Dictionary<string, int> InterestPoints { get; set; }
-
-        /// <summary>
-        /// 角色的所有个人技能
-        /// </summary>
-        public List<string> skills = new List<string>();
+        public Dictionary<string, int> Adjustments { get; set; }
 
         /// <summary>
         /// 角色名称等信息发生改变时, 触发的事件
@@ -351,15 +314,16 @@ namespace CallOfCthulhu
         {
             var character = new Character()
             {
-                Traits = new Dictionary<string, int>(),
+                Initials = new Dictionary<string, int>(),
                 Age = DEFAULT_AGE,
+                Skills = new string[0],
             };
             if (baseModelDict != null)
             {
                 bool hasCalculator = calculator != null;
                 foreach (var prop in baseModelDict.Values)
                 {
-                    character.SetTraitInitial(prop.Name, hasCalculator ? calculator(character.Traits, prop.Formula) : 0);
+                    character.SetTraitInitial(prop.Name, hasCalculator ? calculator(character.Initials, prop.Formula) : 0);
                     character.SetTraitGrowth(prop.Name, 0);
                     character.SetTraitAdjustment(prop.Name, 0);
                 }

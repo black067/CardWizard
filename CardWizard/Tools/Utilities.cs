@@ -28,30 +28,27 @@ namespace CardWizard.Tools
 
         /// <summary>
         /// 计算集合中的的元素个数
-        /// <para><em>dirty</em></para>
+        /// <para>支持的类型有
+        /// <see cref="IDictionary"/>
+        /// <see cref="ICollection"/>
+        /// <see cref="IEnumerable"/></para>
+        /// <para><em>* dirty</em></para>
         /// </summary>
         /// <param name="someItems"></param>
         /// <returns></returns>
         public static int GetCount(object someItems)
         {
-            if (someItems is IDictionary dict)
+            switch (someItems)
             {
-                return dict.Count;
+                case IDictionary dict:
+                    return dict.Count;
+                case ICollection collection:
+                    return collection.Count;
+                case IEnumerable enumerable:
+                    return enumerable.Cast<object>().Count();
+                default:
+                    return 0;
             }
-            if (someItems is ICollection collection)
-            {
-                return collection.Count;
-            }
-            if (someItems is IList arr)
-            {
-                return arr.Count;
-            }
-            if (someItems is IEnumerable enumerable)
-            {
-                var array = enumerable.Cast<object>();
-                return array.Count();
-            }
-            return 0;
         }
     }
 }

@@ -1,20 +1,18 @@
-﻿using System;
-using System.IO;
-using System.Windows.Controls;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Markup;
-using System.Windows;
-using System.Threading.Tasks;
+﻿using CardWizard.Tools;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Imaging;
-using Image = System.Drawing.Image;
-using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.ComponentModel;
-using CardWizard.Tools;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Documents;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using Image = System.Drawing.Image;
 
 namespace CardWizard.View
 {
@@ -23,27 +21,64 @@ namespace CardWizard.View
     /// </summary>
     public static class UIExtension
     {
+        /// <summary>
+        /// 解析字符串, 从中获取 <see cref="TextElement"/> 列表, 基本元素是 <see cref="Run"/>
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        public static IEnumerable<TextElement> ResolveTextElements(string text)
+        {
+            static Run localGetRun(string raw)
+            {
+                if (string.IsNullOrWhiteSpace(raw)) return null;
+                var segments = raw.Split("#", 2, StringSplitOptions.RemoveEmptyEntries);
+                var run = new Run(segments[0].Trim());
+                if (segments.Length > 1)
+                {
+                    var styleDict = UIExtension.ResolveTextElementProperties(segments[1]);
+                    foreach (var kvp in styleDict)
+                    {
+                        run.SetValue(kvp.Key, kvp.Value);
+                    }
+                }
+                return run;
+            }
+            if (string.IsNullOrWhiteSpace(text)) return Array.Empty<TextElement>();
+            var results = new List<TextElement>();
+            foreach (var item in text.Split('\n', '\r'))
+            {
+                var run = localGetRun(item);
+                if (run != null)
+                {
+                    results.Add(run);
+                    results.Add(new LineBreak());
+                }
+            }
+            if (results.Last() is LineBreak lineBreak) results.Remove(lineBreak);
+            return results;
+        }
+
+        /// <summary>
+        /// 将文本解析为一个字典, 包含了一组用于初始化 <see cref="TextElement"/> 的值
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
         public static Dictionary<DependencyProperty, object> ResolveTextElementProperties(string text)
         {
             var dict = new Dictionary<DependencyProperty, object>();
+            if (string.IsNullOrWhiteSpace(text)) return dict;
+            var typeofTextElement = typeof(TextElement);
             if (YamlKit.TryParse<Dictionary<string, object>>(text, out var raw))
             {
-                if (raw.TryGetValue("FontSize", out var fontsize))
+                foreach (var kvp in raw)
                 {
-                    dict[TextElement.FontSizeProperty] = new FontSizeConverter().ConvertFrom(fontsize);
-                }
-                if (raw.TryGetValue("Foreground", out var foreground))
-                {
-                    dict[TextElement.ForegroundProperty] = new System.Windows.Media.ColorConverter().ConvertFrom(foreground);
-                }
-                if (raw.TryGetValue("Background", out var background))
-                {
-                    dict[TextElement.ForegroundProperty] = new System.Windows.Media.ColorConverter().ConvertFrom(background);
+                    if (kvp.Value == null) continue;
+                    var descriptor = DependencyPropertyDescriptor.FromName(kvp.Key, typeofTextElement, typeofTextElement);
+                    dict[descriptor.DependencyProperty] = descriptor.Converter.ConvertFromInvariantString(kvp.Value.ToString());
                 }
             }
             return dict;
         }
-
 
         /// <summary>
         /// 查找所有子元素

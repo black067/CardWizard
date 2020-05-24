@@ -5,109 +5,115 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CardWizard.View"
              mc:Ignorable="d" 
-             d:DesignHeight="240" d:DesignWidth="280">
+             d:DesignHeight="320" d:DesignWidth="280"
+    xmlns:System="clr-namespace:System;assembly=System.Runtime">
+    <UserControl.Resources>
+        <System:Double x:Key="LabelFontSize">14</System:Double>
+        <Thickness x:Key="DefaultMargin">6,6,6,6</Thickness>
+        <System:Double x:Key="MaxLineHeight">45</System:Double>
+    </UserControl.Resources>
     <Grid x:Name="MainGrid">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="96"/>
-            <ColumnDefinition/>
-            <ColumnDefinition Width="64"/>
-            <ColumnDefinition/>
+            <ColumnDefinition Width="96*"/>
+            <ColumnDefinition Width="48*"/>
+            <ColumnDefinition Width="72*"/>
+            <ColumnDefinition Width="62*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
-            <!--<RowDefinition/>-->
+            <RowDefinition MaxHeight="{DynamicResource MaxLineHeight}"/>
+            <RowDefinition MaxHeight="{DynamicResource MaxLineHeight}"/>
+            <RowDefinition MaxHeight="{DynamicResource MaxLineHeight}"/>
+            <RowDefinition MaxHeight="{DynamicResource MaxLineHeight}"/>
+            <RowDefinition MaxHeight="{DynamicResource MaxLineHeight}"/>
+            <RowDefinition MaxHeight="{DynamicResource MaxLineHeight}"/>
+            <RowDefinition MaxHeight="{DynamicResource MaxLineHeight}"/>
         </Grid.RowDefinitions>
+
         <!--时代-->
-        <Label x:Name="Label_Era" 
-               Content="Era" 
+        <Label x:Name="Label_Era" Tag="Era" 
+               Content="Era" Grid.Row="0"
                Style="{DynamicResource XLabel}"
-               Tag="Era"/>
+               FontSize="{DynamicResource LabelFontSize}" Target="{Binding ElementName=Combo_Era}"/>
         <ComboBox x:Name="Combo_Era"
                   FontSize="14"
-                  Margin="{Binding Margin, ElementName=Label_Era}"
-                  Grid.Column="1" Grid.ColumnSpan="3"
+                  Margin="{DynamicResource DefaultMargin}"
+                  Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="0"
                   HorizontalContentAlignment="Left" VerticalContentAlignment="Center" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
                   BorderBrush="{DynamicResource MenuBackground}" Background="White">
         </ComboBox>
         <!--姓名-->
-        <Label x:Name="Label_Name" 
+        <Label x:Name="Label_Name" Tag="Name" 
                Content="Name" 
-               Style="{DynamicResource XLabel}" Grid.Row="1"
-               Tag="Name"/>
+               Style="{DynamicResource XLabel}" Grid.Row="1" Target="{Binding ElementName=Text_Name}"
+               FontSize="{DynamicResource LabelFontSize}"/>
         <TextBox x:Name="Text_Name"
                  Style="{DynamicResource TextField}"
-                 FontSize="14"
+                 FontSize="14" Margin="{DynamicResource DefaultMargin}"
                  Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3"/>
         <!--职业-->
         <Label x:Name="Label_Occupation" 
                Grid.Row="2" Content="Occupation" Tag="Occupation" 
-               Style="{DynamicResource XLabel}"/>
+               Style="{DynamicResource XLabel}" FontSize="{DynamicResource LabelFontSize}"/>
         <Button x:Name="Button_Occupation" 
                 Content="Select Occupation" Tag="Occupation.Select" 
                 Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3"
-                Margin="2,2,2,2" 
-                Style="{DynamicResource XButtonStyle}"/>
+                Margin="{DynamicResource DefaultMargin}"
+                Style="{DynamicResource XButtonStyle}" FontSize="{DynamicResource LabelFontSize}"/>
         <!--性别-->
         <Label x:Name="Label_Gender" 
                Content="Gender" Grid.Row="3" 
-               Style="{DynamicResource XLabel}"
-               Tag="Gender" Grid.Column="2"/>
+               Style="{DynamicResource XLabel}" Target="{Binding ElementName=Combo_Gender}"
+               Tag="Gender" Grid.Column="2" FontSize="{DynamicResource LabelFontSize}"/>
         <!--性别的选项-->
         <ComboBox x:Name="Combo_Gender"
                   Grid.Column="3" Grid.Row="3"
-                  Margin="{Binding Margin, ElementName=Text_Name}"
+                  Margin="{DynamicResource DefaultMargin}"
                   HorizontalContentAlignment="Left" VerticalContentAlignment="Center" 
                   Background="White">
         </ComboBox>
         <!--年龄-->
-        <Label x:Name="Label_Age" 
+        <Label x:Name="Label_Age" Tag="Age" 
                Content="Age" 
                Grid.Row="3" 
-               Style="{DynamicResource XLabel}"
-               Tag="Age"/>
+               Style="{DynamicResource XLabel}" Target="{Binding ElementName=Text_Age}"
+               FontSize="{DynamicResource LabelFontSize}"/>
         <TextBox x:Name="Text_Age"
                  Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="1" 
                  InputScope="Number"
-                 FontSize="14"
-                 Style="{DynamicResource TextField}"/>
+                 FontSize="14" Margin="{DynamicResource DefaultMargin}"
+                 Style="{DynamicResource TextField}">99</TextBox>
         <!--居住地-->
         <Label x:Name="Label_Address" 
                Content="Address"
                Grid.Row="4" 
-               Style="{DynamicResource XLabel}"
-               Tag="Address"/>
+               Style="{DynamicResource XLabel}" Target="{Binding ElementName=Text_Address}"
+               Tag="Address" FontSize="{DynamicResource LabelFontSize}"/>
         <TextBox x:Name="Text_Address"
                  Grid.Row="4"
                  Grid.Column="1" Grid.ColumnSpan="3" 
-                 FontSize="14"
+                 FontSize="14" Margin="{DynamicResource DefaultMargin}"
                  Style="{DynamicResource TextField}"/>
         <!--故乡-->
         <Label x:Name="Label_Homeland" 
                Content="Homeland"
                Grid.Row="5" 
-               Style="{DynamicResource XLabel}"
-               Tag="Homeland"/>
+               Style="{DynamicResource XLabel}" Target="{Binding ElementName=Text_Homeland}"
+               Tag="Homeland" FontSize="{DynamicResource LabelFontSize}"/>
         <TextBox x:Name="Text_Homeland"
                  Grid.Row="5"
                  Grid.Column="1" Grid.ColumnSpan="3" 
-                 FontSize="14"
+                 FontSize="14" Margin="{DynamicResource DefaultMargin}"
                  Style="{DynamicResource TextField}"/>
         <!--学历-->
         <Label x:Name="Label_Education" 
                Content="Education" 
-               Grid.Row="6" 
-               Style="{DynamicResource XLabel}"
-               Tag="Education"/>
+               Grid.Row="7" 
+               Style="{DynamicResource XLabel}" Target="{Binding ElementName=Text_Education}"
+               Tag="Education" FontSize="{DynamicResource LabelFontSize}"/>
         <TextBox x:Name="Text_Education"
-                 Grid.Row="6"
+                 Grid.Row="7"
                  Grid.Column="1" Grid.ColumnSpan="3" 
-                 FontSize="14"
+                 FontSize="14" Margin="{DynamicResource DefaultMargin}"
                  Style="{DynamicResource TextField}"/>
     </Grid>
 </UserControl>
