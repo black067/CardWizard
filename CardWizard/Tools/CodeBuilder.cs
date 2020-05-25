@@ -11,6 +11,8 @@ using System.Reflection;
 using Microsoft.CSharp;
 using System.CodeDom;
 using System.CodeDom.Compiler;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace CardWizard.Tools
 {
@@ -21,10 +23,23 @@ namespace CardWizard.Tools
         /// </summary>
         const string SummaryFormat = "<summary>\r\n {0}\r\n </summary>";
 
+        static readonly Type[] TypeRefWhitenames = new Type[]
+        { 
+            typeof(string), typeof(char), 
+            typeof(byte), typeof(int), typeof(double), 
+            typeof(bool), typeof(float), typeof(long), typeof(short), 
+            typeof(ulong), typeof(uint), typeof(ushort), typeof(decimal),
+        };
+
         /// <summary>
         /// 类的命名空间
         /// </summary>
         public string Namespace { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 引用的命名空间
+        /// </summary>
+        public List<string> NamespaceImported { get; set; } = new List<string>();
 
         /// <summary>
         /// 类名称
@@ -75,30 +90,33 @@ namespace CardWizard.Tools
 
         /// <summary>
         /// 生成编译单元
-        /// <para>
-        /// <paramref name="propertyTypePairs"/> 的值类型可以是 <see cref="Type"/> 或 <see cref="string"/> (类型名称)
-        /// </para>
         /// </summary>
-        /// <param name="propertyTypePairs"></param>
+        /// <param name="members"></param>
         /// <returns></returns>
-        public CodeCompileUnit GenerateUnit(Dictionary<string, object> propertyTypePairs)
+        public CodeCompileUnit GenerateUnit(IEnumerable<MemberDefinition> members)
         {
             // 编译的基本单元
             CodeCompileUnit unit = new CodeCompileUnit();
             // 声明命名空间
             CodeNamespace @namespace = new CodeNamespace(Namespace);
+            // 引用的命名空间
+            foreach (var item in NamespaceImported)
+            {
+                @namespace.Imports.Add(new CodeNamespaceImport(item));
+            }
             unit.Namespaces.Add(@namespace);
             // 声明类型
             CodeTypeDeclaration @class = new CodeTypeDeclaration(Name)
             {
                 // 类型的属性 public class
                 TypeAttributes = TypeAttributes.Public | TypeAttributes.Sealed | TypeAttributes.Class,
-                
+                IsPartial = true,
             };
             Declaration = @class;
             @class.Comments.Add(new CodeCommentStatement(Format($"{Comment} - 生成的代码"), true));
             // 添加到命名空间
             @namespace.Types.Add(@class);
+            
             // new() 方法
             var constructorEmpty = new CodeConstructor() { Attributes = MemberAttributes.Public, };
             @class.Members.Add(constructorEmpty);
@@ -114,7 +132,17 @@ namespace CardWizard.Tools
             @class.Members.Add(new CodeMemberMethod() { Name = name_event.PrefixBy("On"), }.Process(m =>
             {
                 var name_variable = "name";
-                m.Parameters.Add(new CodeParameterDeclarationExpression(new CodeTypeReference(typeof(string)), name_variable));
+                var param = new CodeParameterDeclarationExpression(typeof(string), name_variable);
+                // OptionalAttribute
+                var optional = new CodeAttributeDeclaration(new CodeTypeReference(typeof(OptionalAttribute)));
+                param.CustomAttributes.Add(optional);
+                // DefaultParameterValueAttribute
+                var defaultValue = new CodeAttributeDeclaration(new CodeTypeReference(typeof(DefaultParameterValueAttribute)));
+                defaultValue.Arguments.Add(new CodeAttributeArgument(new CodePrimitiveExpression("")));
+                param.CustomAttributes.Add(defaultValue);
+                // CallerMemberNameAttribute
+                param.CustomAttributes.Add(new CodeAttributeDeclaration(new CodeTypeReference(typeof(CallerMemberNameAttribute))));
+                m.Parameters.Add(param);
                 m.Statements.Add(new CodeConditionStatement(
                     new CodeBinaryOperatorExpression(
                         new CodeEventReferenceExpression(new CodeThisReferenceExpression(), name_event),
@@ -125,7 +153,7 @@ namespace CardWizard.Tools
                                 new CodeThisReferenceExpression(), name_event),
                             new CodeThisReferenceExpression(),
                             new CodeObjectCreateExpression(
-                                typeof(PropertyChangedEventArgs), 
+                                typeof(PropertyChangedEventArgs),
                                 new CodeVariableReferenceExpression(name_variable))))));
             }).AssignAs(out var notifyMethod));
             // 通过字典创建实例
@@ -136,26 +164,38 @@ namespace CardWizard.Tools
             @class.Members.Add(constructor);
             // 生成属性与字段
             CodeMemberField field; CodeMemberProperty prop; string name, origin; Type typeRef;
-            //CodeAttributeDeclaration codeAttribute;
-            foreach (var kvp in propertyTypePairs)
+            // 过滤重复的
+            var membersDistinct = (from m in members group m by m.Name into defgroup select defgroup.First());
+
+            foreach (var definition in membersDistinct)
             {
-                name = kvp.Key;
-                if (string.IsNullOrWhiteSpace(name)) { continue; }
-                origin = kvp.Value.ToString();
-                if (string.IsNullOrWhiteSpace(origin)) { origin = "0"; }
-                typeRef = kvp.Value is Type typeItem ? typeItem : ResolveType(kvp.Value.ToString());
+                name = definition.Name;
+                if (string.IsNullOrWhiteSpace(name)) continue;
+
+                typeRef = definition.TypeRef is Type typeItem ? typeItem : typeof(string);
                 field = new CodeMemberField
                 {
                     Attributes = MemberAttributes.Private,
                     Name = name.ToLower().PrefixBy("_"),
                     Type = new CodeTypeReference(typeRef),
                 };
+                if (definition.DefaultValue != null && TypeRefWhitenames.Contains(typeRef))
+                    field.InitExpression = new CodePrimitiveExpression(definition.DefaultValue);
+                else if (typeRef.IsSubclassOf(typeof(Enum)))
+                    field.InitExpression = new CodeSnippetExpression($"{typeRef.FullName.Replace('+', '.')}.{definition.DefaultValue}");
+                else if (definition.DefaultValue is string snippet)
+                    field.InitExpression = new CodeSnippetExpression(snippet);
+                else if (typeRef.GetConstructor(Type.EmptyTypes) != null)
+                    field.InitExpression = new CodeObjectCreateExpression(new CodeTypeReference(typeRef));
+                else
+                    field.InitExpression = new CodeDefaultValueExpression(new CodeTypeReference(typeRef));
                 prop = new CodeMemberProperty
                 {
                     Attributes = MemberAttributes.Final | MemberAttributes.Public,
                     Name = name,
                     Type = new CodeTypeReference(typeRef),
                 };
+                prop.Comments.Add(new CodeCommentStatement(Format(definition.Comment), true));
 
                 prop.GetStatements.Add(new CodeMethodReturnStatement(
                     new CodeFieldReferenceExpression(
@@ -165,8 +205,7 @@ namespace CardWizard.Tools
                         new CodeThisReferenceExpression(), field.Name),
                     new CodePropertySetValueReferenceExpression()));
                 prop.SetStatements.Add(new CodeMethodInvokeExpression(
-                    new CodeMethodReferenceExpression(new CodeThisReferenceExpression(), notifyMethod.Name),
-                    new CodePrimitiveExpression(prop.Name)));
+                    new CodeMethodReferenceExpression(new CodeThisReferenceExpression(), notifyMethod.Name)));
                 var valueGetter = new CodeIndexerExpression(
                                     new CodeVariableReferenceExpression(constructor_arg_name),
                                     new CodePrimitiveExpression(prop.Name));
@@ -350,5 +389,72 @@ namespace CardWizard.Tools
             }
             return type;
         }
+    }
+
+    /// <summary>
+    /// 属性的定义
+    /// </summary>
+    public class MemberDefinition
+    {
+        public MemberDefinition(string name, object defaultValue, string comment = null) : this(name, defaultValue, null, comment) { }
+
+        public MemberDefinition(string name, Type typeRef, string comment = null) : this(name, null, typeRef, comment) { }
+
+        public MemberDefinition(string name, object defaultValue, Type typeRef, string comment)
+        {
+            Name = name;
+            DefaultValue = defaultValue;
+            TypeRef = typeRef ?? defaultValue?.GetType() ?? typeof(object);
+            Comment = comment ?? string.Empty;
+        }
+
+        public MemberDefinition(FieldInfo info, object target = null)
+        {
+            if (info == null) throw new NullReferenceException();
+            Name = info.Name;
+            TypeRef = info.FieldType;
+            if (target != null)
+            {
+                DefaultValue = info.GetValue(target);
+            }
+            var descrAttr = info.GetCustomAttributes(typeof(DescriptionAttribute), true).FirstOrDefault();
+            if (descrAttr is DescriptionAttribute description)
+            {
+                Comment = description.Description;
+            }
+        }
+
+        public MemberDefinition(PropertyInfo info, object target = null)
+        {
+            if (info == null) throw new NullReferenceException();
+            Name = info.Name;
+            TypeRef = info.PropertyType;
+            if (target != null)
+            {
+                DefaultValue = info.GetValue(target);
+            }
+            var descrAttr = info.GetCustomAttributes(typeof(DescriptionAttribute), true).FirstOrDefault();
+            if (descrAttr is DescriptionAttribute description)
+            {
+                Comment = description.Description;
+            }
+        }
+
+        /// <summary>
+        /// 属性名称
+        /// </summary>
+        public string Name { get; set; }
+        /// <summary>
+        /// 默认值
+        /// </summary>
+        public object DefaultValue { get; set; }
+        /// <summary>
+        /// 类型
+        /// </summary>
+        public Type TypeRef { get; set; }
+        /// <summary>
+        /// 注释
+        /// </summary>
+        public string Comment { get; set; }
     }
 }
