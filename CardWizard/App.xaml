@@ -20,6 +20,7 @@
         <Style x:Key="XToolTip" TargetType="ToolTip">
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="Background" Value="WhiteSmoke"/>
+            <Setter Property="Opacity" Value="0.75"/>
         </Style>
         <!-- 定义Label 的样式-->
         <Style x:Key="XLabel" TargetType="Label">

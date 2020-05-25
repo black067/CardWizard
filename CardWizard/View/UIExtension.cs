@@ -103,6 +103,13 @@ namespace CardWizard.View
                         result.AddRange(SelectAllSubElement(visual));
                     }
                     break;
+                case ItemsControl itemsControl:
+                    var items = from object i in itemsControl.Items where i is Visual select i as Visual;
+                    foreach (Visual item in items)
+                    {
+                        result.AddRange(SelectAllSubElement(item));
+                    }
+                    break;
                 case Decorator decorator:
                     result.AddRange(SelectAllSubElement(decorator.Child));
                     break;

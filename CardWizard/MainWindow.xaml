@@ -25,6 +25,7 @@
         <CommandBinding Command="{x:Static local:MainWindow.CommandCreate}" Executed="CommandCreate_Executed"/>
         <CommandBinding Command="{x:Static local:MainWindow.CommandSave}" Executed="CommandSave_Executed"/>
         <CommandBinding Command="{x:Static local:MainWindow.CommandCapture}" Executed="CommandCapture_Executed"/>
+        <CommandBinding Command="{x:Static local:MainWindow.CommandSwitchToolTip}" Executed="CommandShowToolTip_Executed"/>
     </Window.CommandBindings>
     <Grid x:Name="MainDock">
         <Grid.ColumnDefinitions>
@@ -37,40 +38,42 @@
             <RowDefinition Height="64"/>
         </Grid.RowDefinitions>
         <!--菜单栏-->
-        <Grid x:Name="MenuBar" Grid.ColumnSpan="2">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="30"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="64"/>
-                <ColumnDefinition Width="64"/>
-                <ColumnDefinition Width="64"/>
-                <ColumnDefinition Width="64"/>
-                <ColumnDefinition/>
-                <ColumnDefinition Width="50"/>
-            </Grid.ColumnDefinitions>
-            <Border Grid.ColumnSpan="99"
-                Background="{DynamicResource MenuBackground}"/>
-            <Button x:Name="Button_Create" 
-                    Style="{StaticResource XButtonStyle}" 
-                    Content="新建" Command="{x:Static local:MainWindow.CommandCreate}"
-                    Background="Transparent" BorderBrush="Transparent" Tag="MenuBar.Button.Create"/>
-            <Button x:Name="Button_Save" 
-                    Style="{StaticResource XButtonStyle}"  
-                    Grid.Column="1"
-                    Content="保存" Command="{x:Static local:MainWindow.CommandSave}"
-                    Background="Transparent" BorderBrush="Transparent" Tag="MenuBar.Button.Save"/>
-            <Button x:Name="Button_SavePic" 
-                    Style="{StaticResource XButtonStyle}"  
-                    Grid.Column="2"
-                    Content="生成图片" Command="{x:Static local:MainWindow.CommandCapture}"
-                    Background="Transparent" BorderBrush="Transparent" Tag="MenuBar.Button.SavePicture"/>
-            <Button x:Name="Button_Debug" 
-                    Style="{StaticResource XButtonStyle}"  
-                    Grid.Column="6"
-                    Content="Debug" 
-                    Background="Transparent" BorderBrush="Transparent"/>
-        </Grid>
+        <Menu x:Name="MainMenuBar"
+              Background="{DynamicResource MenuBackground}" Grid.ColumnSpan="2" 
+              FontFamily="{DynamicResource WindowFontFamily}" Padding="10,0,10,0" 
+              Foreground="{DynamicResource ButtonForeground}" FontSize="16">
+            <Menu.Resources>
+                <Thickness x:Key="MenuItemMargin">6,0,6,0</Thickness>
+                <Style x:Key="MenuItemTop" TargetType="MenuItem">
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="{DynamicResource ButtonBackground}"/>
+                        </Trigger>
+                    </Style.Triggers>
+                    <Setter Property="BorderBrush" Value="Transparent"/>
+                    <Setter Property="Margin" Value="{DynamicResource MenuItemMargin}"/>
+                </Style>
+            </Menu.Resources>
+            <MenuItem Header="Create" Tag="MenuBar.Button.Create" 
+                      Command="{x:Static local:MainWindow.CommandCreate}"
+                      Height="{Binding ActualHeight, ElementName=MainMenuBar, Mode=OneWay}" 
+                      Style="{DynamicResource MenuItemTop}"/>
+            <MenuItem Header="Save" Tag="MenuBar.Button.Save" 
+                      Command="{x:Static local:MainWindow.CommandSave}"
+                      Height="{Binding ActualHeight, ElementName=MainMenuBar, Mode=OneWay}"
+                      Style="{DynamicResource MenuItemTop}"/>
+            <MenuItem Header="SavePicture" Tag="MenuBar.Button.SavePicture" 
+                      Command="{x:Static local:MainWindow.CommandCapture}"
+                      Height="{Binding ActualHeight, ElementName=MainMenuBar, Mode=OneWay}"
+                      Style="{DynamicResource MenuItemTop}"/>
+            <MenuItem Header="Settings" Tag="MenuBar.Button.Settings" 
+                      Height="{Binding ActualHeight, ElementName=MainMenuBar, Mode=OneWay}"
+                      Style="{DynamicResource MenuItemTop}">
+                <MenuItem x:Name="MenuItemSwitchToolTip" Header="Show Tool Tip" Tag="MenuBar.Button.ShowToolTip" 
+                          Command="{x:Static local:MainWindow.CommandSwitchToolTip}"
+                          Foreground="{DynamicResource MenuBackground}"/>
+            </MenuItem>
+        </Menu>
         <!--日志输出窗口-->
         <TextBox x:Name="Logger" Height="60"
                  TextWrapping="NoWrap" 
@@ -92,7 +95,6 @@
                     <ListBoxItem Height="30" Content="{Binding Path=Name}" Focusable="False" IsHitTestVisible="False" IsTabStop="False"/>
                 </DataTemplate>
             </ListBox.ItemTemplate>
-            <!--<ListBoxItem>Casasd</ListBoxItem>-->
         </ListBox>
         <!--角色数据-->
         <ScrollViewer x:Name="InvestigatorScrollViewer" Grid.Column="1" Grid.Row="1">
@@ -160,9 +162,6 @@
                         </Grid.RowDefinitions>
                         <Grid.Resources>
                         </Grid.Resources>
-                        <!--<Border Grid.ColumnSpan="99" Grid.RowSpan="99" 
-                                BorderBrush="{DynamicResource ButtonBackground}"
-                                BorderThickness="2,2,2,2" OpacityMask="#7FFFFFFF"/>-->
                         <!--属性数值格子-->
                         <cview:TraitBox Tag="STR" Grid.Row="0" Style="{DynamicResource TraitBoxStyle}" Foreground="{DynamicResource MenuBackground}"/>
                         <cview:TraitBox Tag="DEX" Grid.Row="0" Grid.Column="1" Style="{DynamicResource TraitBoxStyle}" Foreground="{DynamicResource MenuBackground}"/>

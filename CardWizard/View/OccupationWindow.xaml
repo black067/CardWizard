@@ -88,11 +88,11 @@
             <TextBlock Tag="OccupationWindow.Message" Visibility="Hidden"
                        Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1" Grid.RowSpan="2">选择一个职业
             </TextBlock>
-            <Button x:Name="Button_Confirm" Tag="Occupations.Button.Confirm" 
+            <Button x:Name="Button_Confirm" Tag="Confirm" 
                     Content="确定"
                     Style="{DynamicResource XButtonStyle}" 
                 Grid.Row="2" Grid.Column="3"/>
-            <Button x:Name="Button_Cancel" Tag="Occupations.Button.Cancel" 
+            <Button x:Name="Button_Cancel" Tag="Cancel" 
                     Content="取消"
                     Style="{DynamicResource XButtonStyle}" 
                 Grid.Row="2" Grid.Column="1"/>

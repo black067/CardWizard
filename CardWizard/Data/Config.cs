@@ -12,67 +12,85 @@ namespace CardWizard.Data
     /// <summary>
     /// 配置数据
     /// </summary>
+    [Description("配置数据")]
     public partial class Config
     {
         /// <summary>
         /// Lua 垃圾回收的周期
         /// </summary>
-        [Description("Lua 垃圾回收的周期")]
+        [Description("Lua 垃圾回收的周期, 单位: 秒")]
         public int GCInterval = 20;
 
         /// <summary>
         /// 是否保存翻译后的文本
         /// </summary>
+        [Description("是否保存翻译后的文本")]
         public bool SaveTranslationDoc = true;
 
         /// <summary>
         /// 是否显示提示信息
         /// </summary>
-        public bool ShowToolTips = true;
+        [Description("是否显示提示信息")]
+        public bool ToolTipAvailable = true;
+
+        /// <summary>
+        /// 提示浮窗出现时, 其背景的透明度
+        /// </summary>
+        [Description("提示浮窗出现时, 其背景的透明度")]
+        public double ToolTipOpacity = 0.77;
 
         /// <summary>
         /// 角色存档文件的标准后缀名
         /// </summary>
+        [Description("角色存档文件的标准后缀名")]
         public string FileExtensionForCard = ".i.yaml";
 
         /// <summary>
         /// 角色存档的翻译文件的标准后缀名
         /// </summary>
+        [Description("角色存档的翻译文件的标准后缀名")]
         public string FileExtensionForCardDoc = ".i.trans.yaml";
 
         /// <summary>
         /// 角色图像的后缀名
         /// </summary>
+        [Description("角色图像的后缀名")]
         public string FileExtensionForCardPic = ".i.png";
 
         /// <summary>
         /// 调查员的图像文档在打印时的页面DPI
         /// </summary>
+        [Description("调查员的图像文档在打印时的页面DPI")]
         public double PrintSettings_Dpi = 300;
 
         /// <summary>
         /// 打印时的尺寸
         /// </summary>
+        [Description("打印时的尺寸")]
         public int[] PrintSettings_Size = new int[] { 2480, 3508 };
 
         /// <summary>
         /// 调查员的图像文档在打印时的页面背景色
         /// </summary>
+        [Description("调查员的图像文档在打印时的页面背景色")]
         public string PrintSettings_BackgroundColor = "#ffffffff";
 
         /// <summary>
         /// 文本翻译工具
         /// </summary>
+        [Description("文本翻译工具")]
         public Translator Translator = new Translator();
 
         /// <summary>
         /// 路径数据, 缓存了应用的特殊路径
         /// </summary>
+        [Description("保存应用的资源路径")]
         public Paths Paths = new Paths();
 
         /// <summary>
         /// 基础属性模型
         /// </summary>
+        [Description("基础属性模型")]
         public List<Trait> DataModels = new List<Trait>()
         {
             new Trait() { Name = "STR", Formula = "5 * (3D6)", Derived = false },

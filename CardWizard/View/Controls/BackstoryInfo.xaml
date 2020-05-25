@@ -69,7 +69,7 @@
                   Grid.Column="3" Grid.Row="3"
                   Margin="{DynamicResource DefaultMargin}"
                   HorizontalContentAlignment="Left" VerticalContentAlignment="Center" 
-                  Background="White">
+                  Background="White" FontSize="14">
         </ComboBox>
         <!--年龄-->
         <Label x:Name="Label_Age" Tag="Age" 

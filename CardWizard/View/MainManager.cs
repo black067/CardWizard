@@ -121,21 +121,7 @@ namespace CardWizard.View
         /// <summary>
         /// 是否显示提示信息
         /// </summary>
-        public Visibility ShowToolTips
-        {
-            get
-            {
-                return Config.ShowToolTips ? Visibility.Visible : Visibility.Hidden;
-            }
-            set
-            {
-                Config.ShowToolTips = value switch
-                {
-                    Visibility.Visible => true,
-                    _ => false,
-                };
-            }
-        }
+        public static double ToolTipOpacity { get; set; }
 
         /// <summary>
         /// 角色与其档案文件
@@ -231,8 +217,11 @@ namespace CardWizard.View
             // 给按钮绑定事件
             Window.CommandCreateGestured += DoCreate;
             Window.CommandSaveGestured += DoSave;
-            Window.Button_Debug.Click += DoDebug;
+            //Window.Button_Debug.Click += DoDebug;
             Window.CommandCaptureGestured += DoCapturePicture;
+            Window.CommandSwitchToolTipGestured += DoSwitchToolTip;
+            ToolTipOpacity = Config.ToolTipAvailable ? Config.ToolTipOpacity : 0;
+            Window.MenuItemSwitchToolTip.IsChecked = Config.ToolTipAvailable;
             InitAsCardList(Window.List_Cards);
             // 角色基本信息面板的初始化
             Window.Backstory.InitializeBinding(this);
@@ -279,7 +268,7 @@ namespace CardWizard.View
             // 如果存在启动脚本文件, 执行
             LuaHub.DoFile(Paths.ScriptStartup, isGlobal: true);
             // 对界面进行本地化
-            Localize(Window, Translator, null, () => new Binding(nameof(ShowToolTips)) { Source = this, Mode = BindingMode.OneWay });
+            Localize(Window, Translator);
             // 垃圾回收
             GC.Collect();
         }
@@ -400,6 +389,20 @@ namespace CardWizard.View
             foreach (var kvp in cache.Values)
             {
                 kvp();
+            }
+        }
+
+        private void DoSwitchToolTip(object sender, System.Windows.Input.ExecutedRoutedEventArgs e)
+        {
+
+            Config.ToolTipAvailable = !Config.ToolTipAvailable;
+            if (Config.ToolTipAvailable)
+            {
+                ToolTipOpacity = Config.ToolTipOpacity;
+            }
+            else
+            {
+                ToolTipOpacity = 0;
             }
         }
 
@@ -528,9 +531,9 @@ namespace CardWizard.View
         /// <summary>
         /// 本地化控件及其子控件的文本
         /// </summary>
-        public static void Localize(ContentControl container, Translator translator, HashSet<Visual> histories = null, Func<Binding> toolTipBindingGetter = null)
+        public static void Localize(FrameworkElement container, Translator translator, HashSet<Visual> histories = null)
         {
-            static void translate(FrameworkElement element, Translator translator, Func<Binding> toolTipBindingGetter = null)
+            static void translate(FrameworkElement element, Translator translator)
             {
                 if (translator == null) return;
                 var path = element?.Tag?.ToString() ?? string.Empty;
@@ -538,6 +541,7 @@ namespace CardWizard.View
                 {
                     switch (element)
                     {
+                        case MenuItem menuItem: menuItem.Header = text; break;
                         case Image image: image.ToolTip = text; break;
                         case Label label: label.Content = text; break;
                         case Button button: button.Content = text; break;
@@ -552,16 +556,16 @@ namespace CardWizard.View
                 }
                 // 查询是否存在这个子控件的提示信息, 若有, 添加 ToolTip
                 var tooltipKey = $"{path}.ToolTip";
-                if (translator.TryTranslate(tooltipKey, out text))
+                if (translator.TryTranslate(tooltipKey, out text) && !string.IsNullOrWhiteSpace(text))
                 {
                     var toolTip = new ToolTip();
                     toolTip.BeginInit();
-                    if (toolTipBindingGetter != null)
-                    {
-                        toolTip.SetBinding(UIElement.VisibilityProperty, toolTipBindingGetter());
-                    }
                     toolTip.Style = (Style)Application.Current.FindResource("XToolTip");
                     toolTip.Content = text;
+                    toolTip.Opened += (o, e) =>
+                    {
+                        toolTip.Opacity = ToolTipOpacity;
+                    };
                     toolTip.EndInit();
                     element.RegisterName(tooltipKey.Replace('.', '_'), toolTip);
                     element.ToolTip = toolTip;
@@ -573,7 +577,7 @@ namespace CardWizard.View
             if (histories.Contains(container)) { return; }
             else
             {
-                translate(container, translator, toolTipBindingGetter);
+                translate(container, translator);
                 histories.Add(container);
             }
             // 查询所有的子控件
@@ -583,12 +587,11 @@ namespace CardWizard.View
             foreach (var element in elements)
             {
                 if (histories.Contains(element)) continue;
-                translate(element, translator, toolTipBindingGetter);
+                translate(element, translator);
                 histories.Add(element);
-
                 if (element is ContentControl control)
                 {
-                    Localize(control, translator, histories, toolTipBindingGetter);
+                    Localize(control, translator, histories);
                 }
             }
         }
