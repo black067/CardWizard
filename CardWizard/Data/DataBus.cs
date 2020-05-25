@@ -130,5 +130,42 @@ namespace CardWizard.Data
                     break;
             }
         }
+
+        /// <summary>
+        /// 生成默认数据
+        /// </summary>
+        public void GenerateDefaultData()
+        {
+            var OccupationModels = new List<Occupation>()
+            {
+                new Occupation()
+                {
+                    Name = "医生",
+                    Description = "钻研学习医学科学技术，挽救生命，以治病为业。",
+                    Skills = new string[]
+                    {
+                        "急救", "其它语言(拉丁文)", "医学", "心理学", "科学(生物学)", "科学(药学)", Skill.CUSTOM_PRO, Skill.CUSTOM_PRO
+                    },
+                    CreditRatingRange = "30 ~ 80",
+                    PointFormula = "EDU * 4",
+                },
+                new Occupation()
+                {
+                    Name = "警探",
+                    Description = "执行侦探破案工作的警察。",
+                    Skills = new string[]
+                    {
+                        "艺术与手艺(表演)", "乔装", "射击", "法律", "聆听", "心理学", "侦察", Skill.CUSTOM_SOCIAL, Skill.CUSTOM
+                    },
+                    CreditRatingRange = "20 ~ 50",
+                    PointFormula = "EDU * 2 + math.max(DEX, STR) * 2",
+                },
+            };
+
+            foreach (var item in OccupationModels)
+            {
+                CacheData(item);
+            }
+        }
     }
 }

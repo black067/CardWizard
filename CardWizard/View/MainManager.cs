@@ -119,6 +119,25 @@ namespace CardWizard.View
         public ObservableCollection<Character> Characters { get; set; }
 
         /// <summary>
+        /// 是否显示提示信息
+        /// </summary>
+        public Visibility ShowToolTips
+        {
+            get
+            {
+                return Config.ShowToolTips ? Visibility.Visible : Visibility.Hidden;
+            }
+            set
+            {
+                Config.ShowToolTips = value switch
+                {
+                    Visibility.Visible => true,
+                    _ => false,
+                };
+            }
+        }
+
+        /// <summary>
         /// 角色与其档案文件
         /// </summary>
         private Dictionary<Character, string> CharacterFiles { get; set; } = new Dictionary<Character, string>();
@@ -162,6 +181,11 @@ namespace CardWizard.View
             }
             // 读取配置表
             Config = YamlKit.LoadFile<Config>(Resources.FileConfig).Process();
+            // 关闭窗口的时候保存配置表
+            Window.Closing += (o, e) =>
+            {
+                YamlKit.SaveFile(Resources.FileConfig, Config);
+            };
             // 设置定期 Garbage Collect
             GCDispatcher = new DispatcherTimer()
             {
@@ -255,7 +279,7 @@ namespace CardWizard.View
             // 如果存在启动脚本文件, 执行
             LuaHub.DoFile(Paths.ScriptStartup, isGlobal: true);
             // 对界面进行本地化
-            Localize(Window, Translator);
+            Localize(Window, Translator, null, () => new Binding(nameof(ShowToolTips)) { Source = this, Mode = BindingMode.OneWay });
             // 垃圾回收
             GC.Collect();
         }
@@ -345,10 +369,11 @@ namespace CardWizard.View
         private void DoCapturePicture(object sender, RoutedEventArgs e)
         {
             // 开始截屏前先缓存并更改部分元素的状态
-            var cacheVisibility = new Dictionary<UIElement, Visibility>();
+            var cache = new Dictionary<UIElement, Action>();
             foreach (var item in HideOnCapturePic)
             {
-                cacheVisibility.Add(item, item.Visibility);
+                var origin = item.Visibility;
+                cache.Add(item, () => item.Visibility = origin);
                 item.Visibility = Visibility.Hidden;
             }
             var bg = Window.InvestigatorView.Background;
@@ -372,9 +397,9 @@ namespace CardWizard.View
             });
             // 将被更改的元素还原
             Window.InvestigatorView.Background = bg;
-            foreach (var kvp in cacheVisibility)
+            foreach (var kvp in cache.Values)
             {
-                kvp.Key.Visibility = kvp.Value;
+                kvp();
             }
         }
 
@@ -503,11 +528,12 @@ namespace CardWizard.View
         /// <summary>
         /// 本地化控件及其子控件的文本
         /// </summary>
-        public static void Localize(ContentControl container, Translator translator, HashSet<Visual> histories = null)
+        public static void Localize(ContentControl container, Translator translator, HashSet<Visual> histories = null, Func<Binding> toolTipBindingGetter = null)
         {
-            static void translate(FrameworkElement element, Translator translator)
+            static void translate(FrameworkElement element, Translator translator, Func<Binding> toolTipBindingGetter = null)
             {
-                var path = element.Tag?.ToString() ?? string.Empty;
+                if (translator == null) return;
+                var path = element?.Tag?.ToString() ?? string.Empty;
                 if (translator.TryTranslate(path, out var text))
                 {
                     switch (element)
@@ -518,7 +544,7 @@ namespace CardWizard.View
                         case Window window: window.Title = text; break;
                         case TextBlock block:
                             var inlines = UIExtension.ResolveTextElements(text);
-                            if (inlines.Count() == 0) break;
+                            if (!inlines.Any()) break;
                             block.Inlines.Clear();
                             block.Inlines.AddRange(inlines);
                             break;
@@ -530,6 +556,10 @@ namespace CardWizard.View
                 {
                     var toolTip = new ToolTip();
                     toolTip.BeginInit();
+                    if (toolTipBindingGetter != null)
+                    {
+                        toolTip.SetBinding(UIElement.VisibilityProperty, toolTipBindingGetter());
+                    }
                     toolTip.Style = (Style)Application.Current.FindResource("XToolTip");
                     toolTip.Content = text;
                     toolTip.EndInit();
@@ -543,7 +573,7 @@ namespace CardWizard.View
             if (histories.Contains(container)) { return; }
             else
             {
-                translate(container, translator);
+                translate(container, translator, toolTipBindingGetter);
                 histories.Add(container);
             }
             // 查询所有的子控件
@@ -553,12 +583,12 @@ namespace CardWizard.View
             foreach (var element in elements)
             {
                 if (histories.Contains(element)) continue;
-                translate(element, translator);
+                translate(element, translator, toolTipBindingGetter);
                 histories.Add(element);
 
                 if (element is ContentControl control)
                 {
-                    Localize(control, translator, histories);
+                    Localize(control, translator, histories, toolTipBindingGetter);
                 }
             }
         }

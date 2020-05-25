@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace CallOfCthulhu
 {
@@ -46,5 +47,20 @@ namespace CallOfCthulhu
         /// 技能基础值
         /// </summary>
         public int BaseValue { get; set; }
+
+        public Skill Resolve(string text)
+        {
+            var s = new Skill();
+            var match = Regex.Match(text, @"(\-|\+)?\d+(\.\d+)?\%", RegexOptions.Multiline);
+            if (match.Success)
+            {
+                s.Name = text.Substring(0, match.Index);
+            }
+            else
+            {
+                s.Name = text;
+            }
+            return s;
+        }
     }
 }

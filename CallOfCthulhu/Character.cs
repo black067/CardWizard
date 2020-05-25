@@ -27,10 +27,11 @@ namespace CallOfCthulhu
 
         private string occupation;
 
+        private string address;
+
         private string homeland;
 
         private string[] skills;
-        private string address;
 
         #region 角色属性值与其成长值的获取与赋值
 

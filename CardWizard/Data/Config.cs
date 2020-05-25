@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using System.Reflection;
 using YamlDotNet.Serialization;
 using CallOfCthulhu;
+using System.ComponentModel;
 
 namespace CardWizard.Data
 {
@@ -14,8 +15,9 @@ namespace CardWizard.Data
     public partial class Config
     {
         /// <summary>
-        /// 垃圾回收的周期
+        /// Lua 垃圾回收的周期
         /// </summary>
+        [Description("Lua 垃圾回收的周期")]
         public int GCInterval = 20;
 
         /// <summary>
@@ -24,24 +26,34 @@ namespace CardWizard.Data
         public bool SaveTranslationDoc = true;
 
         /// <summary>
+        /// 是否显示提示信息
+        /// </summary>
+        public bool ShowToolTips = true;
+
+        /// <summary>
         /// 角色存档文件的标准后缀名
         /// </summary>
-        public string FileExtensionForCard = ".ivg.yaml";
+        public string FileExtensionForCard = ".i.yaml";
 
         /// <summary>
         /// 角色存档的翻译文件的标准后缀名
         /// </summary>
-        public string FileExtensionForCardDoc = ".ivg.trans.yaml";
+        public string FileExtensionForCardDoc = ".i.trans.yaml";
 
         /// <summary>
         /// 角色图像的后缀名
         /// </summary>
-        public string FileExtensionForCardPic = ".doc.png";
+        public string FileExtensionForCardPic = ".i.png";
 
         /// <summary>
         /// 调查员的图像文档在打印时的页面DPI
         /// </summary>
         public double PrintSettings_Dpi = 300;
+
+        /// <summary>
+        /// 打印时的尺寸
+        /// </summary>
+        public int[] PrintSettings_Size = new int[] { 2480, 3508 };
 
         /// <summary>
         /// 调查员的图像文档在打印时的页面背景色
@@ -103,6 +115,7 @@ namespace CardWizard.Data
         /// <summary>
         /// 所有职业
         /// </summary>
+        [Description("所有职业数据")]
         public List<Occupation> OccupationModels = new List<Occupation>()
         {
             new Occupation()
