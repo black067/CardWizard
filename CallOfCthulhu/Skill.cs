@@ -48,7 +48,7 @@ namespace CallOfCthulhu
         /// </summary>
         public int BaseValue { get; set; }
 
-        public Skill Resolve(string text)
+        public static Skill Resolve(string text)
         {
             var s = new Skill();
             var match = Regex.Match(text, @"(\-|\+)?\d+(\.\d+)?\%", RegexOptions.Multiline);
