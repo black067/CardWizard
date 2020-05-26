@@ -194,7 +194,7 @@ namespace CallOfCthulhu
             { "Card.Button.DMGBonus.ToolTip", "掷一次伤害加值" },
             { "Message.RollADMGBonus", "根据公式 {0}, 本轮掷出了 {1}" },
             { "GenerationWindow.Title", "生成了以下属性..." },
-            { "GenerationWindow.Message", $"请选择一组数据作为角色的基础属性\n* {{AST}} 不计入属性总计" },
+            { "GenerationWindow.Message", $"请选择一组数据作为角色的基础属性\n*{{LUCK}} 将在确认后自动骰出\n* {{AST}} 不计入属性总计" },
             { "OccupationWindow.Title", "有以下职业可供选择" },
             { "OccupationWindow.Message", "" },
             { "Dialog.Import.Avatar.Title", "选择调查员的照片 (*.png)" },

@@ -21,11 +21,13 @@
             <Setter Property="Foreground" Value="WhiteSmoke"/>
         </Style>
     </Window.Resources>
+    <!--绑定快捷键-->
     <Window.CommandBindings>
         <CommandBinding Command="{x:Static local:MainWindow.CommandCreate}" Executed="CommandCreate_Executed"/>
         <CommandBinding Command="{x:Static local:MainWindow.CommandSave}" Executed="CommandSave_Executed"/>
         <CommandBinding Command="{x:Static local:MainWindow.CommandCapture}" Executed="CommandCapture_Executed"/>
         <CommandBinding Command="{x:Static local:MainWindow.CommandSwitchToolTip}" Executed="CommandShowToolTip_Executed"/>
+        <CommandBinding Command="{x:Static local:MainWindow.CommandConfirm}" Executed="CommandConfirm_Executed"/>
     </Window.CommandBindings>
     <Grid x:Name="MainDock">
         <Grid.ColumnDefinitions>
@@ -48,6 +50,7 @@
                     <Style.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter Property="Background" Value="{DynamicResource ButtonBackground}"/>
+                            <Setter Property="BorderBrush" Value="Transparent"/>
                         </Trigger>
                     </Style.Triggers>
                     <Setter Property="BorderBrush" Value="Transparent"/>

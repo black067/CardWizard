@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 
 namespace CallOfCthulhu
@@ -149,7 +150,7 @@ namespace CallOfCthulhu
             set
             {
                 name = value;
-                UpdateData(nameof(Name));
+                UpdateData();
             }
         }
 
@@ -162,7 +163,7 @@ namespace CallOfCthulhu
             set
             {
                 age = value;
-                UpdateData(nameof(Age));
+                UpdateData();
             }
         }
 
@@ -175,7 +176,7 @@ namespace CallOfCthulhu
             set
             {
                 era = value;
-                UpdateData(nameof(Era));
+                UpdateData();
             }
         }
 
@@ -188,7 +189,7 @@ namespace CallOfCthulhu
             set
             {
                 gender = value;
-                UpdateData(nameof(Gender));
+                UpdateData();
             }
         }
 
@@ -201,7 +202,7 @@ namespace CallOfCthulhu
             set
             {
                 education = value;
-                UpdateData(nameof(Education));
+                UpdateData();
             }
         }
 
@@ -214,7 +215,7 @@ namespace CallOfCthulhu
             set
             {
                 occupation = value;
-                UpdateData(nameof(Occupation));
+                UpdateData();
             }
         }
 
@@ -227,7 +228,7 @@ namespace CallOfCthulhu
             set
             {
                 address = value;
-                UpdateData(nameof(Address));
+                UpdateData();
             }
         }
 
@@ -240,7 +241,7 @@ namespace CallOfCthulhu
             set
             {
                 homeland = value;
-                UpdateData(nameof(Homeland));
+                UpdateData();
             }
         }
 
@@ -253,7 +254,7 @@ namespace CallOfCthulhu
             set
             {
                 skills = value;
-                UpdateData(nameof(Skills));
+                UpdateData();
             }
         }
 
@@ -287,7 +288,7 @@ namespace CallOfCthulhu
         /// 更新角色信息
         /// </summary>
         /// <param name="name"></param>
-        protected void UpdateData(string name) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        protected void UpdateData([CallerMemberName] string name = "") => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 
         /// <summary>
         /// 更新特点数值
@@ -332,11 +333,4 @@ namespace CallOfCthulhu
             return character;
         }
     }
-
-    /// <summary>
-    /// 委托: 可绑定到 <see cref="Character.TraitChanged"/> 事件上, 用于监听角色属性数值的变化
-    /// </summary>
-    /// <param name="character"></param>
-    /// <param name="args"></param>
-    public delegate void TraitChangedEventHandler(Character character, TraitChangedEventArgs args);
 }

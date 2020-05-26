@@ -167,28 +167,29 @@ namespace CardWizard.View
             Label_ValueOneFifth.Content = (int)(value / 5);
         }
 
+        private void TraitChanged(Character c, TraitChangedEventArgs e)
+        {
+            if (!e.Key.EqualsIgnoreCase(Key)) { return; }
+
+            ValueInitial = c.GetTraitInitial(Key);
+            ValueAdjustment = c.GetTraitAdjustment(Key);
+            ValueGrowth = c.GetTraitGrowth(Key);
+            UpdateValueView();
+        }
+
         /// <summary>
         /// 绑定到属性
         /// </summary>
         /// <param name="key"></param>
         /// <param name="targetGetter"></param>
-        public TraitChangedEventHandler BindToTrait(Func<Character> getter, string key, EndEditBoxEventHandler onEndEdit)
+        public TraitChangedEventHandler BindToTrait(string key, Func<Character> getter, EndEditBoxEventHandler onEndEdit)
         {
             Key = key;
             CharacterGetter = getter;
             Block_Key.SetValue(TagProperty, $"{Key}.Block");
             InputFieldEndEdit += onEndEdit;
             GrowthMarkColumn.Width = new GridLength(0, GridUnitType.Star);
-            void ITraitChanged(Character c, TraitChangedEventArgs e)
-            {
-                if (!e.Key.EqualsIgnoreCase(Key)) { return; }
-
-                ValueInitial = c.GetTraitInitial(Key);
-                ValueAdjustment = c.GetTraitAdjustment(Key);
-                ValueGrowth = c.GetTraitGrowth(Key);
-                UpdateValueView();
-            }
-            return ITraitChanged;
+            return TraitChanged;
         }
 
         /// <summary>
@@ -199,7 +200,28 @@ namespace CardWizard.View
         public TraitChangedEventHandler BindToTraitByTag(Func<Character> getter, EndEditBoxEventHandler onEndEdit)
         {
             var tag = Tag?.ToString();
-            return BindToTrait(getter, tag, onEndEdit);
+            return BindToTrait(tag, getter, onEndEdit);
+        }
+
+        private void SkillChanged(Character c, TraitChangedEventArgs e)
+        {
+            if (!e.Key.EqualsIgnoreCase(Key)) return;
+            
+        }
+
+        /// <summary>
+        /// 与技能绑定
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="getter"></param>
+        /// <param name="onEndEdit"></param>
+        /// <returns></returns>
+        public TraitChangedEventHandler BindToSkill(string key, Func<Character> getter, EndEditBoxEventHandler onEndEdit)
+        {
+            Key = key;
+            CharacterGetter = getter;
+            InputFieldEndEdit += onEndEdit;
+            return TraitChanged;
         }
     }
 

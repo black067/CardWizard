@@ -47,14 +47,15 @@ First line # { FontSize: 8, Background: Black }
 Title B # { FontSize: 12 }
 Second line # { FontSize: 8, Background: Transparent }";
             // FUNCTION BEGIN
-            var runs = UIExtension.ResolveTextElements(text).ToList();
+            var inlines = UIExtension.ResolveTextElements(text);
+            var runs = (from i in inlines where i is Run select i as Run).ToList();
             // FUNCTION END
             var conditions = new Dictionary<string, Func<bool>>()
             {
                 { $"0: {nameof(TextElement.FontSize)} convert fail", 
                     () => runs[0].FontSize.Equals(12.0) },
                 { $"1: {nameof(TextElement.Background)} convert fail", 
-                    () => runs[1].Background is SolidColorBrush colorBrush && colorBrush.Color.Equals(ColorConverter.ConvertFromString("Black")) },
+                    () => runs[1].Background is SolidColorBrush colorBrush },
             };
             foreach (var (msg, condition) in conditions)
             {

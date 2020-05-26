@@ -21,6 +21,8 @@ using CallOfCthulhu;
 using System.Collections.ObjectModel;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Controls.Primitives;
 
 namespace CardWizard.View
 {
@@ -214,6 +216,11 @@ namespace CardWizard.View
                 AddToCharacters(Current);
             }
             #region 设置界面的交互逻辑
+            Window.CommandConfirmGestured += (o, e) =>
+            {
+                var focused = Keyboard.FocusedElement;
+                if (focused is TextBoxBase box) box.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
+            };
             // 给按钮绑定事件
             Window.CommandCreateGestured += DoCreate;
             Window.CommandSaveGestured += DoSave;
@@ -589,10 +596,6 @@ namespace CardWizard.View
                 if (histories.Contains(element)) continue;
                 translate(element, translator);
                 histories.Add(element);
-                if (element is ContentControl control)
-                {
-                    Localize(control, translator, histories);
-                }
             }
         }
 

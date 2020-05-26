@@ -43,13 +43,14 @@ namespace CallOfCthulhu
         public ContextData(IDictionary<string, object> dictionary) : base(dictionary) { }
 
         /// <summary>
-        /// 
+        /// 通过键值对创建
         /// </summary>
         /// <param name="collection"></param>
         public ContextData(IEnumerable<KeyValuePair<string, object>> collection) : base(collection) { }
 
         /// <summary>
-        /// 
+        /// 通过 <see cref="Tuple{T1, T2}"/> 来创建
+        /// <para>T1 is <see cref="string"/>, T2 is <see cref="Object"/></para>
         /// </summary>
         /// <param name="tuples"></param>
         public ContextData(IEnumerable<Tuple<string, object>> tuples) : base(from t in tuples select new KeyValuePair<string, object>(t.Item1, t.Item2)) { }

@@ -13,9 +13,7 @@ namespace CardWizard.View.Tests
         [TestMethod()]
         public void OccupationWindowTest()
         {
-            var config = new Config();
-            var window = new OccupationWindow(config.OccupationModels, config.Translator);
-            window.Show();
+
         }
 
         [TestMethod()]

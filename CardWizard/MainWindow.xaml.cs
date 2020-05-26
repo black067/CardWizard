@@ -35,7 +35,7 @@ namespace CardWizard
             CommandCreate.InputGestures.Add(new KeyGesture(Key.N, ModifierKeys.Control));
             CommandSave.InputGestures.Add(new KeyGesture(Key.S, ModifierKeys.Control));
             CommandCapture.InputGestures.Add(new KeyGesture(Key.S, ModifierKeys.Control | ModifierKeys.Shift));
-
+            CommandConfirm.InputGestures.Add(new KeyGesture(Key.Enter));
             // UI 逻辑处理
             manager = new MainManager(this);
         }
@@ -43,7 +43,7 @@ namespace CardWizard
         /// <summary>
         /// 新建
         /// </summary>
-        public static RoutedCommand CommandCreate = new RoutedCommand("Create", typeof(MainWindow));
+        public static RoutedCommand CommandCreate = new RoutedCommand("Create", typeof(Window));
         /// <summary>
         /// 指令: 新建 触发时执行的动作
         /// </summary>
@@ -56,7 +56,7 @@ namespace CardWizard
         /// <summary>
         /// 保存
         /// </summary>
-        public static RoutedCommand CommandSave = new RoutedCommand("Save", typeof(MainWindow));
+        public static RoutedCommand CommandSave = new RoutedCommand("Save", typeof(Window));
         /// <summary>
         /// 指令: 保存 触发时执行的动作
         /// </summary>
@@ -65,10 +65,11 @@ namespace CardWizard
         {
             CommandSaveGestured?.Invoke(sender, e);
         }
+
         /// <summary>
         /// 生成图像文档
         /// </summary>
-        public static RoutedCommand CommandCapture = new RoutedCommand("Capture", typeof(MainWindow));
+        public static RoutedCommand CommandCapture = new RoutedCommand("Capture", typeof(Window));
         /// <summary>
         /// 指令: 生成图像文档 触发时执行的动作
         /// </summary>
@@ -77,10 +78,11 @@ namespace CardWizard
         {
             CommandCaptureGestured?.Invoke(sender, e);
         }
+
         /// <summary>
         /// 切换提示浮窗的显示与关闭
         /// </summary>
-        public static RoutedCommand CommandSwitchToolTip = new RoutedCommand("SwitchToolTip", typeof(MainWindow));
+        public static RoutedCommand CommandSwitchToolTip = new RoutedCommand("SwitchToolTip", typeof(Window));
         /// <summary>
         /// 指令: 切换提示浮窗的显示与关闭 触发时执行的动作
         /// </summary>
@@ -88,6 +90,19 @@ namespace CardWizard
         private void CommandShowToolTip_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             CommandSwitchToolTipGestured?.Invoke(sender, e);
+        }
+
+        /// <summary>
+        /// 按下 Enter
+        /// </summary>
+        public static RoutedCommand CommandConfirm = new RoutedCommand("Confirm", typeof(Window));
+        /// <summary>
+        /// 指令: 按下 Enter 触发时执行的动作
+        /// </summary>
+        public event CommandExcution CommandConfirmGestured;
+        private void CommandConfirm_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            CommandConfirmGestured?.Invoke(sender, e);
         }
     }
 

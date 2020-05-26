@@ -9,7 +9,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Image = System.Drawing.Image;
@@ -21,6 +23,15 @@ namespace CardWizard.View
     /// </summary>
     public static class UIExtension
     {
+        static CommandBinding AddCommandsBindings(this Window window, RoutedCommand command, ExecutedRoutedEventHandler handler, InputGesture gesture = null)
+        {
+            var binding = new CommandBinding(command, handler);
+            window.CommandBindings.Add(binding);
+            if (gesture != null)
+                command.InputGestures.Add(gesture);
+            return binding;
+        }
+
         /// <summary>
         /// 解析字符串, 从中获取 <see cref="TextElement"/> 列表, 基本元素是 <see cref="Run"/>
         /// </summary>
@@ -179,6 +190,45 @@ namespace CardWizard.View
             }
             return panel;
         }
+
+        /// <summary>
+        /// 将目控件设置为: 单击时选中所有文本
+        /// <para>仅支类型为 <see cref="TextBoxBase"/> 的对象</para>
+        /// </summary>
+        /// <param name="element"></param>
+        public static void OnClickSelectAll(UIElement element)
+        {
+            element.PreviewMouseDown += Box_PreviewMouseDown;
+            element.GotFocus += Box_GotFocus;
+            element.LostFocus += Box_LostFocus;
+        }
+
+        #region 单击时将内容全选
+        private static void Box_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.Source is UIElement element)
+            {
+                element.Focus();
+                e.Handled = true;
+            }
+        }
+        private static void Box_GotFocus(object sender, RoutedEventArgs e)
+        {
+            if (e.Source is TextBoxBase box)
+            {
+                box.SelectAll();
+                box.PreviewMouseDown -= Box_PreviewMouseDown;
+            }
+        }
+        private static void Box_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (e.Source is TextBoxBase box)
+            {
+                box.SelectAll();
+                box.PreviewMouseDown += Box_PreviewMouseDown;
+            }
+        }
+        #endregion
 
         /// <summary>
         /// 

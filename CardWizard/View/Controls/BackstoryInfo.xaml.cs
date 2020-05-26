@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -58,7 +58,7 @@ namespace CardWizard.View
             // 角色职业
             Button_Occupation.Click += Button_Occupation_Click;
             // 角色年龄的显示
-            BindTextBox(Text_Age, nameof(Character.Age), Manager);
+            BindTextBox(Text_Age, nameof(Character.Age), Manager, new IntRangeRule(1, 99));
             AgeBonusMark = Manager.Window.Label_Validity;
             manager.PropertyChanged += CurrentAgeChanged;
             manager.InfoUpdated += c => IsAgeValid(AgeBonusMark, c);
@@ -127,10 +127,9 @@ namespace CardWizard.View
         /// <param name="e"></param>
         private void CurrentAgeChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            // 改变的值不是年龄, 直接中断
+            // 改变的值不是年龄, 直接退出
             if (!e.PropertyName.EqualsIgnoreCase(nameof(Character.Age))) return;
-            // 判断年龄是否符合规则
-            var minAge = IsAgeValid(AgeBonusMark, Manager.Current);
+
             //var edu = Manager.Current.GetTraitInitial("EDU");
             //var script = $"return AgeBonus({edu}, {Manager.Current.Age}, {minAge})";
             //var table = (XLua.LuaTable)Manager.LuaHub.DoString(script).First();
@@ -149,45 +148,13 @@ namespace CardWizard.View
             //}
         }
 
-        internal class AgeRangeRule : ValidationRule
-        {
-            public int Min { get; set; }
-            public int Max { get; set; }
-
-            public AgeRangeRule()
-            {
-            }
-
-            public override ValidationResult Validate(object value, CultureInfo cultureInfo)
-            {
-                int age = 0;
-
-                try
-                {
-                    if (((string)value).Length > 0)
-                        age = Int32.Parse((String)value);
-                }
-                catch (Exception e)
-                {
-                    return new ValidationResult(false, $"Illegal characters or {e.Message}");
-                }
-
-                if ((age < Min) || (age > Max))
-                {
-                    return new ValidationResult(false,
-                      $"Please enter an age in the range: {Min}-{Max}.");
-                }
-                return ValidationResult.ValidResult;
-            }
-        }
-
         /// <summary>
         /// 绑定输入框到管理器
         /// </summary>
         /// <param name="box"></param>
         /// <param name="path"></param>
         /// <param name="manager"></param>
-        private static void BindTextBox(TextBox box, string path, MainManager manager)
+        private static void BindTextBox(TextBox box, string path, MainManager manager, params ValidationRule[] rules)
         {
             manager.InfoUpdating += c =>
             {
@@ -195,34 +162,14 @@ namespace CardWizard.View
                 {
                     Source = c,
                 };
-                if (path == nameof(Character.Age)) binding.ValidationRules.Add(new AgeRangeRule() { Min = 1, Max = 99 });
+                foreach (var item in rules)
+                {
+                    binding.ValidationRules.Add(item);
+                }
                 box.SetBinding(TextBox.TextProperty, binding);
             };
-            #region 单击时将内容全选
-            box.PreviewMouseDown += Box_PreviewMouseDown;
-            box.GotFocus += Box_GotFocus;
-            box.LostFocus += Box_LostFocus;
-            #endregion
+            UIExtension.OnClickSelectAll(box);
         }
 
-        #region 单击时将内容全选
-        private static void Box_PreviewMouseDown(object sender, MouseButtonEventArgs e)
-        {
-            var box = e.Source as TextBox;
-            box.Focus();
-            e.Handled = true;
-        }
-        private static void Box_GotFocus(object sender, RoutedEventArgs e)
-        {
-            var box = e.Source as TextBox;
-            box.SelectAll();
-            box.PreviewMouseDown -= Box_PreviewMouseDown;
-        }
-        private static void Box_LostFocus(object sender, RoutedEventArgs e)
-        {
-            var box = e.Source as TextBox;
-            box.PreviewMouseDown += Box_PreviewMouseDown;
-        }
-        #endregion
     }
 }

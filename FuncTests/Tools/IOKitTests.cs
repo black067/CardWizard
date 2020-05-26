@@ -77,7 +77,7 @@ namespace CardWizard.Tools
             {
 
             }
-            Thread.Sleep(32);
+            Thread.Sleep(500);
             var threadExt = IOKit.Extract(ZipFileName);
             // FUNCTION END
             var filesExtracted = Directory.GetFiles("./test").ToDictionary(s => Path.GetFileName(s));
@@ -88,7 +88,7 @@ namespace CardWizard.Tools
                 string[] linesSource = File.ReadAllLines(kvp.Value);
                 string[] linesExtracted = File.ReadAllLines(filesExtracted[kvp.Key]);
 
-                Assert.AreEqual(linesSource.Length, linesSource.Length, $"文件长度不一致: {kvp.Value}");
+                Assert.AreEqual(linesSource.Length, linesExtracted.Length, $"文件长度不一致: {kvp.Value}");
                 for (int i = 0, len = linesSource.Length; i < len; i++)
                 {
                     Assert.AreEqual(linesSource[i], linesExtracted[i], message: $"在第 {i} 行出现差异");

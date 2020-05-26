@@ -48,13 +48,14 @@ namespace CallOfCthulhu
         /// </summary>
         public int BaseValue { get; set; }
 
-        public static Skill Resolve(string text)
+        public static Skill Parse(string text)
         {
             var s = new Skill();
             var match = Regex.Match(text, @"(\-|\+)?\d+(\.\d+)?\%", RegexOptions.Multiline);
             if (match.Success)
             {
                 s.Name = text.Substring(0, match.Index);
+                s.BaseValue = int.Parse(match.Value.Replace("%", string.Empty));
             }
             else
             {

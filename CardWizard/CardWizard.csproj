@@ -80,6 +80,10 @@
     </EmbeddedResource>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="View\Tools\" />
+  </ItemGroup>
+
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="echo f|xcopy $(SolutionDir)Assets\XLua\xlua.dll $(TargetDir)xlua.dll /Y" />
   </Target>
