@@ -1,4 +1,6 @@
-﻿DOC_DamageBonus = [[ DamageBonus 的算法参考以下数据 (来自第七版规则书)
+﻿--- 此文件声明了一些重要规则, 如果不清楚修改了会产生何种后果, 请不要修改.
+
+DOC_DamageBonus = [[ DamageBonus 的算法参考以下数据 (来自第七版规则书)
 STR+SIZ		伤害加值		体格
 2-64		-2			-2
 65-84		-1			-1
@@ -12,7 +14,9 @@ STR+SIZ		伤害加值		体格
 * 这之上, 每+80, 伤害奖励再增加1D6
 ]]
 
+--- <summary>
 --- 计算伤害奖励的脚本
+--- </summary>
 function DamageBonus(strength, size)
 	local result = 0
 	local build = 0
@@ -50,7 +54,9 @@ MOV 的值还与年龄有关:
 - 年龄在80-89岁之间: MOV -= 5
 ]]
 
+--- <summary>
 --- 计算 MOV 的值
+--- </summary>
 function GetMOV(size, dexterity, strength, age)
 	if age == nil then age = CS.CallOfCthulhu.Character.DEFAULT_AGE end
 	local AgePenalty = math.floor((age - 40) / 10 + 1)
@@ -78,7 +84,9 @@ DATA_AssetOriginal = {}
 DATA_AssetOriginal['1890s'] = {	'$500+房子&膳食', '$1000', '$1500', '$2000', '$2500', '$3000', '$4000', '$5000', '$5000', '$10000'}
 DATA_AssetOriginal['1920s'] = {	'$1500+房子&膳食', '$2500', '$3500', '$3500', '$4500', '$5500', '$6500', '$7500', '$10000', '$20000'}
 DATA_AssetOriginal['Modern'] = {'$15000+房子&膳食', '$25000', '$35000', '$45000', '$55000', '$75000', '$100000', '$200000', '$300000', '$500000'}
+--- <summary>
 --- 初始资产的计算
+--- </summary>
 function AssetOrignal(era, value)
 	-- 1890s || 1920s
 	local result = 0
@@ -93,28 +101,98 @@ function AssetOrignal(era, value)
 	return result
 end
 
-DOC_EDUAndAges = [[ 角色教育值与年龄的关系如下 (来自第六版规则书)
-一名调查员的最小年龄为'教育(EDU) + 6'岁. 你每大于这个岁数 10 岁, 获得 1 点教育(EDU) 与 20 点职业点数.
-当超过 40 岁时, 每超过 10 年, 从以下属性中选择 1 点减去: STR / CON / DEX / APP.
-]]
-
-function GetMinAge(eduBase)
-	return eduBase + 6
+--- <summary>
+--- 教育增强检定
+--- </summary>
+function EDUBonus(eduBase, count)
+	if count == nil then count = 1 end
+	-- EDU shouldn't be larger than 99
+	local r = 0
+	for i = 1, count do
+		if eduBase + r >= 99 then break end
+		local d = Roll(1, 100) -- Equals to 1D100
+		if eduBase + r >= d then goto ContinueEDUBonus end
+		local v = Roll(1, 10) -- Equa to 1D10
+		if eduBase + r + v < 100 then  -- EDU shouldn't be larger than 99
+			r = r + v
+		else
+			r = 99 - eduBase
+			break
+		end
+		::ContinueEDUBonus::
+	end
+	return r
 end
 
-function AgeBonus(eduBase, age, minAge)
-	if minAge == nil then minAge = GetMinAge(eduBase) end
-	local bonus = {}
-	-- 计算年龄带来的教育值与职业技能点奖励
-	local delta = age - minAge
-	local ageBonus =  math.floor(delta / 10)
-	bonus['EDU'] = ageBonus
-	bonus['OccupationPoints'] = ageBonus
-	-- 计算调整值
-	bonus['Adjustment'] = 0
-	local deltaForPenalty = age - 40
-	if deltaForPenalty >= 0 then
-		bonus['Adjustment'] = math.floor(deltaForPenalty / 10)
+DOC_EDUAndAges = [[ 角色教育值与年龄的关系如下 (来自第七版规则书)
+玩家的调查员应选择年龄在 15 至 90 之间。
+若设想的调查员超过这个年龄范围，那么请找您的守秘人进行调整吧。
+对照相应年龄，调整调查员的属性，不同年龄段的调整不叠加。 
+15-19 岁：力量和体型合计减 5 点。教育减 5 点。 决定幸运值时可以骰 2 次并取较好的一次。
+20-39 岁：对教育进行 1 次增强检定。
+40-49 岁：对教育进行 2 次增强检定。力量/体质/敏捷合计减 5 点。外貌减 5 点。
+50-59 岁：对教育进行 3 次增强检定。力量/体质/敏捷合计减 10 点。外貌减 10 点。
+60-69 岁：对教育进行 4 次增强检定。力量/体质/敏捷合计减 20 点。外貌减 15 点。
+70-79 岁：对教育进行 4 次增强检定。力量/体质/敏捷合计减 40 点。外貌减 20 点。
+80-89 岁：对教育进行 4 次增强检定。力量/体质/敏捷合计减 80 点。外貌减 25 点。
+]]
+
+TABLE_AGEBONUS = {
+	[{0, 19}] = {
+		['Rule'] = 'STR + SIZ == -5',
+		['Bonus'] = { 
+			{ ['key'] = 'LUCK', ['formula'] = 'math.max(5 * (3D6), 5 * (3D6))' }, 
+			{ ['key'] = 'EDU', ['formula'] = 'EDU - 5' }
+		}
+	},
+	[{20, 39}] = {
+		['Rule'] = 'true',
+		['Bonus'] = { 
+			{ ['key'] = 'EDU', ['formula'] = 'EDU + EDUBonus(EDU, 1)' }
+		}
+	},
+	[{40, 49}] = {
+		['Rule'] = 'STR + SIZ + DEX == -5',
+		['Bonus'] = { 
+			{ ['key'] = 'APP', ['formula'] = 'APP - 5' }, 
+			{ ['key'] = 'EDU', ['formula'] = 'EDU + EDUBonus(EDU, 2)' },
+		}
+	},
+	[{50, 59}] = {
+		['Rule'] = 'STR + SIZ + DEX == -10',
+		['Bonus'] = { 
+			{ ['key'] = 'APP', ['formula'] = 'APP - 10' }, 
+			{ ['key'] = 'EDU', ['formula'] = 'EDU + EDUBonus(EDU, 3)' },
+		}
+	},
+	[{60, 69}] = {
+		['Rule'] = 'STR + SIZ + DEX == -20',
+		['Bonus'] = { 
+			{ ['key'] = 'APP', ['formula'] = 'APP - 15' }, 
+			{ ['key'] = 'EDU', ['formula'] = 'EDU + EDUBonus(EDU, 4)' },
+		}
+	},
+	[{70, 79}] = {
+		['Rule'] = 'STR + SIZ + DEX == -40',
+		['Bonus'] = { 
+			{ ['key'] = 'APP', ['formula'] = 'APP - 20' }, 
+			{ ['key'] = 'EDU', ['formula'] = 'EDU + EDUBonus(EDU, 4)' },
+		}
+	},
+	[{80, 99}] = {
+		['Rule'] = 'STR + SIZ + DEX == -80',
+		['Bonus'] = { 
+			{ ['key'] = 'APP', ['formula'] = 'APP - 25' }, 
+			{ ['key'] = 'EDU', ['formula'] = 'EDU + EDUBonus(EDU, 4)' },
+		}
+	},
+}
+
+--- <summary>
+--- 年龄对属性的影响
+--- </summary>
+function AgeBonus(age)
+	for k, v in pairs(TABLE_AGEBONUS) do
+		if age >= k[1] and age <= k[2] then return v end
 	end
-	return bonus
 end

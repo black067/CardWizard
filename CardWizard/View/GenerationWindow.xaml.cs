@@ -17,6 +17,8 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Documents;
 using CallOfCthulhu;
+using System.Windows.Data;
+using System.Windows.Input;
 
 namespace CardWizard.View
 {
@@ -29,6 +31,8 @@ namespace CardWizard.View
         /// 选择结果
         /// </summary>
         public Dictionary<string, int> Selection { get; set; }
+
+        public int Age { get; set; }
 
         /// <summary>
         /// 
@@ -43,6 +47,7 @@ namespace CardWizard.View
             Button_Confirm.Click += Button_Confirm_Click;
             Button_Cancel.Click += Button_Cancel_Click;
             Closed += ListWindow_Closed;
+
             if (manager == null) throw new NullReferenceException();
             var translator = manager.Translator;
             var dataModels = manager.Config.DataModels;
@@ -65,12 +70,13 @@ namespace CardWizard.View
                 }
             }
             // 初始化年龄惩罚的显示列
-            InitAgePenaltyBlock();
+            BindAgeBox(manager.LuaHub, Text_Age, Block_AgeBonus);
             // 生成几组角色的属性
             var datas = dataModels.ToDictionary(m => m.Name);
             for (int i = items.Count - 1; i >= 0; i--)
             {
-                var properties = new Dictionary<string, int>(from m in dataModels where Filter(m)
+                var properties = new Dictionary<string, int>(from m in dataModels
+                                                             where Filter(m)
                                                              select new KeyValuePair<string, int>(m.Name, 0));
                 foreach (var key in properties.Keys.ToArray())
                 {
@@ -92,10 +98,14 @@ namespace CardWizard.View
         /// 初始化年龄惩罚列
         /// </summary>
         /// <param name="traitsView"></param>
-        private void InitAgePenaltyBlock()
+        private void BindAgeBox(ScriptHub hub, TextBox inputField, TextBlock description)
         {
-            // TODO 撰写年龄的输入框逻辑
-            AgeSettings.Visibility = Visibility.Hidden;
+            void onEndEdit(object sender, RoutedEventArgs e)
+            {
+
+            }
+            inputField.LostFocus += onEndEdit;
+            UIExtension.OnClickSelectAll(inputField);
         }
 
         /// <summary>
@@ -103,7 +113,7 @@ namespace CardWizard.View
         /// </summary>
         /// <param name="m"></param>
         /// <returns></returns>
-        private static bool Filter(Trait m) => !m.Derived || m.Name.EqualsIgnoreCase("AST");
+        private static bool Filter(Trait m) => !m.Derived && !m.Name.EqualsIgnoreCase("LUCK") || m.Name.EqualsIgnoreCase("AST");
 
         private void Button_Cancel_Click(object sender, RoutedEventArgs e)
         {

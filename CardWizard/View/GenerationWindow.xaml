@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CardWizard.View"
+        xmlns:main="clr-namespace:CardWizard"
         mc:Ignorable="d" Tag="GenerationWindow.Title"
         Title="ListWindow" MinWidth="720" MinHeight="380" d:DesignHeight="380" FontFamily="Consolas">
     <Grid x:Name="MainGrid">
@@ -46,7 +47,7 @@
                 <ColumnDefinition Width="80"/>
                 <ColumnDefinition x:Name="last" Width="80"/>
             </Grid.ColumnDefinitions>
-            <TextBlock x:Name="Block_AgeBonus" Grid.ColumnSpan="99">
+            <TextBlock x:Name="Block_AgeBonus" Grid.ColumnSpan="1" Grid.RowSpan="2">
                 
             </TextBlock>
             <Label x:Name="Label_Age" Tag="Age"
