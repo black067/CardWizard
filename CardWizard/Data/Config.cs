@@ -102,7 +102,7 @@ namespace CardWizard.Data
             new Trait() { Name = "INT", Formula = "5 * (2D6 + 6)",Derived = false },
             new Trait() { Name = "EDU", Formula = "5 * (2D6 + 6)", Derived = false, Upper = 99},
             new Trait() { Name = "LUCK", Formula = "5 * (3D6)", Derived = false, Upper = 99 },
-            new Trait() { Name = "AST", Formula = "1D10", Derived = false},
+            new Trait() { Name = "AST", Formula = "1D10", Derived = true},
             new Trait() { Name = "SAN", Formula = "POW", Derived = true, Upper = 99},
             new Trait() { Name = "IDEA", Formula = "INT",Derived = true },
             new Trait() { Name = "MOV", Formula = "GetMOV(SIZ, DEX, STR, AGE)", Derived = true},

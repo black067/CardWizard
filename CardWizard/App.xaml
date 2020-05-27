@@ -44,7 +44,11 @@
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Background" Value="#43a9c7"/>
             <Setter Property="Cursor" Value="Hand"></Setter>
-            <Setter Property="ToolTip" Value="{DynamicResource XToolTip}"/>
+            <Setter Property="ToolTip">
+                <Setter.Value>
+                    <ToolTip Style="{DynamicResource XToolTip}"/>
+                </Setter.Value>
+            </Setter>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
@@ -57,6 +61,9 @@
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
                                 <Setter TargetName="border" Property="Background" Value="#2a89a4"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Background" Value="Gray"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>

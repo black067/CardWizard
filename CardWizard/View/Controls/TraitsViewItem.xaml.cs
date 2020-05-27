@@ -46,21 +46,42 @@ namespace CardWizard.View
             var keys = datas.Keys.ToArray();
             for (int i = 0, len = Math.Min(MainGrid.Children.Count, values.Length); i < len; i++)
             {
+                var key = keys[i];
+                var value = values[i];
                 var item = MainGrid.Children[i];
                 if (item is FrameworkElement element)
                 {
-                    element.ToolTip = keys[i];
+                    element.ToolTip = key;
                 }
                 if (item is ContentControl ctr)
                 {
-                    ctr.Content = values[i];
+                    ctr.Content = value;
                 }
                 else if (item is TextBox box)
                 {
-                    box.Text = values[i].ToString();
-                    Children.Add(keys[i], box);
+                    box.Text = value.ToString();
+                    Children.Add(key, box);
+                    if (enableEdit)
+                    {
+                        box.TextChanged += (o, e) =>
+                        {
+                            if (int.TryParse(box.Text, out int v))
+                            {
+                                datas[key] = v;
+                            }
+                        };
+                        UIExtension.OnClickSelectAll(box);
+                    }
                 }
-                if (!enableEdit) { item.IsEnabled = false; }
+                if (enableEdit)
+                {
+                    item.IsEnabled = true;
+                    item.Focusable = true;
+                }
+                else
+                {
+                    item.IsEnabled = false;
+                }
             }
             CleanExcessColumns(values.Length);
         }

@@ -410,7 +410,7 @@ namespace CardWizard.Tools
 
         public MemberDefinition(FieldInfo info, object target = null)
         {
-            if (info == null) throw new NullReferenceException();
+            if (info == null) throw new NullReferenceException("field info is null");
             Name = info.Name;
             TypeRef = info.FieldType;
             if (target != null)
@@ -426,7 +426,7 @@ namespace CardWizard.Tools
 
         public MemberDefinition(PropertyInfo info, object target = null)
         {
-            if (info == null) throw new NullReferenceException();
+            if (info == null) throw new NullReferenceException("property info is null");
             Name = info.Name;
             TypeRef = info.PropertyType;
             if (target != null)

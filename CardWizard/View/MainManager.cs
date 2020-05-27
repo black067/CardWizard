@@ -159,7 +159,7 @@ namespace CardWizard.View
         /// <param name="window"></param>
         public MainManager(MainWindow window)
         {
-            Window = window ?? throw new NullReferenceException();
+            Window = window ?? throw new NullReferenceException("Window is null");
             // 设置 Logger
             Messenger.OnEnqueue += Messenger_OnEnqueue;
             // 如果项目路径下存在文件"DEBUG", 就执行以下下操作
@@ -566,7 +566,7 @@ namespace CardWizard.View
                 var tooltipKey = $"{path}.ToolTip";
                 if (translator.TryTranslate(tooltipKey, out text) && !string.IsNullOrWhiteSpace(text))
                 {
-                    var toolTip = new ToolTip();
+                    var toolTip = element.ToolTip is ToolTip ? (element.ToolTip as ToolTip) : new ToolTip();
                     toolTip.BeginInit();
                     toolTip.Style = (Style)Application.Current.FindResource("XToolTip");
                     toolTip.Content = text;
@@ -577,6 +577,10 @@ namespace CardWizard.View
                     toolTip.EndInit();
                     element.RegisterName(tooltipKey.Replace('.', '_'), toolTip);
                     element.ToolTip = toolTip;
+                }
+                else
+                {
+                    element.ToolTip = null;
                 }
             }
 

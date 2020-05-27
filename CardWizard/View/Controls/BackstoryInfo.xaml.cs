@@ -43,7 +43,7 @@ namespace CardWizard.View
         /// <param name="manager"></param>
         public void InitializeBinding(MainManager manager)
         {
-            if (manager == null) throw new NullReferenceException();
+            if (manager == null) throw new NullReferenceException("manager is null");
             Manager = manager;
             var translator = Manager.Translator;
             // 角色名称的控制

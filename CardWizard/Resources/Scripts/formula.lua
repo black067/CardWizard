@@ -142,6 +142,7 @@ DOC_EDUAndAges = [[ 角色教育值与年龄的关系如下 (来自第七版规�
 
 DATA_AGEBONUS = {
 	[{0, 19}] = [[
+Comment: 力量和体型合计减 5 点。教育减 5 点。 决定幸运值时可以骰 2 次并取较好的一次。
 Rule: STR + SIZ == -5
 Bonus:
 - key: LUCK
@@ -150,11 +151,13 @@ Bonus:
   formula: EDU - 5]],
 
 	[{20, 39}] = [[
+Comment: 对教育进行 1 次增强检定。
 Bonus: 
 - key: EDU
   formula: EDUBonus(EDU, 1)]],
 
 	[{40, 49}] = [[
+Comment: 对教育进行 2 次增强检定。力量/体质/敏捷合计减 5 点。外貌减 5 点。
 Rule: STR + SIZ + DEX == -5
 Bonus: 
 - key: APP
@@ -163,6 +166,7 @@ Bonus:
   formula: EDUBonus(EDU, 2)]],
 
 	[{50, 59}] = [[
+Comment: 对教育进行 3 次增强检定。力量/体质/敏捷合计减 10 点。外貌减 10 点。
 Rule: STR + SIZ + DEX == -10
 Bonus: 
 - key: APP  
@@ -171,6 +175,7 @@ Bonus:
   formula: EDUBonus(EDU, 3)]],
 
 	[{60, 69}] = [[
+Comment: 对教育进行 4 次增强检定。力量/体质/敏捷合计减 20 点。外貌减 15 点。
 Rule: STR + SIZ + DEX == -20
 Bonus: 
 - key: APP  
@@ -179,6 +184,7 @@ Bonus:
   formula: EDUBonus(EDU, 4)]],
 
 	[{70, 79}] = [[
+Comment: 对教育进行 4 次增强检定。力量/体质/敏捷合计减 40 点。外貌减 20 点。
 Rule: STR + SIZ + DEX == -40
 Bonus: 
 - key: APP  
@@ -187,6 +193,7 @@ Bonus:
   formula: EDUBonus(EDU, 4)]],
 
 	[{80, 99}] = [[
+Comment: 对教育进行 4 次增强检定。力量/体质/敏捷合计减 80 点。外貌减 25 点。
 Rule: STR + SIZ + DEX == -80
 Bonus: 
 - key: APP  

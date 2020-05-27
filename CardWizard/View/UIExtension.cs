@@ -23,10 +23,18 @@ namespace CardWizard.View
     /// </summary>
     public static class UIExtension
     {
-        static CommandBinding AddCommandsBindings(this Window window, RoutedCommand command, ExecutedRoutedEventHandler handler, InputGesture gesture = null)
+        /// <summary>
+        /// 添加指令绑定
+        /// </summary>
+        /// <param name="element"></param>
+        /// <param name="command"></param>
+        /// <param name="handler"></param>
+        /// <param name="gesture"></param>
+        /// <returns></returns>
+        public static CommandBinding AddCommandsBindings(this UIElement element, RoutedCommand command, ExecutedRoutedEventHandler handler, InputGesture gesture = null)
         {
             var binding = new CommandBinding(command, handler);
-            window.CommandBindings.Add(binding);
+            element.CommandBindings.Add(binding);
             if (gesture != null)
                 command.InputGestures.Add(gesture);
             return binding;
@@ -144,7 +152,7 @@ namespace CardWizard.View
         public static T ForeachChild<T>(this T panel, Func<UIElement, int, bool> dosth,
                                         int loopLimit = int.MaxValue, bool reverse = false) where T : Panel
         {
-            if (panel == null) throw new NullReferenceException();
+            if (panel == null) throw new NullReferenceException("panel is null");
             if (reverse)
             {
                 for (int i = Math.Min(panel.Children.Count, loopLimit) - 1; i >= 0; i--)
@@ -175,7 +183,7 @@ namespace CardWizard.View
         public static T ForeachChild<T>(this T panel, Action<UIElement, int> dosth,
                                         int loopLimit = int.MaxValue, bool reverse = false) where T : Panel
         {
-            if (panel == null) throw new NullReferenceException();
+            if (panel == null) throw new NullReferenceException("panel is null");
             if (reverse)
             {
                 for (int i = Math.Min(panel.Children.Count, loopLimit) - 1; i >= 0; i--)
@@ -297,7 +305,7 @@ namespace CardWizard.View
         /// <returns></returns>
         public static BitmapImage ToBitmapImage(this Image image)
         {
-            if (image == null) throw new NullReferenceException();
+            if (image == null) throw new NullReferenceException("image is null");
             using var stream = new MemoryStream();
             image.Save(stream, ImageFormat.Png);
             var bitmapImage = new BitmapImage();
@@ -317,7 +325,7 @@ namespace CardWizard.View
         /// <returns></returns>
         public static Image ZoomIn(this Image bitmap, double width, double height)
         {
-            if (bitmap == null) throw new NullReferenceException();
+            if (bitmap == null) throw new NullReferenceException("bitmap is null");
             if (height <= 0)
             {
                 height = width / (1.0 * bitmap.Width / bitmap.Height);
@@ -336,7 +344,7 @@ namespace CardWizard.View
         /// <returns></returns>
         public static Icon ToIcon(this Bitmap bitmap)
         {
-            if (bitmap == null) throw new NullReferenceException();
+            if (bitmap == null) throw new NullReferenceException("bitmap is null");
             using MemoryStream bitmapStream = new MemoryStream();
             bitmap.Save(bitmapStream, ImageFormat.Png);
 

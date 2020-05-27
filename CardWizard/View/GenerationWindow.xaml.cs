@@ -27,25 +27,51 @@ namespace CardWizard.View
     /// <summary>
     /// ListWindow.xaml 的交互逻辑
     /// </summary>
-    public partial class GenerationWindow : Window
+    public partial class GenerationWindow : Window, INotifyPropertyChanged
     {
         /// <summary>
         /// 选择结果
         /// </summary>
         public Dictionary<string, int> Selection { get; set; }
+        private int age = Character.DEFAULT_AGE;
 
-        public int Age { get; set; }
+        public event PropertyChangedEventHandler PropertyChanged;
 
+        /// <summary>
+        /// 初始年龄
+        /// </summary>
+        public int Age
+        {
+            get
+            {
+                return age;
+            }
+            set
+            {
+                age = value;
+                OnPropertyChanged();
+            }
+        }
         public string Rule { get; set; }
 
         public List<(string key, string formula)> Bonus { get; set; }
 
+        public void OnPropertyChanged([CallerMemberName] string propertyName = "") => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
         /// <summary>
-        /// 
+        /// 用来筛选可重生成的属性
+        /// </summary>
+        /// <param name="m"></param>
+        /// <returns></returns>
+        private static bool Filter(Trait m) => !m.Derived && !m.Name.EqualsIgnoreCase("LUCK");
+
+        /// <summary>
+        /// 构造一个角色生成器窗口
         /// </summary>
         /// <param name="manager"></param>
         public GenerationWindow(MainManager manager, CalculateTrait TraitRoller)
         {
+            if (manager == null) throw new NullReferenceException("manager is null");
             InitializeComponent();
             Width = MinWidth;
             Height = MinHeight;
@@ -53,8 +79,6 @@ namespace CardWizard.View
             Button_Confirm.Click += Button_Confirm_Click;
             Button_Cancel.Click += Button_Cancel_Click;
             Closed += ListWindow_Closed;
-
-            if (manager == null) throw new NullReferenceException();
             var translator = manager.Translator;
             var dataModels = manager.Config.DataModels;
             // 初始化标题行
@@ -67,16 +91,9 @@ namespace CardWizard.View
                 Headers.InitAsHeaders(properties.ToArray(), translator);
             });
             // 列表
-            List<TraitsViewItem> items = new List<TraitsViewItem>();
-            foreach (var item in ListMain.Items)
-            {
-                if (item is TraitsViewItem listItem)
-                {
-                    items.Add(listItem);
-                }
-            }
+            List<TraitsViewItem> items = (from object i in ListMain.Items where i is TraitsViewItem select i as TraitsViewItem).ToList();
             // 初始化年龄惩罚的显示列
-            BindAgeBox(manager.LuaHub, Text_Age, Block_AgeBonus);
+            BindAgeBox(manager.LuaHub, Text_Age, Label_AgeBonus, Button_AgeCheck, AdjustmentsEditor, dataModels);
             // 生成几组角色的属性
             var datas = dataModels.ToDictionary(m => m.Name);
             for (int i = items.Count - 1; i >= 0; i--)
@@ -100,16 +117,25 @@ namespace CardWizard.View
             MainManager.Localize(this, translator);
         }
 
-        public static void GetAgeBonus(ScriptHub hub, int age, out string rule, out List<(string key, string formula)> bonus)
+        /// <summary>
+        /// 查询角色的年龄奖励
+        /// </summary>
+        /// <param name="hub"></param>
+        /// <param name="age"></param>
+        /// <param name="rule"></param>
+        /// <param name="bonus"></param>
+        public static void GetAgeBonus(ScriptHub hub, int age, out string comment, out string rule, out List<(string key, string formula)> bonus)
         {
             if (hub == null) throw new NullReferenceException("hub is null");
             bonus = new List<(string, string)>();
-            var text = (string)hub.DoString($"return AgeBonus({age})").FirstOrDefault();
+            var ageBonus = hub.Get<LuaFunction>("AgeBonus");
+            var text = ageBonus.Call(age).FirstOrDefault().ToString();
             var dict = YamlKit.Parse<ContextData>(text);
+            dict.TryGet<string>("Comment", out comment);
             if (dict.ContainsKey("Rule"))
-                rule = (string)dict["Rule"];
+                rule = $"return {dict["Rule"]}";
             else
-                rule = "true";
+                rule = "return true";
             dict.TryGet<ICollection>("Bonus", out var bonusRaw);
             foreach (IDictionary item in bonusRaw)
             {
@@ -123,29 +149,55 @@ namespace CardWizard.View
         /// 初始化年龄惩罚列
         /// </summary>
         /// <param name="traitsView"></param>
-        private void BindAgeBox(ScriptHub hub, TextBox inputField, TextBlock description)
+        private void BindAgeBox(ScriptHub hub, TextBox inputField, Label description, Button checkButton, TraitsViewItem traitsView, List<Trait> models)
         {
-            void onEndEdit(object sender, RoutedEventArgs e)
+            // 设置数据绑定
+            var binding = new Binding(nameof(Age)) { Source = this, };
+            binding.NotifyOnValidationError = true;
+            var validation = new IntRangeRule(1, 99);
+            binding.ValidationRules.Add(validation);
+            inputField.SetBinding(TextBox.TextProperty, binding);
+            UIExtension.OnClickSelectAll(inputField);
+            // 绑定调整值输入框
+            var properties = new Dictionary<string, int>(from m in models
+                                                         where Filter(m)
+                                                         select new KeyValuePair<string, int>(m.Name, 0));
+            traitsView.InitAsDatas(properties, true);
+            // 设置编辑结束时执行的事件
+            void ValidCheck()
             {
-                GetAgeBonus(hub, Age, out var r, out var b);
+                using var subhub = hub.CreateSubEnv(traitsView.Values);
+                bool valid = (bool)subhub.DoString(Rule, isGlobal: true).First();
+                Button_Confirm.IsEnabled = valid;
+                description.DataContext = valid ? string.Empty : "Invalid";
+            }
+            void CheckAgeBonus(int age)
+            {
+                GetAgeBonus(hub, age, out var comment, out var r, out var b);
                 Rule = r;
                 Bonus = b;
-                description.Inlines.Clear();
-                description = 
+                description.Content = comment;
+                ValidCheck();
             }
-            var binding = new Binding(nameof(Age)) { Source = this, Mode = BindingMode.TwoWay };
-            binding.ValidationRules.Add(new IntRangeRule(1, 99));
-            inputField.SetBinding(TextBox.TextProperty, binding);
-            inputField.LostFocus += onEndEdit;
-            UIExtension.OnClickSelectAll(inputField);
+            // 更新显示的提示文字
+            CheckAgeBonus(Age);
+            PropertyChanged += (o, e) =>
+            {
+                if (e.PropertyName != nameof(Age)) return;
+                CheckAgeBonus(Age);
+            };
+            // 
+            checkButton.Click += (o, e) =>
+            {
+                ValidCheck();
+            };
+            var gestures = new InputGestureCollection();
+            gestures.Add(new MouseGesture(MouseAction.LeftClick));
+            this.AddCommandsBindings(new RoutedCommand("CatchMouse", this.GetType(), gestures), (o, e) =>
+            {
+                if (inputField.IsFocused) { checkButton.Focus(); }
+            });
         }
-
-        /// <summary>
-        /// 用来筛选可重生成的属性
-        /// </summary>
-        /// <param name="m"></param>
-        /// <returns></returns>
-        private static bool Filter(Trait m) => !m.Derived && !m.Name.EqualsIgnoreCase("LUCK") || m.Name.EqualsIgnoreCase("AST");
 
         private void Button_Cancel_Click(object sender, RoutedEventArgs e)
         {

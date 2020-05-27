@@ -14,6 +14,7 @@
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="Cursor" Value="IBeam"/>
+            <Setter Property="Focusable" Value="False"/>
             <Setter Property="Foreground" Value="{Binding Foreground, ElementName=userControl}"/>
         </Style>
     </UserControl.Resources>
