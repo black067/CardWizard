@@ -19,6 +19,8 @@ using System.Windows.Documents;
 using CallOfCthulhu;
 using System.Windows.Data;
 using System.Windows.Input;
+using XLua;
+using XLua.LuaDLL;
 
 namespace CardWizard.View
 {
@@ -34,11 +36,15 @@ namespace CardWizard.View
 
         public int Age { get; set; }
 
+        public string Rule { get; set; }
+
+        public List<(string key, string formula)> Bonus { get; set; }
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="manager"></param>
-        public GenerationWindow(MainManager manager, Func<Dictionary<string, int>, string, int> TraitRoller)
+        public GenerationWindow(MainManager manager, CalculateTrait TraitRoller)
         {
             InitializeComponent();
             Width = MinWidth;
@@ -80,7 +86,7 @@ namespace CardWizard.View
                                                              select new KeyValuePair<string, int>(m.Name, 0));
                 foreach (var key in properties.Keys.ToArray())
                 {
-                    var value = TraitRoller(properties, datas[key].Formula);
+                    var value = TraitRoller(datas[key].Formula, properties);
                     properties[key] = Convert.ToInt32(value);
                 }
                 var sum = properties.Sum(kvp => kvp.Key != "AST" ? kvp.Value : 0);
@@ -94,6 +100,25 @@ namespace CardWizard.View
             MainManager.Localize(this, translator);
         }
 
+        public static void GetAgeBonus(ScriptHub hub, int age, out string rule, out List<(string key, string formula)> bonus)
+        {
+            if (hub == null) throw new NullReferenceException("hub is null");
+            bonus = new List<(string, string)>();
+            var text = (string)hub.DoString($"return AgeBonus({age})").FirstOrDefault();
+            var dict = YamlKit.Parse<ContextData>(text);
+            if (dict.ContainsKey("Rule"))
+                rule = (string)dict["Rule"];
+            else
+                rule = "true";
+            dict.TryGet<ICollection>("Bonus", out var bonusRaw);
+            foreach (IDictionary item in bonusRaw)
+            {
+                var key = (string)item["key"];
+                var formula = (string)item["formula"];
+                bonus.Add((key, formula));
+            }
+        }
+
         /// <summary>
         /// 初始化年龄惩罚列
         /// </summary>
@@ -102,8 +127,15 @@ namespace CardWizard.View
         {
             void onEndEdit(object sender, RoutedEventArgs e)
             {
-
+                GetAgeBonus(hub, Age, out var r, out var b);
+                Rule = r;
+                Bonus = b;
+                description.Inlines.Clear();
+                description = 
             }
+            var binding = new Binding(nameof(Age)) { Source = this, Mode = BindingMode.TwoWay };
+            binding.ValidationRules.Add(new IntRangeRule(1, 99));
+            inputField.SetBinding(TextBox.TextProperty, binding);
             inputField.LostFocus += onEndEdit;
             UIExtension.OnClickSelectAll(inputField);
         }

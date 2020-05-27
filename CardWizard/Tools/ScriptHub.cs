@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.IO;
+using System.Runtime.CompilerServices;
 
 namespace CardWizard.Tools
 {
@@ -48,7 +49,7 @@ namespace CardWizard.Tools
         /// <param name="chunkName"></param>
         /// <param name="isGlobal"></param>
         /// <returns></returns>
-        public abstract object[] DoString(string text, string chunkName = "CHUNK", bool isGlobal = false);
+        public abstract object[] DoString(string text, [CallerMemberName] string chunkName = "", bool isGlobal = false);
 
         /// <summary>
         /// 执行 二进制 Lua 字符串 
@@ -57,7 +58,7 @@ namespace CardWizard.Tools
         /// <param name="chunkName"></param>
         /// <param name="isGlobal"></param>
         /// <returns></returns>
-        public abstract object[] DoString(byte[] source, string chunkName = "CHUNK", bool isGlobal = false);
+        public abstract object[] DoString(byte[] source, [CallerMemberName] string chunkName = "", bool isGlobal = false);
 
         /// <summary>
         /// 执行 Lua 脚本文件
@@ -66,10 +67,12 @@ namespace CardWizard.Tools
         /// <param name="chunkName"></param>
         /// <param name="isGlobal"></param>
         /// <returns></returns>
-        public virtual object[] DoFile(string path, string chunkName = "CHUNK", bool isGlobal = false)
+        public virtual object[] DoFile(string path, string chunkName = "", bool isGlobal = false)
         {
             if (File.Exists(path))
             {
+                if (string.IsNullOrWhiteSpace(chunkName))
+                    chunkName = Path.GetFileNameWithoutExtension(path).ToUpper();
                 return DoString(File.ReadAllText(path), chunkName, isGlobal);
             }
             return null;

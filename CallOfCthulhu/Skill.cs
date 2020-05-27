@@ -82,7 +82,7 @@ namespace CallOfCthulhu
             if (segments.Length > 1 && !string.IsNullOrWhiteSpace(segments[1]) && parser != null)
             {
                 context = parser.Invoke(segments[1]);
-                context?.SetValues(s);
+                context?.ExportValues(s);
             }
             else
             {

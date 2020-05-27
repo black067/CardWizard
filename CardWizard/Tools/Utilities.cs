@@ -40,8 +40,6 @@ namespace CardWizard.Tools
         {
             switch (someItems)
             {
-                case IDictionary dict:
-                    return dict.Count;
                 case ICollection collection:
                     return collection.Count;
                 case IEnumerable enumerable:

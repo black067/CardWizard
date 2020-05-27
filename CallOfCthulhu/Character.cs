@@ -307,12 +307,18 @@ namespace CallOfCthulhu
         }
 
         /// <summary>
+        /// 此构造器仅用于数据序列化, 请避免直接使用此方法构造角色
+        /// <para>使用 <see cref="Create(Dictionary{string, Trait}, CalculateTrait)"/></para>
+        /// </summary>
+        public Character() { }
+
+        /// <summary>
         /// 创建一个新角色
         /// </summary>
         /// <param name="baseModelDict"></param>
-        /// <param name="calculator"></param>
+        /// <param name="calculator">属性计算器</param>
         /// <returns></returns>
-        public static Character Create(Dictionary<string, Trait> baseModelDict, Func<Dictionary<string, int>, string, int> calculator = null)
+        public static Character Create(Dictionary<string, Trait> baseModelDict, CalculateTrait calculator = null)
         {
             var character = new Character()
             {
@@ -325,7 +331,7 @@ namespace CallOfCthulhu
                 bool hasCalculator = calculator != null;
                 foreach (var prop in baseModelDict.Values)
                 {
-                    character.SetTraitInitial(prop.Name, hasCalculator ? calculator(character.Initials, prop.Formula) : 0);
+                    character.SetTraitInitial(prop.Name, hasCalculator ? calculator(prop.Formula, character.Initials) : 0);
                     character.SetTraitGrowth(prop.Name, 0);
                     character.SetTraitAdjustment(prop.Name, 0);
                 }
@@ -333,4 +339,12 @@ namespace CallOfCthulhu
             return character;
         }
     }
+
+    /// <summary>
+    /// 委托: 属性计算器, 可以根据现有属性的值计算派生属性的值
+    /// </summary>
+    /// <param name="traits"></param>
+    /// <param name="key"></param>
+    /// <returns></returns>
+    public delegate int CalculateTrait(string formula, Dictionary<string, int> traits);
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text;
 using XLua;
 
@@ -107,7 +108,7 @@ end";
         /// <param name="chunkName"></param>
         /// <param name="global"></param>
         /// <returns></returns>
-        public override object[] DoString(string text, string chunkName = "CHUNK", bool global = false)
+        public override object[] DoString(string text, [CallerMemberName] string chunkName = "", bool global = false)
         {
             if (global)
             {
@@ -123,7 +124,7 @@ end";
         /// <param name="chunkName"></param>
         /// <param name="global"></param>
         /// <returns></returns>
-        public override object[] DoString(byte[] source, string chunkName = "CHUNK", bool global = false)
+        public override object[] DoString(byte[] source, [CallerMemberName] string chunkName = "", bool global = false)
         {
             if (global)
             {

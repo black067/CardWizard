@@ -1,4 +1,6 @@
-﻿--- 此文件声明了一些重要规则, 如果不清楚修改了会产生何种后果, 请不要修改.
+﻿--- 此文件声明了一些重要的算法, 如果不清楚如何修改/修改了会产生何种后果, 请不要修改.
+Utilities = CS.CardWizard.Tools.Utilities
+DEFAULT_AGE = CS.CallOfCthulhu.Character.DEFAULT_AGE
 
 DOC_DamageBonus = [[ DamageBonus 的算法参考以下数据 (来自第七版规则书)
 STR+SIZ		伤害加值		体格
@@ -16,6 +18,7 @@ STR+SIZ		伤害加值		体格
 
 --- <summary>
 --- 计算伤害奖励的脚本
+--- 返回值分别是 伤害加值的计算公式 和 体格值
 --- </summary>
 function DamageBonus(strength, size)
 	local result = 0
@@ -58,7 +61,7 @@ MOV 的值还与年龄有关:
 --- 计算 MOV 的值
 --- </summary>
 function GetMOV(size, dexterity, strength, age)
-	if age == nil then age = CS.CallOfCthulhu.Character.DEFAULT_AGE end
+	if age == nil then age = DEFAULT_AGE end
 	local AgePenalty = math.floor((age - 40) / 10 + 1)
 	local movement = 7
 	if dexterity > size and strength > size then movement = 9
@@ -137,62 +140,69 @@ DOC_EDUAndAges = [[ 角色教育值与年龄的关系如下 (来自第七版规�
 80-89 岁：对教育进行 4 次增强检定。力量/体质/敏捷合计减 80 点。外貌减 25 点。
 ]]
 
-TABLE_AGEBONUS = {
-	[{0, 19}] = {
-		['Rule'] = 'STR + SIZ == -5',
-		['Bonus'] = { 
-			{ ['key'] = 'LUCK', ['formula'] = 'math.max(5 * (3D6), 5 * (3D6))' }, 
-			{ ['key'] = 'EDU', ['formula'] = 'EDU - 5' }
-		}
-	},
-	[{20, 39}] = {
-		['Rule'] = 'true',
-		['Bonus'] = { 
-			{ ['key'] = 'EDU', ['formula'] = 'EDU + EDUBonus(EDU, 1)' }
-		}
-	},
-	[{40, 49}] = {
-		['Rule'] = 'STR + SIZ + DEX == -5',
-		['Bonus'] = { 
-			{ ['key'] = 'APP', ['formula'] = 'APP - 5' }, 
-			{ ['key'] = 'EDU', ['formula'] = 'EDU + EDUBonus(EDU, 2)' },
-		}
-	},
-	[{50, 59}] = {
-		['Rule'] = 'STR + SIZ + DEX == -10',
-		['Bonus'] = { 
-			{ ['key'] = 'APP', ['formula'] = 'APP - 10' }, 
-			{ ['key'] = 'EDU', ['formula'] = 'EDU + EDUBonus(EDU, 3)' },
-		}
-	},
-	[{60, 69}] = {
-		['Rule'] = 'STR + SIZ + DEX == -20',
-		['Bonus'] = { 
-			{ ['key'] = 'APP', ['formula'] = 'APP - 15' }, 
-			{ ['key'] = 'EDU', ['formula'] = 'EDU + EDUBonus(EDU, 4)' },
-		}
-	},
-	[{70, 79}] = {
-		['Rule'] = 'STR + SIZ + DEX == -40',
-		['Bonus'] = { 
-			{ ['key'] = 'APP', ['formula'] = 'APP - 20' }, 
-			{ ['key'] = 'EDU', ['formula'] = 'EDU + EDUBonus(EDU, 4)' },
-		}
-	},
-	[{80, 99}] = {
-		['Rule'] = 'STR + SIZ + DEX == -80',
-		['Bonus'] = { 
-			{ ['key'] = 'APP', ['formula'] = 'APP - 25' }, 
-			{ ['key'] = 'EDU', ['formula'] = 'EDU + EDUBonus(EDU, 4)' },
-		}
-	},
+DATA_AGEBONUS = {
+	[{0, 19}] = [[
+Rule: STR + SIZ == -5
+Bonus:
+- key: LUCK
+  formula: math.max(5 * (3D6), 5 * (3D6))
+- key: EDU
+  formula: EDU - 5]],
+
+	[{20, 39}] = [[
+Bonus: 
+- key: EDU
+  formula: EDUBonus(EDU, 1)]],
+
+	[{40, 49}] = [[
+Rule: STR + SIZ + DEX == -5
+Bonus: 
+- key: APP
+  formula: -5 
+- key: EDU
+  formula: EDUBonus(EDU, 2)]],
+
+	[{50, 59}] = [[
+Rule: STR + SIZ + DEX == -10
+Bonus: 
+- key: APP  
+  formula: -10 
+- key: EDU  
+  formula: EDUBonus(EDU, 3)]],
+
+	[{60, 69}] = [[
+Rule: STR + SIZ + DEX == -20
+Bonus: 
+- key: APP  
+  formula: -15 
+- key: EDU  
+  formula: EDUBonus(EDU, 4)]],
+
+	[{70, 79}] = [[
+Rule: STR + SIZ + DEX == -40
+Bonus: 
+- key: APP  
+  formula: -20 
+- key: EDU  
+  formula: EDUBonus(EDU, 4)]],
+
+	[{80, 99}] = [[
+Rule: STR + SIZ + DEX == -80
+Bonus: 
+- key: APP  
+  formula: -25 
+- key: EDU  
+  formula: EDUBonus(EDU, 4)]],
 }
 
 --- <summary>
 --- 年龄对属性的影响
 --- </summary>
 function AgeBonus(age)
-	for k, v in pairs(TABLE_AGEBONUS) do
-		if age >= k[1] and age <= k[2] then return v end
+	for k, v in pairs(DATA_AGEBONUS) do
+		if age >= k[1] and age <= k[2] then
+			return v
+		end
 	end
+	return DATA_AGEBONUS[{80, 99}]
 end

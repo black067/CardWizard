@@ -191,7 +191,7 @@ namespace CardWizard.View
             // 创建 Lua 环境
             InitLuaHub();
             // 如果存在存储了计算公式的脚本文件, 执行
-            LuaHub.DoFile(Paths.ScriptFormula, isGlobal: true);
+            LuaHub.DoFile(Paths.ScriptFormula, "FORMULA", isGlobal: true);
             // 创建必要的文件夹
             Directory.CreateDirectory(Paths.PathSave);
             // 载入角色数据
@@ -260,7 +260,7 @@ namespace CardWizard.View
             {
                 var message = Translator.Translate("Message.RollADMGBonus", "{1}");
                 var formula = Window.Value_DamageBonus.Content.ToString();
-                var result = CalcTrait(Current.Initials, formula);
+                var result = CalcTrait(formula, Current.Initials);
                 Messenger.EnqueueFormat(message, Window.Value_DamageBonus.Content, result);
             };
             // 头像绑定事件: 点击时可以选择图片导入
@@ -273,7 +273,7 @@ namespace CardWizard.View
             // 刷新界面
             OnInfoUpdate(Current);
             // 如果存在启动脚本文件, 执行
-            LuaHub.DoFile(Paths.ScriptStartup, isGlobal: true);
+            LuaHub.DoFile(Paths.ScriptStartup, "STARTUP", isGlobal: true);
             // 对界面进行本地化
             Localize(Window, Translator);
             // 垃圾回收
@@ -508,7 +508,7 @@ namespace CardWizard.View
         /// <summary>
         /// 初始化 <see cref="LuaHub"/>
         /// </summary>
-        private void InitLuaHub()
+        private ScriptHub InitLuaHub()
         {
             LuaHub = new XLuaHub();
             // 传入窗口与管理器的实例
@@ -518,6 +518,7 @@ namespace CardWizard.View
             LuaHub.Set<Func<int, int, int>>(nameof(Roll), Roll);
             GCDispatcher.Tick += (o, e) => LuaHub.EnvGC();
             Window.Closed += (o, e) => LuaHub.Dispose();
+            return LuaHub;
         }
 
         /// <summary>
@@ -664,7 +665,7 @@ namespace CardWizard.View
             foreach (var m in Config.DataModels)
             {
                 if (!m.Formula.Contains(key)) continue;
-                var value = CalcTrait(source, m.Formula);
+                var value = CalcTrait(m.Formula, source);
                 OnCharacterTraitEdited(character, args.Segment, m.Name, value);
             }
         }
@@ -777,8 +778,9 @@ namespace CardWizard.View
         /// 计算一段脚本并返回 <see cref="int"/>
         /// </summary>
         /// <param name="script"></param>
+        /// <param name="variables"></param>
         /// <returns></returns>
-        public int CalcForInt(IDictionary variables, string script)
+        public int CalcForInt(string script, IDictionary variables)
         {
             using var subhub = LuaHub.CreateSubEnv(variables);
             var r = subhub.DoString(script, "CALC", true).FirstOrDefault() ?? 0;
@@ -791,7 +793,7 @@ namespace CardWizard.View
         /// <param name="traits"></param>
         /// <param name="formula"></param>
         /// <returns></returns>
-        public int CalcTrait(Dictionary<string, int> traitValues, string formula)
+        public int CalcTrait(string formula, Dictionary<string, int> traitValues = null)
         {
             if (string.IsNullOrWhiteSpace(formula)) return 0;
             var segments = formula.Split(";");
@@ -803,8 +805,8 @@ namespace CardWizard.View
                 var segmentsJ = m.Value.Split('D');
                 seg = seg.Replace(m.Value, $"{nameof(Roll)}({segmentsJ[0]}, {segmentsJ[1]})");
             }
-            if (traitValues == null) throw new NullReferenceException();
-            return CalcForInt(traitValues, $"return {seg}");
+            traitValues ??= new Dictionary<string, int>();
+            return CalcForInt($"return {seg}", traitValues);
         }
 
         /// <summary>
@@ -826,7 +828,7 @@ namespace CardWizard.View
             };
             foreach (var model in Config.DataModels.Where(filter))
             {
-                var value = CalcTrait(variables, model.Formula);
+                var value = CalcTrait(model.Formula, variables);
                 character.SetTraitInitial(model.Name, value);
             }
         }
