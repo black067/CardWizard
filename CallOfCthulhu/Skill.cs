@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace CallOfCthulhu
@@ -48,18 +50,43 @@ namespace CallOfCthulhu
         /// </summary>
         public int BaseValue { get; set; }
 
-        public static Skill Parse(string text)
+        /// <summary>
+        /// 将文本转化为 Skill
+        /// <para><paramref name="parser"/>: 函数, 可以将形如 "{ a: 1, b: true, c: C }" 的字符串转化为 <see cref="ContextData"/> </para>
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="context"></param>
+        /// <param name="parser"></param>
+        /// <returns></returns>
+        public static Skill Parse(string text, out ContextData context, Func<string, ContextData> parser = null)
         {
             var s = new Skill();
-            var match = Regex.Match(text, @"(\-|\+)?\d+(\.\d+)?\%", RegexOptions.Multiline);
+
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                context = new ContextData();
+                return s;
+            }
+            var segments = text.Split('#', 2, StringSplitOptions.RemoveEmptyEntries);
+            var first = segments.First();
+            var match = Regex.Match(first, @"(\-|\+)?\d+(\.\d+)?\%", RegexOptions.Multiline);
             if (match.Success)
             {
-                s.Name = text.Substring(0, match.Index);
+                s.Name = first.Substring(0, match.Index).Trim();
                 s.BaseValue = int.Parse(match.Value.Replace("%", string.Empty));
             }
             else
             {
-                s.Name = text;
+                s.Name = first;
+            }
+            if (segments.Length > 1 && !string.IsNullOrWhiteSpace(segments[1]) && parser != null)
+            {
+                context = parser.Invoke(segments[1]);
+                context?.SetValues(s);
+            }
+            else
+            {
+                context = new ContextData();
             }
             return s;
         }
