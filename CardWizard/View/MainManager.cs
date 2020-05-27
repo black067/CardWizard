@@ -222,7 +222,7 @@ namespace CardWizard.View
                 if (focused is TextBoxBase box) box.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
             };
             // 给按钮绑定事件
-            Window.CommandCreateGestured += DoCreate;
+            Window.CommandCreateGestured += GetHandlerForReGenerateTraits(() => Character.Create(Config.BaseModelDict));
             Window.CommandSaveGestured += DoSave;
             //Window.Button_Debug.Click += DoDebug;
             Window.CommandCaptureGestured += DoCapturePicture;
@@ -281,33 +281,6 @@ namespace CardWizard.View
         }
 
         #region Button Click Handler
-        /// <summary>
-        /// 新建按钮点击时触发的事件
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void DoCreate(object sender, RoutedEventArgs e)
-        {
-            var childWindow = new GenerationWindow(this, CalcTrait)
-            {
-                Owner = Window,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner
-            };
-            childWindow.ShowDialog();
-            if (childWindow.DialogResult ?? false)
-            {
-                var newer = Character.Create(Config.BaseModelDict);
-                var selection = childWindow.Selection;
-                selection.Remove("SUM");
-                foreach (var kvp in childWindow.Selection)
-                {
-                    newer.SetTraitInitial(kvp.Key, kvp.Value);
-                }
-                RecalcTraitsInitial(newer, t => t.Derived);
-                AddToCharacters(newer);
-            }
-        }
-
         /// <summary>
         /// 保存按钮点击时触发的事件
         /// </summary>
@@ -399,7 +372,7 @@ namespace CardWizard.View
             }
         }
 
-        private void DoSwitchToolTip(object sender, System.Windows.Input.ExecutedRoutedEventArgs e)
+        private void DoSwitchToolTip(object sender, RoutedEventArgs e)
         {
 
             Config.ToolTipAvailable = !Config.ToolTipAvailable;
@@ -737,25 +710,32 @@ namespace CardWizard.View
         /// <returns></returns>
         public RoutedEventHandler GetHandlerForReGenerateTraits(Func<Character> getter)
         {
-            void regenerateprops(object o, RoutedEventArgs e)
+            void regenerateprops(object o, EventArgs _)
             {
                 var character = getter?.Invoke();
                 if (character == null) return;
-                var childWindow = new GenerationWindow(this, CalcTrait)
+                var generator = new GenerationWindow(this, CalcTrait)
                 {
                     Owner = Window,
+                    Age = character.Age,
                     WindowStartupLocation = WindowStartupLocation.CenterOwner
                 };
-                childWindow.ShowDialog();
-                if ((bool)childWindow.DialogResult)
+                generator.ShowDialog();
+                if ((bool)generator.DialogResult)
                 {
-                    var selection = childWindow.Selection;
+                    // 设置角色的基础属性
+                    var selection = generator.Selection;
                     foreach (var kvp in selection)
                     {
                         if (Config.BaseModelDict.ContainsKey(kvp.Key))
                             character.SetTraitInitial(kvp.Key, kvp.Value);
                     }
+                    // 将年龄的影响作用到角色上
+                    generator.ApplyAgeBonus(character);
+                    // 重算派生属性
                     RecalcTraitsInitial(character, t => t.Derived);
+                    if (!Characters.Contains(character))
+                        AddToCharacters(character);
                     OnInfoUpdate(character);
                 }
             }

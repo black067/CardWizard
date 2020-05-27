@@ -21,6 +21,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using XLua;
 using XLua.LuaDLL;
+using System.Text.RegularExpressions;
 
 namespace CardWizard.View
 {
@@ -52,9 +53,10 @@ namespace CardWizard.View
                 OnPropertyChanged();
             }
         }
-        public string Rule { get; set; }
 
-        public List<(string key, string formula)> Bonus { get; set; }
+        public Dictionary<string, string> Bonus { get; set; } = new Dictionary<string, string>();
+
+        private CalculateTrait TraitRoller { get; set; }
 
         public void OnPropertyChanged([CallerMemberName] string propertyName = "") => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
@@ -69,7 +71,7 @@ namespace CardWizard.View
         /// 构造一个角色生成器窗口
         /// </summary>
         /// <param name="manager"></param>
-        public GenerationWindow(MainManager manager, CalculateTrait TraitRoller)
+        public GenerationWindow(MainManager manager, CalculateTrait traitRoller)
         {
             if (manager == null) throw new NullReferenceException("manager is null");
             InitializeComponent();
@@ -81,6 +83,7 @@ namespace CardWizard.View
             Closed += ListWindow_Closed;
             var translator = manager.Translator;
             var dataModels = manager.Config.DataModels;
+            TraitRoller = traitRoller;
             // 初始化标题行
             Headers.Process(_ =>
             {
@@ -98,19 +101,18 @@ namespace CardWizard.View
             var datas = dataModels.ToDictionary(m => m.Name);
             for (int i = items.Count - 1; i >= 0; i--)
             {
+                var item = items[i];
                 var properties = new Dictionary<string, int>(from m in dataModels
                                                              where Filter(m)
                                                              select new KeyValuePair<string, int>(m.Name, 0));
                 foreach (var key in properties.Keys.ToArray())
                 {
-                    var value = TraitRoller(datas[key].Formula, properties);
-                    properties[key] = Convert.ToInt32(value);
+                    properties[key] = TraitRoller(datas[key].Formula, properties);
                 }
-                var sum = properties.Sum(kvp => kvp.Key != "AST" ? kvp.Value : 0);
+                var sum = properties.Sum(kvp => kvp.Value);
                 properties["SUM"] = sum;
-
-                items[i].MouseDown += (o, e) => Selection = properties;
-                items[i].InitAsDatas(properties, false);
+                item.InitAsDatas(properties, false);
+                item.MouseDown += (o, e) => Selection = item.Values;
             }
             Selection = items[0].Values;
 
@@ -130,7 +132,7 @@ namespace CardWizard.View
             bonus = new List<(string, string)>();
             var ageBonus = hub.Get<LuaFunction>("AgeBonus");
             var text = ageBonus.Call(age).FirstOrDefault().ToString();
-            var dict = YamlKit.Parse<ContextData>(text);
+            var dict = YamlKit.Parse<ContextDict>(text);
             dict.TryGet<string>("Comment", out comment);
             if (dict.ContainsKey("Rule"))
                 rule = $"return {dict["Rule"]}";
@@ -164,27 +166,54 @@ namespace CardWizard.View
                                                          select new KeyValuePair<string, int>(m.Name, 0));
             traitsView.InitAsDatas(properties, true);
             // 设置编辑结束时执行的事件
-            void ValidCheck()
+            bool ValidCheck()
             {
-                using var subhub = hub.CreateSubEnv(traitsView.Values);
-                bool valid = (bool)subhub.DoString(Rule, isGlobal: true).First();
-                Button_Confirm.IsEnabled = valid;
-                description.DataContext = valid ? string.Empty : "Invalid";
-            }
-            void CheckAgeBonus(int age)
-            {
-                GetAgeBonus(hub, age, out var comment, out var r, out var b);
-                Rule = r;
-                Bonus = b;
+                GetAgeBonus(hub, Age, out var comment, out var rule, out var bonus);
+                Bonus.Clear();
+                // 显示说明文字
                 description.Content = comment;
-                ValidCheck();
+                // 屏蔽那些不需要调整的属性输入框
+                foreach (var box in traitsView.Children.Values) box.Visibility = Visibility.Hidden;
+                var matches = Regex.Matches(rule, @"[A-Z|a-z]{1,}");
+                foreach (Match match in matches)
+                {
+                    if (traitsView.Children.TryGetValue(match.Value, out var box))
+                    {
+                        box.Visibility = Visibility.Visible;
+                        box.IsEnabled = true;
+                        box.Focusable = true;
+                    }
+                }
+                foreach (var t in bonus)
+                {
+                    Bonus.Add(t.key, t.formula);
+                    if (traitsView.Children.TryGetValue(t.key, out var box))
+                    {
+                        if (int.TryParse(t.formula, out int v))
+                        {
+                            box.Text = t.formula;
+                            traitsView.Values[t.key] = v;
+                            // 可见不可编辑
+                            box.Visibility = Visibility.Visible;
+                            box.IsEnabled = false;
+                            box.Focusable = false;
+                        }
+                    }
+                }
+                // 判断是否有按照规则调整
+                using var subhub = hub.CreateSubEnv(traitsView.Values);
+                bool isValid = (bool)subhub.DoString(rule, isGlobal: true).First();
+                Button_Confirm.IsEnabled = isValid;
+                description.DataContext = isValid ? string.Empty : "Invalid";
+                return isValid;
             }
+            // 先刷新一遍数据的显示
+            ValidCheck();
             // 更新显示的提示文字
-            CheckAgeBonus(Age);
             PropertyChanged += (o, e) =>
             {
                 if (e.PropertyName != nameof(Age)) return;
-                CheckAgeBonus(Age);
+                ValidCheck();
             };
             // 
             checkButton.Click += (o, e) =>
@@ -193,10 +222,39 @@ namespace CardWizard.View
             };
             var gestures = new InputGestureCollection();
             gestures.Add(new MouseGesture(MouseAction.LeftClick));
+            gestures.Add(new KeyGesture(Key.Enter));
+            gestures.Add(new KeyGesture(Key.Tab));
             this.AddCommandsBindings(new RoutedCommand("CatchMouse", this.GetType(), gestures), (o, e) =>
             {
-                if (inputField.IsFocused) { checkButton.Focus(); }
+                var valid = false;
+                if (Keyboard.FocusedElement != inputField)
+                    valid = ValidCheck();
+                if (!valid) checkButton.Focus();
+                else Button_Confirm.Focus();
             });
+        }
+
+        /// <summary>
+        /// 将年龄对属性的影响施加到角色身上
+        /// <para>当前年龄对属性的影响可在属性 <see cref="Bonus"/> 中查询</para>
+        /// </summary>
+        /// <param name="character"></param>
+        /// <param name="calculator"></param>
+        public void ApplyAgeBonus(Character character)
+        {
+            character.Age = Age;
+            foreach (var kvp in Bonus)
+            {
+                if (!character.Initials.ContainsKey(kvp.Key)) continue;
+                var delta = TraitRoller?.Invoke(kvp.Value, character.Initials) ?? 0;
+                character.SetTraitAdjustment(kvp.Key, delta);
+            }
+            foreach (var kvp in AdjustmentsEditor.Values)
+            {
+                if (!character.Initials.ContainsKey(kvp.Key) || kvp.Value == 0) continue;
+                var old = character.GetTraitAdjustment(kvp.Key);
+                character.SetTraitAdjustment(kvp.Key, old + kvp.Value);
+            }
         }
 
         private void Button_Cancel_Click(object sender, RoutedEventArgs e)

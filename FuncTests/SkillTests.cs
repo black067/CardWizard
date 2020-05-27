@@ -17,7 +17,7 @@ namespace CallOfCthulhu.Tests
         public void ResolveTest()
         {
             var text = "射击（步枪/霰弹枪）25% # { Spacial: 0, Interest: 0, Increased: true }";
-            var skill = Skill.Parse(text, out var context, YamlKit.Parse<ContextData>);
+            var skill = Skill.Parse(text, out var context, YamlKit.Parse<ContextDict>);
             Assert.AreEqual(skill.Name, "射击（步枪/霰弹枪）", "Name 处理失败");
             Assert.AreEqual(skill.BaseValue, 25, "BaseValue 处理失败");
 

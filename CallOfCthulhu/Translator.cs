@@ -176,6 +176,7 @@ namespace CallOfCthulhu
             { "false", "否" },
             { "Confirm", "确定" },
             { "Cancel", "取消" },
+            { "Check", "检定" },
             // 菜单栏
             { "MenuBar.Button.Create", "新建" },
             { "MenuBar.Button.Create.ToolTip", "Ctrl + N\n创建一份新的调查员档案" },
@@ -196,6 +197,7 @@ namespace CallOfCthulhu
             { "GenerationWindow.Title", "生成了以下属性..." },
             { "GenerationWindow.Message", $"选择一组数据作为调查员的基础属性\n* 请确认调查员年龄, 并按照年龄调整属性点\n* {{LUCK}} 将在确认后自动骰出" },
             { "GenerationWindow.Helper", "* 此行填写调整值" },
+            { "GenerationWindow.ValidationCheck", "校验" },
             { "OccupationWindow.Title", "有以下职业可供选择" },
             { "OccupationWindow.Message", "" },
             { "Dialog.Import.Avatar.Title", "选择调查员的照片 (*.png)" },

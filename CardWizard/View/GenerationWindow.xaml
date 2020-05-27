@@ -66,7 +66,7 @@
             <local:TraitsViewItem x:Name="AdjustmentsEditor" Grid.ColumnSpan="4" HorizontalAlignment="Stretch" Margin="7,0,7,0"/>
             <Label Content="* 在本行填写调整值" Tag="GenerationWindow.Helper"
                    Grid.Column="2" Grid.ColumnSpan="3" HorizontalContentAlignment="Center"
-                   Style="{DynamicResource AgeBonusCommentStyle}" Foreground="{DynamicResource PlaceholderForeground}" FontSize="10"/>
+                   Style="{DynamicResource AgeBonusCommentStyle}" Foreground="{DynamicResource PlaceholderForeground}"/>
             <Label x:Name="Label_AgeBonus" Grid.ColumnSpan="1" Grid.Row="1" Grid.RowSpan="1"
                    Content="对教育进行 3 次增强检定。力量/体质/敏捷合计减 10 点。外貌减 10 点。"
                    Style="{DynamicResource AgeBonusCommentStyle}">
@@ -80,7 +80,7 @@
                      InputScope="Number"
                      Style="{DynamicResource TextField}" Cursor="IBeam">
             </TextBox>
-            <Button x:Name="Button_AgeCheck" Content="Check" Tag="Check"
+            <Button x:Name="Button_AgeCheck" Content="Check" Tag="GenerationWindow.ValidationCheck"
                     Grid.Row="99" Grid.Column="3"
                     Margin="2,2,2,2"
                     Style="{DynamicResource XButtonStyle}"/>

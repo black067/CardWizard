@@ -52,19 +52,19 @@ namespace CallOfCthulhu
 
         /// <summary>
         /// 将文本转化为 Skill
-        /// <para><paramref name="parser"/>: 函数, 可以将形如 "{ a: 1, b: true, c: C }" 的字符串转化为 <see cref="ContextData"/> </para>
+        /// <para><paramref name="parser"/>: 函数, 可以将形如 "{ a: 1, b: true, c: C }" 的字符串转化为 <see cref="ContextDict"/> </para>
         /// </summary>
         /// <param name="text"></param>
         /// <param name="context"></param>
         /// <param name="parser"></param>
         /// <returns></returns>
-        public static Skill Parse(string text, out ContextData context, Func<string, ContextData> parser = null)
+        public static Skill Parse(string text, out ContextDict context, Func<string, ContextDict> parser = null)
         {
             var s = new Skill();
 
             if (string.IsNullOrWhiteSpace(text))
             {
-                context = new ContextData();
+                context = new ContextDict();
                 return s;
             }
             var segments = text.Split('#', 2, StringSplitOptions.RemoveEmptyEntries);
@@ -86,7 +86,7 @@ namespace CallOfCthulhu
             }
             else
             {
-                context = new ContextData();
+                context = new ContextDict();
             }
             return s;
         }

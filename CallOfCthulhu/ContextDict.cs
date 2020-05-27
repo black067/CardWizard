@@ -12,7 +12,7 @@ namespace CallOfCthulhu
     /// <para>派生自: <see cref="Dictionary{TKey, TValue}"/>, <see cref="INotifyCollectionChanged"/></para>
     /// <para>TKey is <see cref="string"/>, TVallue is <see cref="Object"/></para>
     /// </summary>
-    public class ContextData : Dictionary<string, object>, INotifyCollectionChanged
+    public class ContextDict : Dictionary<string, object>, INotifyCollectionChanged
     {
         public event NotifyCollectionChangedEventHandler CollectionChanged;
 
@@ -119,7 +119,7 @@ namespace CallOfCthulhu
         /// </summary>
         /// <param name="values"></param>
         /// <param name="target"></param>
-        public static void ExportValues(ContextData values, object target)
+        public static void ExportValues(ContextDict values, object target)
         {
             if (target == null || values == null || values.Count == 0) return;
             var typeofTarget = target.GetType();
@@ -160,31 +160,31 @@ namespace CallOfCthulhu
         /// and uses the default equality comparer for the key type.
         /// <para>TKey is <see cref="String"/>, TValue is <see cref="Object"/></para>
         /// </summary>
-        public ContextData() : base() { }
+        public ContextDict() : base() { }
 
         /// <summary>
         /// 以指定的容量初始化
         /// </summary>
         /// <param name="capacity"></param>
-        public ContextData(int capacity) : base(capacity) { }
+        public ContextDict(int capacity) : base(capacity) { }
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="dictionary"></param>
-        public ContextData(IDictionary<string, object> dictionary) : base(dictionary) { }
+        public ContextDict(IDictionary<string, object> dictionary) : base(dictionary) { }
 
         /// <summary>
         /// 通过键值对创建
         /// </summary>
         /// <param name="collection"></param>
-        public ContextData(IEnumerable<KeyValuePair<string, object>> collection) : base(collection) { }
+        public ContextDict(IEnumerable<KeyValuePair<string, object>> collection) : base(collection) { }
 
         /// <summary>
         /// 通过 <see cref="Tuple{T1, T2}"/> 来创建
         /// <para>T1 is <see cref="string"/>, T2 is <see cref="Object"/></para>
         /// </summary>
         /// <param name="tuples"></param>
-        public ContextData(IEnumerable<Tuple<string, object>> tuples) : base(from t in tuples select new KeyValuePair<string, object>(t.Item1, t.Item2)) { }
+        public ContextDict(IEnumerable<Tuple<string, object>> tuples) : base(from t in tuples select new KeyValuePair<string, object>(t.Item1, t.Item2)) { }
     }
 }

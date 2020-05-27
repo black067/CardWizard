@@ -47,7 +47,7 @@ namespace CardWizard
         /// <summary>
         /// 指令: 新建 触发时执行的动作
         /// </summary>
-        public event CommandExcution CommandCreateGestured;
+        public event RoutedEventHandler CommandCreateGestured;
         private void CommandCreate_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             CommandCreateGestured?.Invoke(sender, e);
@@ -60,7 +60,7 @@ namespace CardWizard
         /// <summary>
         /// 指令: 保存 触发时执行的动作
         /// </summary>
-        public event CommandExcution CommandSaveGestured;
+        public event RoutedEventHandler CommandSaveGestured;
         private void CommandSave_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             CommandSaveGestured?.Invoke(sender, e);
@@ -73,7 +73,7 @@ namespace CardWizard
         /// <summary>
         /// 指令: 生成图像文档 触发时执行的动作
         /// </summary>
-        public event CommandExcution CommandCaptureGestured;
+        public event RoutedEventHandler CommandCaptureGestured;
         private void CommandCapture_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             CommandCaptureGestured?.Invoke(sender, e);
@@ -86,7 +86,7 @@ namespace CardWizard
         /// <summary>
         /// 指令: 切换提示浮窗的显示与关闭 触发时执行的动作
         /// </summary>
-        public event CommandExcution CommandSwitchToolTipGestured;
+        public event RoutedEventHandler CommandSwitchToolTipGestured;
         private void CommandShowToolTip_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             CommandSwitchToolTipGestured?.Invoke(sender, e);
@@ -99,18 +99,12 @@ namespace CardWizard
         /// <summary>
         /// 指令: 按下 Enter 触发时执行的动作
         /// </summary>
-        public event CommandExcution CommandConfirmGestured;
+        public event RoutedEventHandler CommandConfirmGestured;
         private void CommandConfirm_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             CommandConfirmGestured?.Invoke(sender, e);
         }
     }
 
-    /// <summary>
-    /// 绑定快捷键时使用的委托类型
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
-    public delegate void CommandExcution(object sender, ExecutedRoutedEventArgs e);
 
 }

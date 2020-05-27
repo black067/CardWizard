@@ -74,7 +74,7 @@ namespace CardWizard.Tools.Tests
                 Assert.IsNotNull(text, $"在 i == {i} 时, 无返回值");
                 Assert.IsTrue(text is string, $"在 i == {i} 时, 返回值不是 字符串, text is {text}");
                 // 解析返回的字符串
-                var context = YamlKit.Parse<ContextData>((string)text);
+                var context = YamlKit.Parse<ContextDict>((string)text);
                 // 取出 Bonus 表
                 context.TryGet<ICollection>("Bonus", out var bonus);
                 Assert.IsNotNull(bonus, $"在 i == {i} 时, Bonus 解析失败");

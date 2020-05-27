@@ -110,9 +110,12 @@ end
 function EDUBonus(eduBase, count)
 	if count == nil then count = 1 end
 	-- EDU shouldn't be larger than 99
+	print(string.format('在 %0.0f 教育值的基础上, 进行 %0.0f 次教育增强检定', eduBase, count))
 	local r = 0
 	for i = 1, count do
-		if eduBase + r >= 99 then break end
+		if eduBase + r >= 99 then 
+			break 
+		end
 		local d = Roll(1, 100) -- Equals to 1D100
 		if eduBase + r >= d then goto ContinueEDUBonus end
 		local v = Roll(1, 10) -- Equa to 1D10
@@ -124,6 +127,7 @@ function EDUBonus(eduBase, count)
 		end
 		::ContinueEDUBonus::
 	end
+	print(string.format('最终教育值增加了 %0.0f', r))
 	return r
 end
 
@@ -142,13 +146,13 @@ DOC_EDUAndAges = [[ 角色教育值与年龄的关系如下 (来自第七版规�
 
 DATA_AGEBONUS = {
 	[{0, 19}] = [[
-Comment: 力量和体型合计减 5 点。教育减 5 点。 决定幸运值时可以骰 2 次并取较好的一次。
+Comment: 教育减 5 点。 力量/体型合计减 5 点。决定幸运值时可以骰 2 次并取较好的一次。
 Rule: STR + SIZ == -5
 Bonus:
 - key: LUCK
   formula: math.max(5 * (3D6), 5 * (3D6))
 - key: EDU
-  formula: EDU - 5]],
+  formula: -5]],
 
 	[{20, 39}] = [[
 Comment: 对教育进行 1 次增强检定。
@@ -158,7 +162,7 @@ Bonus:
 
 	[{40, 49}] = [[
 Comment: 对教育进行 2 次增强检定。力量/体质/敏捷合计减 5 点。外貌减 5 点。
-Rule: STR + SIZ + DEX == -5
+Rule: STR + CON + DEX == -5
 Bonus: 
 - key: APP
   formula: -5 
@@ -167,7 +171,7 @@ Bonus:
 
 	[{50, 59}] = [[
 Comment: 对教育进行 3 次增强检定。力量/体质/敏捷合计减 10 点。外貌减 10 点。
-Rule: STR + SIZ + DEX == -10
+Rule: STR + CON + DEX == -10
 Bonus: 
 - key: APP  
   formula: -10 
@@ -176,7 +180,7 @@ Bonus:
 
 	[{60, 69}] = [[
 Comment: 对教育进行 4 次增强检定。力量/体质/敏捷合计减 20 点。外貌减 15 点。
-Rule: STR + SIZ + DEX == -20
+Rule: STR + CON + DEX == -20
 Bonus: 
 - key: APP  
   formula: -15 
@@ -185,7 +189,7 @@ Bonus:
 
 	[{70, 79}] = [[
 Comment: 对教育进行 4 次增强检定。力量/体质/敏捷合计减 40 点。外貌减 20 点。
-Rule: STR + SIZ + DEX == -40
+Rule: STR + CON + DEX == -40
 Bonus: 
 - key: APP  
   formula: -20 
@@ -194,7 +198,7 @@ Bonus:
 
 	[{80, 99}] = [[
 Comment: 对教育进行 4 次增强检定。力量/体质/敏捷合计减 80 点。外貌减 25 点。
-Rule: STR + SIZ + DEX == -80
+Rule: STR + CON + DEX == -80
 Bonus: 
 - key: APP  
   formula: -25 
