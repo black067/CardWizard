@@ -37,6 +37,11 @@ namespace CardWizard.View
         public MainWindow Window { get; private set; }
 
         /// <summary>
+        /// 调查员信息的主页面
+        /// </summary>
+        public MainPage InvestigatorPage { get => Window.InvestigatorPage; }
+
+        /// <summary>
         /// 配置表
         /// </summary>
         public Config Config { get; set; }
@@ -229,46 +234,8 @@ namespace CardWizard.View
             Window.CommandSwitchToolTipGestured += DoSwitchToolTip;
             ToolTipOpacity = Config.ToolTipAvailable ? Config.ToolTipOpacity : 0;
             Window.MenuItemSwitchToolTip.IsChecked = Config.ToolTipAvailable;
-            InitAsCardList(Window.List_Cards);
-            // 角色基本信息面板的初始化
-            Window.Backstory.InitializeBinding(this);
-            // 属性重生成按钮
-            Window.Button_Regenerate.Click += GetHandlerForReGenerateTraits(() => Current);
-            // 角色属性数值面板初始化
-            Func<Character> charactergetter = () => Current;
-            var traitBoxes = (from UIElement c in Window.TraitsGrid.Children
-                              where c is TraitBox
-                              select c as TraitBox).ToList();
-            traitBoxes.AddRange(from UIElement c in Window.SecondaryTraitsGrid.Children
-                                where c is TraitBox
-                                select c as TraitBox);
-            traitBoxes.Add(Window.Box_Dodge);
-            foreach (var box in traitBoxes)
-            {
-                var iTraitChanged = box.BindToTraitByTag(charactergetter, OnCharacterTraitEdited);
-                TraitChanged += iTraitChanged;
-                InfoUpdated += GetHandlerForTraitBox(iTraitChanged, box.Key);
-            }
-            // 角色伤害奖励的控制
-            InfoUpdated += UpdateDamageBonus;
-            // TODO: 显示角色技能 (完成了相关的工作后再取消隐藏)
-            Window.SkillsPanle.Visibility = Visibility.Hidden;
-            // 监控角色的属性变化
-            TraitChanged += MainManager_TraitChanged;
-            // 绑定事件: 点击骰一次按钮时触发
-            Window.Button_Roll_DMGBonus.Click += (o, e) =>
-            {
-                var message = Translator.Translate("Message.RollADMGBonus", "{1}");
-                var formula = Window.Value_DamageBonus.Content.ToString();
-                var result = CalcTrait(formula, Current.Initials);
-                Messenger.EnqueueFormat(message, Window.Value_DamageBonus.Content, result);
-            };
-            // 头像绑定事件: 点击时可以选择图片导入
-            Window.Image_Avatar.Process(image =>
-            {
-                InfoUpdating += c => AvatarUpdate(c, image);
-                image.MouseDown += DoImportAvatar;
-            });
+            InitializeCardList(Window.List_Cards);
+            InitializeMainPage(InvestigatorPage);
             #endregion
             // 刷新界面
             OnInfoUpdate(Current);
@@ -337,42 +304,7 @@ namespace CardWizard.View
         /// <param name="e"></param>
         private void DoCapturePicture(object sender, RoutedEventArgs e)
         {
-            // 开始截屏前先缓存并更改部分元素的状态
-            var cache = new Dictionary<UIElement, Action>();
-            foreach (var item in HideOnCapturePic)
-            {
-                var origin = item.Visibility;
-                cache.Add(item, () => item.Visibility = origin);
-                item.Visibility = Visibility.Hidden;
-            }
-            var bg = Window.InvestigatorView.Background;
-            // 开始截屏
-            Window.InvestigatorView.Process(source =>
-            {
-                var c = (Color)ColorConverter.ConvertFromString(Config.PrintSettings_BackgroundColor);
-                source.Background = new SolidColorBrush(c);
-                var originH = source.Height;
-                cache.Add(source, () => source.Height = originH);
-                source.Height = source.ActualWidth * Config.PrintSettings_H_W_Scale;
-                // 等待控件属性的变化刷新
-                source.UpdateLayout();
-                // 期望的 DPI
-                var destDpi = Config.PrintSettings_Dpi;
-                // 查询得出当前的 真实尺寸 与 DPI
-                var actualSize = UIExtension.GetActualSize(source);
-                var actualDpi = UIExtension.GetDpi(source);
-                int fileWidth = (int)(actualSize.Width * destDpi / actualDpi);
-                int fileHeight = (int)(actualSize.Height * destDpi / actualDpi);
-                var dest = Path.Combine(Paths.PathSave, Current.Name + Config.FileExtensionForCardPic);
-                UIExtension.SaveAsPng(source, dest, fileWidth, fileHeight, destDpi, destDpi);
-                Messenger.EnqueueFormat(Translator.Translate("Message.Character.SavedPic", "Saved at {0}"), dest.Replace("\\", "/"));
-            });
-            // 将被更改的元素还原
-            Window.InvestigatorView.Background = bg;
-            foreach (var restore in cache.Values)
-            {
-                restore();
-            }
+            InvestigatorPage.CapturePng(Config, Current.Name);
         }
 
         private void DoSwitchToolTip(object sender, RoutedEventArgs e)
@@ -444,7 +376,56 @@ namespace CardWizard.View
                     return;
             }
             File.Copy(result, dest, true);
-            AvatarUpdate(Current, Window.Image_Avatar);
+            AvatarUpdate(Current, InvestigatorPage.Image_Avatar);
+        }
+        #endregion
+
+        #region Handle Main Page
+        /// <summary>
+        /// 角色主页面的初始化
+        /// </summary>
+        /// <param name="page"></param>
+        private void InitializeMainPage(MainPage page)
+        {
+            if (page == null) return;
+            page.Backstory.InitializeBinding(this);
+            // 属性重生成按钮
+            page.Button_Regenerate.Click += GetHandlerForReGenerateTraits(() => Current);
+            // 角色属性数值面板初始化
+            Character charactergetter() => Current;
+            var traitBoxes = (from UIElement c in page.TraitsGrid.Children
+                              where c is TraitBox
+                              select c as TraitBox).ToList();
+            traitBoxes.AddRange(from UIElement c in page.SecondaryTraitsGrid.Children
+                                where c is TraitBox
+                                select c as TraitBox);
+            traitBoxes.Add(page.Box_Dodge);
+            foreach (var box in traitBoxes)
+            {
+                var iTraitChanged = box.BindToTraitByTag(charactergetter, OnCharacterTraitEdited);
+                TraitChanged += iTraitChanged;
+                InfoUpdated += GetHandlerForTraitBox(iTraitChanged, box.Key);
+            }
+            // 角色伤害奖励的控制
+            InfoUpdated += UpdateDamageBonus;
+            // TODO: 显示角色技能 (完成了相关的工作后再取消隐藏)
+            page.SkillsPanle.Visibility = Visibility.Hidden;
+            // 监控角色的属性变化
+            TraitChanged += MainManager_TraitChanged;
+            // 绑定事件: 点击骰一次按钮时触发
+            page.Button_Roll_DMGBonus.Click += (o, e) =>
+            {
+                var message = Translator.Translate("Message.RollADMGBonus", "{1}");
+                var formula = page.Value_DamageBonus.Content.ToString();
+                var result = CalcTrait(formula, Current.Initials);
+                Messenger.EnqueueFormat(message, page.Value_DamageBonus.Content, result);
+            };
+            // 头像绑定事件: 点击时可以选择图片导入
+            page.Image_Avatar.Process(image =>
+            {
+                InfoUpdating += c => AvatarUpdate(c, image);
+                image.MouseDown += DoImportAvatar;
+            });
         }
         #endregion
 
@@ -584,7 +565,7 @@ namespace CardWizard.View
         /// 初始化卡牌显示列表
         /// </summary>
         /// <param name="listBox"></param>
-        private void InitAsCardList(ListBox listBox)
+        private void InitializeCardList(ListBox listBox)
         {
             var binding = new Binding() { Source = Characters };
             listBox.SetBinding(ItemsControl.ItemsSourceProperty, binding);
@@ -687,8 +668,7 @@ namespace CardWizard.View
             if (c == null) return;
             var scrtipt = string.Format("return DamageBonus({0}, {1})", c.GetTrait("STR"), c.GetTrait("SIZ"));
             var results = LuaHub.DoString(scrtipt);
-            Window.Value_DamageBonus.Content = results.First().ToString();
-            Window.Value_Build.Content = Convert.ToInt32(results.ElementAt(1));
+            Window.InvestigatorPage.SetDamageBonus(results[0], Convert.ToInt32(results[1]));
         }
 
         /// <summary>

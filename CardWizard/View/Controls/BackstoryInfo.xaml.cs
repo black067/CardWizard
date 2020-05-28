@@ -59,7 +59,7 @@ namespace CardWizard.View
             Button_Occupation.Click += Button_Occupation_Click;
             // 角色年龄的显示
             BindTextBox(Text_Age, nameof(Character.Age), Manager, new IntRangeRule(1, 99));
-            AgeBonusMark = Manager.Window.Label_Validity;
+            AgeBonusMark = Manager.InvestigatorPage.Label_Validity;
             manager.PropertyChanged += CurrentAgeChanged;
             manager.InfoUpdated += c => IsAgeValid(AgeBonusMark, c);
             // 角色现居地点的显示
