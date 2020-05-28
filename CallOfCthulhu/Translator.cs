@@ -111,11 +111,11 @@ namespace CallOfCthulhu
             // 生命值
             { "HP", "生命值" },
             { "HP.ToolTip", @"{HP}用来计算一名调查员、NPC、怪物在游戏中累计受到的伤害量，用来表明这个家伙在被疼痛、疲惫和死亡压垮前还能走多久。" },
-            { "HP.Block", "Hit # FontSize: 14\n Points # FontSize: 14" },
+            { "HP.Block", "Hit # FontSize: 10\n Points # FontSize: 10 \n 生命 # FontSize: 14" },
             // 魔法值
             { "MP", "魔法值" },
             { "MP.ToolTip", @"（大多数情况下）施法时必须消耗{MP}，激活造物、为魔法通道充能等同样需要。" },
-            { "MP.Block", "Magic # FontSize: 14\n Points # FontSize: 14" },
+            { "MP.Block", "Magic # FontSize: 10\n Points # FontSize: 10 \n 魔法 # FontSize: 14" },
             // 移动速度
             { "MOV", "移动" },
             { "MOV.ToolTip", @"调查员每轮可以移动的码数（或米数）等于他的{MOV}值的五倍。" },
@@ -128,20 +128,21 @@ namespace CallOfCthulhu
 因为没有人可以知道一切，{KNOW}检定永远不能到达99，哪怕一个调查员有21点教育。" },
             // 信用评级
             { "CreditRating", "信用评级" },
+            { "CreditRatingRange", "信用评级范围" },
             { "CreditRating.ToolTip", "调查员的日日所需取决于信用评级。你的主要所有物，包括房子和汽车，都取决于信用评级。" },
             // 资产
             { "AST", "资产" },
             { "AST.ToolTip", @"调查员拥有财产和其他价值年收入五倍的{AST}；
 一个现代的调查员投出55000美元拥有275000的{AST}。这些资产的十分之一存入银行当作现金。另外十分之一是股份和债券，可以在30天内转移。余下的是老书，房子或者是任何符合角色的东西。" },
             { "SUM", "总计" },
-            { "Initial", "初始" },
+            { "Initial", "初" },
             { "Initials", "属性初始值" },
             { "Initial.ToolTip", "初始值, 撰写档案时掷骰得出" },
             { "Adjustments", "属性值调整" },
-            { "Adjustment", "调整" },
+            { "Adjustment", "调" },
             { "Adjustment.ToolTip", "调整值, 计算相关影响因素后得出" },
             { "Growths", "属性值成长" },
-            { "Growth", "成长" },
+            { "Growth", "成" },
             { "Growth.ToolTip", "成长值, 随着游戏进行可能获得成长" },
             { "OccupationPoints", "职业点数" },
             { "InterestPoints", "兴趣点数" },
@@ -190,7 +191,7 @@ namespace CallOfCthulhu
             { "Investigator.Traits.Title", "CHARACTERISTICS 属性" },
             { "Investigator.Combat.Title", "COMBAT 格斗" },
             { "Investigator.Weapons.Title", "WEAPONS 武器" },
-            { "Investigator.Skills.Title", "INVESTIGATOR SKILLS 武器" },
+            { "Investigator.Skills.Title", "INVESTIGATOR SKILLS 技能" },
             // 控件显示
             { "Card.Image.Avatar", "点击可导入新头像" },
             { "Card.Button.Regenerate", "🎲" },

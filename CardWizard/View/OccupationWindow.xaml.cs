@@ -135,6 +135,8 @@ namespace CardWizard.View
             var context = @$"
 {item.Name} {titleStyle}
 {item.Description}
+{{{nameof(Occupation.CreditRatingRange)}}} {titleStyle}
+{item.CreditRatingRange}
 {{{nameof(Occupation.Skills)}}} {titleStyle}
 {item.Skills.CombineToString(", ", null)}
 {{{nameof(Occupation)}.{nameof(Occupation.PointFormula)}}} {titleStyle}

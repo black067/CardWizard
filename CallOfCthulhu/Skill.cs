@@ -51,6 +51,11 @@ namespace CallOfCthulhu
         public int BaseValue { get; set; }
 
         /// <summary>
+        /// 能否获得幕间提升
+        /// </summary>
+        public bool Growable { get; set; } = true;
+
+        /// <summary>
         /// 将文本转化为 Skill
         /// <para><paramref name="parser"/>: 函数, 可以将形如 "{ a: 1, b: true, c: C }" 的字符串转化为 <see cref="ContextDict"/> </para>
         /// </summary>

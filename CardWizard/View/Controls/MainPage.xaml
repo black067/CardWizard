@@ -23,7 +23,7 @@
                     <RowDefinition Height="42"/>
                     <RowDefinition Height="272"/>
                     <RowDefinition Height="84"/>
-                    <RowDefinition x:Name="Row_Skills"/>
+                    <RowDefinition x:Name="Row_Skills" Height="584"/>
                     <RowDefinition Height="210"/>
                     <RowDefinition Height="36"/>
                 </Grid.RowDefinitions>
@@ -38,7 +38,7 @@
                 <Label Content="Document 档案" Tag="Investigator.Document.Title"
                        Grid.ColumnSpan="1" Grid.Column="1" Grid.Row="1" Style="{DynamicResource XLabel}" 
                        FontSize="22" Padding="0,0,0,0"
-                       Background="{DynamicResource MenuBackground}" Foreground="{DynamicResource ButtonForeground}"/>
+                       Background="{DynamicResource TraitBorderBrush}" Foreground="{DynamicResource ButtonForeground}"/>
                 <Label x:Name="Label_Validity" Content="⚠"
                        Grid.Column="1" Grid.Row="1" 
                        HorizontalContentAlignment="Right" VerticalContentAlignment="Center" HorizontalAlignment="Right"
@@ -117,33 +117,7 @@
                     <cview:TraitBox Tag="MP" Grid.Column="2" Grid.Row="0" Style="{DynamicResource TraitBoxStyle}" Foreground="{DynamicResource MenuBackground}"/>
                     <cview:TraitBox Tag="HP" Grid.Column="3" Grid.Row="0" Style="{DynamicResource TraitBoxStyle}" Foreground="{DynamicResource MenuBackground}"/>
                 </Grid>
-                <!--技能面板-->
-                <Grid x:Name="SkillsPanle" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="42"/>
-                        <RowDefinition/>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition Width="144"/>
-                        <ColumnDefinition Width="144"/>
-                    </Grid.ColumnDefinitions>
-                    <Label Content="INVESTIGATOR SKILLS" Tag="Investigator.Skills.Title"
-                           FontSize="22" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3"
-                           Foreground="{DynamicResource ButtonForeground}"
-                           Style="{DynamicResource XLabel}" Background="{DynamicResource TraitBorderBrush}"/>
-                    <WrapPanel x:Name="SkillsContainer" 
-                               Orientation="Vertical" 
-                               Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3" Margin="2,2,2,2">
-                        <WrapPanel.Resources>
-                            <Style x:Key="SkillBoxStyle" TargetType="cview:TraitBox">
-                                <Setter Property="Margin" Value="8,8,8,8"/>
-                            </Style>
-                        </WrapPanel.Resources>
-                        <cview:TraitBox Style="{DynamicResource SkillBoxStyle}"/>
-                    </WrapPanel>
-                </Grid>
-
+                <cview:SkillsViewer x:Name="SkillPanel" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" />
                 <!--伤害奖励与体格的显示-->
                 <Border Grid.Row="5" Grid.Column="3" BorderThickness="1,10,1,1" Background="{DynamicResource MenuBackground}" Opacity="0.2" Margin="1,1,1,1"/>
                 <Grid Grid.Row="5" Grid.Column="3" Margin="0,4,0,4">
@@ -162,7 +136,7 @@
                     <Label Content="Combat 格斗" Tag="Investigator.Combat.Title"
                            Grid.ColumnSpan="2" Grid.Column="0" Grid.Row="0" Style="{DynamicResource XLabel}" 
                            FontSize="22" Padding="0,0,0,0"
-                           Background="{DynamicResource MenuBackground}" Foreground="{DynamicResource ButtonForeground}"/>
+                           Background="{DynamicResource TraitBorderBrush}" Foreground="{DynamicResource ButtonForeground}"/>
                     <!--伤害加深的标签-->
                     <TextBlock x:Name="Label_DamageBonus" Tag="DamageBonus.Block"
                                Grid.Row="1" 

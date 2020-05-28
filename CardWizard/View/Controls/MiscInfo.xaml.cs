@@ -82,7 +82,7 @@ namespace CardWizard.View
 
         private void Button_Occupation_Click(object sender, RoutedEventArgs e)
         {
-            var window = new OccupationWindow(Manager.Config.OccupationModels, Manager.Translator)
+            var window = new OccupationWindow(Manager.DataBus.Occupations.Values, Manager.Translator)
             {
                 Owner = Manager.Window,
             };

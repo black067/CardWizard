@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -209,12 +210,21 @@ namespace CardWizard.View
         /// <param name="getter"></param>
         /// <param name="onEndEdit"></param>
         /// <returns></returns>
-        public TraitChangedEventHandler BindToSkill(string key, Func<Character> getter, EndEditBoxEventHandler onEndEdit)
+        public TraitChangedEventHandler BindToSkill(Skill skill, Func<Character> getter, EndEditBoxEventHandler onEndEdit)
         {
-            Key = key;
             CharacterGetter = getter;
+            Key = skill.Name;
+            SetValue(TagProperty, skill.Name);
+
             InputFieldEndEdit += onEndEdit;
-            LabelColumn.Width = new GridLength(3, GridUnitType.Star);
+            LabelColumn.Width = new GridLength(4, GridUnitType.Star);
+            ValueColumn.Width = new GridLength(1, GridUnitType.Star);
+            
+            Label_Value.FontSize = 22;
+            Label_ValueHalf.FontSize = 12;
+            Label_ValueOneFifth.FontSize = 12;
+
+            if (!skill.Growable) GrowthMark.Visibility = Visibility.Hidden;
             return TraitChanged;
         }
     }

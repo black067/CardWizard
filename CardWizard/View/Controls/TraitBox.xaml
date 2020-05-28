@@ -25,7 +25,7 @@
     </UserControl.Resources>
     <Grid x:Name="MainGrid">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition x:Name="GrowthMarkColumn" Width="0.5*"/>
+            <ColumnDefinition x:Name="GrowthMarkColumn" Width="0.4*"/>
             <ColumnDefinition x:Name="LabelColumn" Width="1.4*"/>
             <ColumnDefinition x:Name="ValueColumn" Width="1.4*"/>
             <ColumnDefinition Width="0.6*"/>
@@ -37,10 +37,12 @@
         <Grid.Resources>
             <SolidColorBrush x:Key="BorderBackground" Color="Transparent"/>
         </Grid.Resources>
-        <CheckBox x:Name="GrowthMark" HorizontalAlignment="Center"/>
+        <CheckBox x:Name="GrowthMark" Grid.RowSpan="2" 
+                  HorizontalAlignment="Center" VerticalContentAlignment="Center" 
+                  HorizontalContentAlignment="Center" VerticalAlignment="Center"/>
         <TextBlock x:Name="Block_Key" Style="{DynamicResource GeneralTextBlock}" 
                    Grid.Column="1" Grid.RowSpan="2"  HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center"
-                   FontSize="10" TextWrapping="WrapWithOverflow">
+                   FontSize="10">
             <Run FontSize="8">PROP</Run><LineBreak/>
             <Run FontSize="12">属性</Run><LineBreak/>
             <Run FontSize="8">PROP</Run><LineBreak/>
@@ -90,15 +92,15 @@
             <Label x:Name="Label_Initial" Tag="Initial" 
                    Content="初始" Grid.Row="0" 
                    Style="{DynamicResource XLabel}" FontSize="{DynamicResource InputLabelFontSize}" 
-                   Margin="{DynamicResource XLabelMargin}" Padding="{DynamicResource XLabelPadding}"/>
+                   Margin="{DynamicResource XLabelMargin}" Padding="{DynamicResource XLabelPadding}" FontWeight="Normal"/>
             <Label x:Name="Label_Adjustment" Tag="Adjustment" 
                    Content="调整" Grid.Row="1"
                    Style="{DynamicResource XLabel}" FontSize="{DynamicResource InputLabelFontSize}" 
-                   Margin="{DynamicResource XLabelMargin}" Padding="{DynamicResource XLabelPadding}"/>
+                   Margin="{DynamicResource XLabelMargin}" Padding="{DynamicResource XLabelPadding}" FontWeight="Normal"/>
             <Label x:Name="Label_Growth" Tag="Growth" 
                    Content="成长" Grid.Row="2"
                    Style="{DynamicResource XLabel}" FontSize="{DynamicResource InputLabelFontSize}" 
-                   Margin="{DynamicResource XLabelMargin}" Padding="{DynamicResource XLabelPadding}"/>
+                   Margin="{DynamicResource XLabelMargin}" Padding="{DynamicResource XLabelPadding}" FontWeight="Normal"/>
             <TextBox x:Name="Text_Initial" Style="{DynamicResource XInput}" Grid.Column="1">100</TextBox>
             <TextBox x:Name="Text_Adjustment" Style="{DynamicResource XInput}" Grid.Row="1" Grid.Column="1">100</TextBox>
             <TextBox x:Name="Text_Growth" Style="{DynamicResource XInput}" Grid.Row="2" Grid.Column="1">100</TextBox>

@@ -136,7 +136,7 @@ namespace CardWizard.Data
         /// </summary>
         public void GenerateDefaultData()
         {
-            var OccupationModels = new List<Occupation>()
+            var models = new object[]
             {
                 new Occupation()
                 {
@@ -160,9 +160,41 @@ namespace CardWizard.Data
                     CreditRatingRange = "20 ~ 50",
                     PointFormula = "EDU * 2 + math.max(DEX, STR) * 2",
                 },
+                new Skill()
+                {
+                    Name = "Accounting",
+                    BaseValue = 25,
+                },
+                new Skill()
+                {
+                    Name = "Anthropology",
+                    BaseValue = 1,
+                },
+                new Skill()
+                {
+                    Name = "Appraise",
+                    BaseValue = 5,
+                },
+                new Skill()
+                {
+                    Name = "Archaeology",
+                    BaseValue = 1,
+                },
+                new Skill()
+                {
+                    Name = "Credit Rating",
+                    BaseValue = 0,
+                    Growable = false,
+                },
+                new Skill()
+                {
+                    Name = "Cthulhu Mythos",
+                    BaseValue = 0,
+                    Growable = false,
+                },
             };
 
-            foreach (var item in OccupationModels)
+            foreach (var item in models)
             {
                 CacheData(item);
             }

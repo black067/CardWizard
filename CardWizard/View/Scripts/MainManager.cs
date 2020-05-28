@@ -203,6 +203,7 @@
             // 初始化数据总线
             DataBus = new DataBus();
             DataBus.LoadFrom(Paths.PathData);
+            if (DataBus.Skills.Count == 0) DataBus.GenerateDefaultData();
             // 创建 Lua 环境
             InitLuaHub();
             // 如果存在存储了计算公式的脚本文件, 执行
@@ -434,8 +435,7 @@
             }
             // 角色伤害奖励的控制
             InfoUpdated += UpdateDamageBonus;
-            // TODO: 显示角色技能 (完成了相关的工作后再取消隐藏)
-            page.SkillsPanle.Visibility = Visibility.Hidden;
+            page.SkillPanel.InitializeSkills(this, DataBus.Skills.Values);
             // 监控角色的属性变化
             TraitChanged += MainManager_TraitChanged;
             // 绑定事件: 点击骰一次按钮时触发
@@ -619,8 +619,10 @@
         private void MainManager_TraitChanged(Character character, TraitChangedEventArgs args)
         {
             var key = args.Key;
-            var model = Config.BaseModelDict[key];
-            if (model.Derived) return;
+            if (Config.BaseModelDict.TryGetValue(key, out var model))
+            {
+                if (model.Derived) return;
+            }
             if (key.EqualsIgnoreCase("STR") || key.EqualsIgnoreCase("SIZ"))
                 UpdateDamageBonus(character);
             var source = args.Segment switch
@@ -646,9 +648,8 @@
         /// <param name="segment"></param>
         /// <param name="traitName"></param>
         /// <param name="value"></param>
-        private void OnCharacterTraitEdited(Character character, Trait.Segment segment, string traitName, int value)
+        internal void OnCharacterTraitEdited(Character character, Trait.Segment segment, string traitName, int value)
         {
-            var model = Config.BaseModelDict[traitName];
             int i = Current.GetTraitInitial(traitName),
                 a = Current.GetTraitAdjustment(traitName),
                 g = Current.GetTraitGrowth(traitName);
@@ -659,12 +660,17 @@
                 Trait.Segment.GROWTH => (value + i + a, Current.SetTraitGrowth),
                 _ => (0, null),
             };
-            if (model.Upper > 0 && after > model.Upper)
+            // 判断总值是否超过范围
+            if (Config.BaseModelDict.TryGetValue(traitName, out var model))
             {
-                value = model.Upper - (after - value);
-                var message = Translator.Translate("Message.Trait.Overflow", "{0} 的值不能超过 {1}");
-                Messenger.EnqueueFormat(message, model.Name, model.Upper);
+                if (model.Upper > 0 && after > model.Upper)
+                {
+                    value = model.Upper - (after - value);
+                    var message = Translator.Translate("Message.Trait.Overflow", "{0} 的值不能超过 {1}");
+                    Messenger.EnqueueFormat(message, model.Name, model.Upper);
+                }
             }
+
             func?.Invoke(traitName, value);
         }
 
@@ -686,7 +692,7 @@
         /// <param name="handler"></param>
         /// <param name="key"></param>
         /// <returns></returns>
-        private static Action<Character> GetHandlerForTraitBox(TraitChangedEventHandler handler, string key)
+        internal static Action<Character> GetHandlerForTraitBox(TraitChangedEventHandler handler, string key)
         {
             void updated(Character c)
             {
