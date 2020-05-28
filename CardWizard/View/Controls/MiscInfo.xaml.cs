@@ -20,7 +20,7 @@ namespace CardWizard.View
     /// <summary>
     /// BackstoryInfo.xaml 的交互逻辑
     /// </summary>
-    public partial class BackstoryInfo : UserControl
+    public partial class MiscInfo : UserControl
     {
         private MainManager Manager { get; set; }
 
@@ -31,7 +31,7 @@ namespace CardWizard.View
         /// <summary>
         /// Constructor
         /// </summary>
-        public BackstoryInfo()
+        public MiscInfo()
         {
             InitializeComponent();
             InvalidMark = (string)Application.Current.FindResource("AgeBonusMark");
@@ -41,7 +41,7 @@ namespace CardWizard.View
         /// 初始化角色信息交互面板
         /// </summary>
         /// <param name="manager"></param>
-        public void InitializeBinding(MainManager manager)
+        public void InitializeControl(MainManager manager)
         {
             if (manager == null) throw new NullReferenceException("manager is null");
             Manager = manager;
@@ -59,9 +59,9 @@ namespace CardWizard.View
             Button_Occupation.Click += Button_Occupation_Click;
             // 角色年龄的显示
             BindTextBox(Text_Age, nameof(Character.Age), Manager, new IntRangeRule(1, 99));
-            AgeBonusMark = Manager.InvestigatorPage.Label_Validity;
-            manager.PropertyChanged += CurrentAgeChanged;
-            manager.InfoUpdated += c => IsAgeValid(AgeBonusMark, c);
+            AgeBonusMark = Manager.IMainPage.Label_Validity;
+            Manager.PropertyChanged += CurrentAgeChanged;
+            Manager.InfoUpdated += c => IsAgeValid(AgeBonusMark, c);
             // 角色现居地点的显示
             BindTextBox(Text_Address, nameof(Character.Address), Manager);
             // 角色出生地的控制

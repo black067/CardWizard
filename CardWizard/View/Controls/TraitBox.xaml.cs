@@ -170,7 +170,6 @@ namespace CardWizard.View
         private void TraitChanged(Character c, TraitChangedEventArgs e)
         {
             if (!e.Key.EqualsIgnoreCase(Key)) { return; }
-
             ValueInitial = c.GetTraitInitial(Key);
             ValueAdjustment = c.GetTraitAdjustment(Key);
             ValueGrowth = c.GetTraitGrowth(Key);
@@ -203,14 +202,8 @@ namespace CardWizard.View
             return BindToTrait(tag, getter, onEndEdit);
         }
 
-        private void SkillChanged(Character c, TraitChangedEventArgs e)
-        {
-            if (!e.Key.EqualsIgnoreCase(Key)) return;
-            
-        }
-
         /// <summary>
-        /// 与技能绑定
+        /// 与角色技能绑定
         /// </summary>
         /// <param name="key"></param>
         /// <param name="getter"></param>
@@ -221,6 +214,7 @@ namespace CardWizard.View
             Key = key;
             CharacterGetter = getter;
             InputFieldEndEdit += onEndEdit;
+            LabelColumn.Width = new GridLength(3, GridUnitType.Star);
             return TraitChanged;
         }
     }

@@ -237,13 +237,41 @@ namespace CallOfCthulhu
         public static string MapKeywords(string sentence, Dictionary<string, Func<string>> getters)
         {
             var matches = Regex.Matches(sentence, @"\{[^\{\}]*\}");
+            Match match;
+            string keyword;
+            Func<string> getter;
             for (int i = matches.Count - 1; i >= 0; i--)
             {
-                var m = matches[i];
-                var r = m.Value.Trim('{', '}');
-                if (getters.TryGetValue(r, out var getter))
+                match = matches[i];
+                keyword = match.Value.Trim('{', '}');
+                if (getters.TryGetValue(keyword, out getter))
                 {
-                    sentence = Regex.Replace(sentence, m.Value, getter());
+                    sentence = Regex.Replace(sentence, match.Value, getter());
+                }
+            }
+            return sentence;
+        }
+
+        /// <summary>
+        /// 将语句中的关键字 (被 '{' 与 '}' 环绕的词) 替换为 <paramref name="getters"/> 中获取的值
+        /// </summary>
+        /// <param name="sentence"></param>
+        /// <param name="dictionary"></param>
+        /// <returns></returns>
+        public static string MapKeywords(string sentence, IDictionary dictionary)
+        {
+            var words = new Dictionary<string, string>(from object k in dictionary.Keys select KeyValuePair.Create(k.ToString(), dictionary[k].ToString()));
+            var matches = Regex.Matches(sentence, @"\{[^\{\}]*\}");
+            Match match;
+            string keyword;
+            string value;
+            for (int i = matches.Count - 1; i >= 0; i--)
+            {
+                match = matches[i];
+                keyword = match.Value.Trim('{', '}');
+                if (words.TryGetValue(keyword, out value))
+                {
+                    sentence = Regex.Replace(sentence, match.Value, value);
                 }
             }
             return sentence;
@@ -257,8 +285,7 @@ namespace CallOfCthulhu
             var gettersdict = ToKeywordsMap();
             foreach (var item in dictionary.Keys.ToArray())
             {
-                var value = MapKeywords(dictionary[item], gettersdict);
-                dictionary[item] = value;
+                dictionary[item] = MapKeywords(dictionary[item], gettersdict);
             }
         }
 

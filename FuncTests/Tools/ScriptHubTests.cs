@@ -22,10 +22,6 @@ namespace CardWizard.Tools.Tests
         /// 脚本执行器
         /// </summary>
         public ScriptHub Hub { get; set; }
-        /// <summary>
-        /// 骰子, 用来生成随机数
-        /// </summary>
-        public Die Die { get; set; }
 
         /// <summary>
         /// 骰点
@@ -35,10 +31,11 @@ namespace CardWizard.Tools.Tests
         /// <returns></returns>
         private int Roll(int count, int upper)
         {
+            var die = new Random(Guid.NewGuid().GetHashCode() % 100);
             int sum = 0;
             for (int i = count; i > 0; i--)
             {
-                sum += Die.Range(1, upper + 1);
+                sum += die.Next(1, upper + 1);
             }
             return sum;
         }
@@ -46,8 +43,6 @@ namespace CardWizard.Tools.Tests
         public ScriptHubTests()
         {
             Hub = new XLuaHub();
-            Die = new Die();
-            Hub.Set(nameof(Die), Die);
             Hub.Set<Func<int, int, int>>(nameof(Roll), Roll);
         }
 

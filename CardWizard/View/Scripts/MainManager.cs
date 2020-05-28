@@ -1,31 +1,27 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
-using System.Linq;
-using System.IO;
-using System.Reflection;
-using System.Windows.Controls;
-using System.Windows.Threading;
-using System.ComponentModel;
-using CardWizard.Data;
-using CardWizard.Tools;
-using CardWizard.Properties;
-using System.Windows;
-using System.Windows.Media.Imaging;
-using Microsoft.Win32;
-using System.Windows.Media;
-using System.Threading;
-using System.Threading.Tasks;
-using CallOfCthulhu;
-using System.Collections.ObjectModel;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Controls.Primitives;
-
-namespace CardWizard.View
+﻿namespace CardWizard.View
 {
+    using CallOfCthulhu;
+    using CardWizard.Data;
+    using CardWizard.Properties;
+    using CardWizard.Tools;
+    using Microsoft.Win32;
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.ComponentModel;
+    using System.IO;
+    using System.Linq;
+    using System.Text.RegularExpressions;
+    using System.Windows;
+    using System.Windows.Controls;
+    using System.Windows.Controls.Primitives;
+    using System.Windows.Data;
+    using System.Windows.Input;
+    using System.Windows.Media;
+    using System.Windows.Media.Imaging;
+    using System.Windows.Threading;
+
     /// <summary>
     /// <see cref="MainWindow"/> 的控制器
     /// </summary>
@@ -39,7 +35,7 @@ namespace CardWizard.View
         /// <summary>
         /// 调查员信息的主页面
         /// </summary>
-        public MainPage InvestigatorPage { get => Window.InvestigatorPage; }
+        public MainPage IMainPage { get => Window.InvestigatorPage; }
 
         /// <summary>
         /// 配置表
@@ -70,11 +66,6 @@ namespace CardWizard.View
         /// lua 执行工具
         /// </summary>
         public ScriptHub LuaHub { get; set; }
-
-        /// <summary>
-        /// 骰子
-        /// </summary>
-        public Die Die { get; set; }
 
         /// <summary>
         /// 刷新角色卡牌信息的事件
@@ -124,6 +115,27 @@ namespace CardWizard.View
         /// 已载入的所有角色
         /// </summary>
         public ObservableCollection<Character> Characters { get; set; }
+
+        /// <summary>
+        /// 随机数生成器
+        /// </summary>
+        public static Random Die { get; set; } = new Random(Guid.NewGuid().GetHashCode() % 100);
+
+        /// <summary>
+        /// 骰点
+        /// </summary>
+        /// <param name="count"></param>
+        /// <param name="upper"></param>
+        /// <returns></returns>
+        private static int Roll(int count, int upper)
+        {
+            int sum = 0;
+            for (int i = count; i > 0; i--)
+            {
+                sum += Die.Next(1, upper + 1);
+            }
+            return sum;
+        }
 
         /// <summary>
         /// 是否显示提示信息
@@ -191,8 +203,6 @@ namespace CardWizard.View
             // 初始化数据总线
             DataBus = new DataBus();
             DataBus.LoadFrom(Paths.PathData);
-            // 新建一个随机数工具
-            Die = new Die();
             // 创建 Lua 环境
             InitLuaHub();
             // 如果存在存储了计算公式的脚本文件, 执行
@@ -226,16 +236,19 @@ namespace CardWizard.View
                 var focused = Keyboard.FocusedElement;
                 if (focused is TextBoxBase box) box.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
             };
-            // 给按钮绑定事件
+            // 绑定各种事件
             Window.CommandCreateGestured += GetHandlerForReGenerateTraits(() => Character.Create(Config.BaseModelDict));
             Window.CommandSaveGestured += DoSave;
             //Window.Button_Debug.Click += DoDebug;
             Window.CommandCaptureGestured += DoCapturePicture;
             Window.CommandSwitchToolTipGestured += DoSwitchToolTip;
+            // ToolTip 的显示
             ToolTipOpacity = Config.ToolTipAvailable ? Config.ToolTipOpacity : 0;
             Window.MenuItemSwitchToolTip.IsChecked = Config.ToolTipAvailable;
+            // 可查看的角色卡列表初始化
             InitializeCardList(Window.List_Cards);
-            InitializeMainPage(InvestigatorPage);
+            // 角色主页初始化
+            InitializeMainPage(IMainPage);
             #endregion
             // 刷新界面
             OnInfoUpdate(Current);
@@ -293,20 +306,17 @@ namespace CardWizard.View
         }
 
         /// <summary>
-        /// 在生成调查员图像文档时需要隐藏的控件
-        /// </summary>
-        public List<UIElement> HideOnCapturePic { get; set; } = new List<UIElement>();
-
-        /// <summary>
         /// 生成图片时的操作
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void DoCapturePicture(object sender, RoutedEventArgs e)
-        {
-            InvestigatorPage.CapturePng(Config, Current.Name);
-        }
+        private void DoCapturePicture(object sender, RoutedEventArgs e) => IMainPage.CapturePng(Config, Current.Name);
 
+        /// <summary>
+        /// 切换提示信息的显示与隐藏
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void DoSwitchToolTip(object sender, RoutedEventArgs e)
         {
 
@@ -334,9 +344,7 @@ namespace CardWizard.View
                 {
                     LuaHub.DoFile(Paths.ScriptDebug, isGlobal: false);
                 }
-#pragma warning disable CA1031 // 不捕获常规异常类型
                 catch (Exception exception)
-#pragma warning restore CA1031 // 不捕获常规异常类型
                 {
                     Messenger.EnqueueFormat("{0}\n{1}", exception.Message, exception.StackTrace);
                     System.Diagnostics.Process.Start("explorer.exe", Paths.ScriptDebug.Replace("/", "\\"));
@@ -376,11 +384,28 @@ namespace CardWizard.View
                     return;
             }
             File.Copy(result, dest, true);
-            AvatarUpdate(Current, InvestigatorPage.Image_Avatar);
+            AvatarUpdate(Current, IMainPage.Image_Avatar);
+        }
+
+        /// <summary>
+        /// 更新角色头像的显示
+        /// </summary>
+        /// <param name="c"></param>
+        /// <param name="image"></param>
+        private async void AvatarUpdate(Character c, Image image)
+        {
+            if (image.Source is BitmapImage b)
+            {
+                await b.StreamSource.DisposeAsync();
+                b.StreamSource.Close();
+            }
+            var path = $"{Paths.PathSave}/{c.Name}.png";
+            var rawImage = !File.Exists(path) ? Resources.Image_Avatar_Empty : System.Drawing.Image.FromFile(path);
+            image.Source = rawImage.ToBitmapImage();
         }
         #endregion
 
-        #region Handle Main Page
+        #region Initialize Main Page
         /// <summary>
         /// 角色主页面的初始化
         /// </summary>
@@ -388,7 +413,8 @@ namespace CardWizard.View
         private void InitializeMainPage(MainPage page)
         {
             if (page == null) return;
-            page.Backstory.InitializeBinding(this);
+            // 初始化杂项信息显示面板
+            page.Miscellaneous.InitializeControl(this);
             // 属性重生成按钮
             page.Button_Regenerate.Click += GetHandlerForReGenerateTraits(() => Current);
             // 角色属性数值面板初始化
@@ -428,23 +454,6 @@ namespace CardWizard.View
             });
         }
         #endregion
-
-        /// <summary>
-        /// 更新角色头像的显示
-        /// </summary>
-        /// <param name="c"></param>
-        /// <param name="image"></param>
-        private async void AvatarUpdate(Character c, Image image)
-        {
-            if (image.Source is BitmapImage b)
-            {
-                await b.StreamSource.DisposeAsync();
-                b.StreamSource.Close();
-            }
-            var path = $"{Paths.PathSave}/{c.Name}.png";
-            var rawImage = !File.Exists(path) ? Resources.Image_Avatar_Empty : System.Drawing.Image.FromFile(path);
-            image.Source = rawImage.ToBitmapImage();
-        }
 
         /// <summary>
         /// 当 <see cref="Messenger"/> 收到消息时, 将其打印到 <see cref="Window"/> 的 Logger 控件中
@@ -723,22 +732,6 @@ namespace CardWizard.View
                 }
             }
             return regenerateprops;
-        }
-
-        /// <summary>
-        /// 骰点
-        /// </summary>
-        /// <param name="count"></param>
-        /// <param name="upper"></param>
-        /// <returns></returns>
-        private int Roll(int count, int upper)
-        {
-            int sum = 0;
-            for (int i = count; i > 0; i--)
-            {
-                sum += Die.Range(1, upper + 1);
-            }
-            return sum;
         }
 
         /// <summary>

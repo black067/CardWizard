@@ -29,35 +29,35 @@
                 </Grid.RowDefinitions>
                 <!--页首的显示-->
                 <Label x:Name="Label_Page_Head" Style="{DynamicResource XLabel}"
-                           Content="- Call of Cthulhu Investigator -"
-                           Grid.ColumnSpan="{Binding ColumnDefinitions.Count, ElementName=InvestigatorView, Mode=OneWay}" 
-                           HorizontalContentAlignment="Center" VerticalContentAlignment="Center" 
-                           Foreground="#FFACACAC"
-                           Tag="Page.Head" Cursor="Arrow" IsHitTestVisible="False"/>
+                       Content="- Call of Cthulhu Investigator -"
+                       Grid.ColumnSpan="{Binding ColumnDefinitions.Count, ElementName=MainGrid, Mode=OneWay}" 
+                       HorizontalContentAlignment="Center" VerticalContentAlignment="Center" 
+                       Foreground="#FFACACAC"
+                       Tag="Page.Head" Cursor="Arrow" IsHitTestVisible="False"/>
                 <!--背景信息的标题-->
                 <Label Content="Document 档案" Tag="Investigator.Document.Title"
-                           Grid.ColumnSpan="1" Grid.Column="1" Grid.Row="1" Style="{DynamicResource XLabel}" 
-                           FontSize="22" Padding="0,0,0,0"
-                           Background="{DynamicResource MenuBackground}" Foreground="{DynamicResource ButtonForeground}"/>
+                       Grid.ColumnSpan="1" Grid.Column="1" Grid.Row="1" Style="{DynamicResource XLabel}" 
+                       FontSize="22" Padding="0,0,0,0"
+                       Background="{DynamicResource MenuBackground}" Foreground="{DynamicResource ButtonForeground}"/>
                 <Label x:Name="Label_Validity" Content="⚠"
-                           Grid.Column="1" Grid.Row="1" 
-                           HorizontalContentAlignment="Right" VerticalContentAlignment="Center" HorizontalAlignment="Right"
-                           Style="{DynamicResource ValidityCheck}" Padding="5,0,5,0" Margin="0,0,5,0"/>
+                       Grid.Column="1" Grid.Row="1" 
+                       HorizontalContentAlignment="Right" VerticalContentAlignment="Center" HorizontalAlignment="Right"
+                       Style="{DynamicResource ValidityCheck}" Padding="5,0,5,0" Margin="0,0,5,0"/>
                 <!--角色背景信息的显示-->
-                <cview:BackstoryInfo x:Name="Backstory" HorizontalAlignment="Stretch" 
-                                         Grid.Row="2" Grid.Column="1" Grid.RowSpan="2" 
-                                         VerticalContentAlignment="Stretch" VerticalAlignment="Stretch"/>
+                <cview:MiscInfo x:Name="Miscellaneous" HorizontalAlignment="Stretch" 
+                                     Grid.Row="2" Grid.Column="1" Grid.RowSpan="2" 
+                                     VerticalContentAlignment="Stretch" VerticalAlignment="Stretch"/>
                 <!--属性总计与重新生成按钮-->
                 <Label Content="Characteristics" Tag="Investigator.Traits.Title"
-                               FontSize="22" Grid.Row="1" Grid.Column="2"
-                               Foreground="{DynamicResource ButtonForeground}"
-                               Style="{DynamicResource XLabel}" Background="{DynamicResource TraitBorderBrush}"/>
+                       FontSize="22" Grid.Row="1" Grid.Column="2"
+                       Foreground="{DynamicResource ButtonForeground}"
+                       Style="{DynamicResource XLabel}" Background="{DynamicResource TraitBorderBrush}"/>
                 <Button x:Name="Button_Regenerate" Tag="Card.Button.Regenerate" Content="🎲"
-                            Grid.Row="1" Grid.Column="2" Cursor="Hand"
-                            HorizontalAlignment="Right" Margin="6,6,8,6" 
-                            Width="{Binding ActualHeight, ElementName=Button_Regenerate, Mode=OneWay}" 
-                            Foreground="{DynamicResource ButtonForeground}" Style="{DynamicResource XButtonStyle}"
-                            FontSize="20" BorderThickness="0,0,0,0" Background="{x:Null}"/>
+                        Grid.Row="1" Grid.Column="2" Cursor="Hand"
+                        HorizontalAlignment="Right" Margin="6,6,8,6" 
+                        Width="{Binding ActualHeight, ElementName=Button_Regenerate, Mode=OneWay}" 
+                        Foreground="{DynamicResource ButtonForeground}" Style="{DynamicResource XButtonStyle}"
+                        FontSize="20" BorderThickness="0,0,0,0" Background="{x:Null}"/>
                 <!--角色属性的显示-->
                 <Grid x:Name="TraitsGrid" Grid.Row="2" Grid.Column="2" Margin="2,0,2,0">
                     <Grid.ColumnDefinitions>
@@ -93,16 +93,16 @@
                         <Border BorderBrush="{DynamicResource TraitBorderBrush}" BorderThickness="1" Grid.RowSpan="2" Margin="2" Opacity="0.3" CornerRadius="16,16,16,16"/>
                     </Grid>-->
                 <Image x:Name="Image_Avatar" Tag="Card.Image.Avatar"
-                           Grid.Column="3"  Grid.Row="2" VerticalAlignment="Center" Cursor="Hand" 
-                           Source="/Resources/Image.Avatar.Empty.png"
-                           HorizontalAlignment="Center">
+                       Grid.Column="3"  Grid.Row="2" VerticalAlignment="Center" Cursor="Hand" 
+                       Source="/Resources/Image.Avatar.Empty.png"
+                       HorizontalAlignment="Center">
                     <Image.Effect>
                         <DropShadowEffect BlurRadius="3" Opacity="0.885" ShadowDepth="2"/>
                     </Image.Effect>
                 </Image>
                 <Grid x:Name="SecondaryTraitsGrid"
-                          Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="2" 
-                          HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                      Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="2" 
+                      HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
                         <ColumnDefinition/>
@@ -129,12 +129,12 @@
                         <ColumnDefinition Width="144"/>
                     </Grid.ColumnDefinitions>
                     <Label Content="INVESTIGATOR SKILLS" Tag="Investigator.Skills.Title"
-                               FontSize="22" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3"
-                               Foreground="{DynamicResource ButtonForeground}"
-                               Style="{DynamicResource XLabel}" Background="{DynamicResource TraitBorderBrush}"/>
+                           FontSize="22" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3"
+                           Foreground="{DynamicResource ButtonForeground}"
+                           Style="{DynamicResource XLabel}" Background="{DynamicResource TraitBorderBrush}"/>
                     <WrapPanel x:Name="SkillsContainer" 
                                Orientation="Vertical" 
-                               Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3">
+                               Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3" Margin="2,2,2,2">
                         <WrapPanel.Resources>
                             <Style x:Key="SkillBoxStyle" TargetType="cview:TraitBox">
                                 <Setter Property="Margin" Value="8,8,8,8"/>
@@ -165,32 +165,32 @@
                            Background="{DynamicResource MenuBackground}" Foreground="{DynamicResource ButtonForeground}"/>
                     <!--伤害加深的标签-->
                     <TextBlock x:Name="Label_DamageBonus" Tag="DamageBonus.Block"
-                                   Grid.Row="1" 
-                                   Style="{DynamicResource GeneralTextBlock}" Height="45" Width="60" Foreground="{DynamicResource MenuBackground}">
+                               Grid.Row="1" 
+                               Style="{DynamicResource GeneralTextBlock}" Height="45" Width="60" Foreground="{DynamicResource MenuBackground}">
                             Damage<LineBreak/>
                             Bonus<LineBreak/>
                             <Run FontSize="15">伤害加深</Run></TextBlock>
                     <Label x:Name="Value_DamageBonus" Content="10D6"
-                               Grid.Row="1" Grid.Column="1"
-                               HorizontalContentAlignment="Left"
-                               Style="{DynamicResource XLabel}" Margin="2,2,2,2" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                           Grid.Row="1" Grid.Column="1"
+                           HorizontalContentAlignment="Left"
+                           Style="{DynamicResource XLabel}" Margin="2,2,2,2" VerticalAlignment="Center" HorizontalAlignment="Left"/>
                     <!--伤害加深掷骰按钮-->
                     <Button x:Name="Button_Roll_DMGBonus" Content="🎲"
-                                Grid.Row="1" Grid.Column="1"
-                                Tag="Card.Button.DMGBonus" Cursor="Hand"
-                                HorizontalAlignment="Right" Margin="6,6,8,6" Width="30"
-                                Background="{x:Null}" Foreground="{DynamicResource MenuBackground}" FontSize="16" BorderThickness="0,0,0,0"/>
+                            Grid.Row="1" Grid.Column="1"
+                            Tag="Card.Button.DMGBonus" Cursor="Hand"
+                            HorizontalAlignment="Right" Margin="6,6,8,6" Width="30"
+                            Background="{x:Null}" Foreground="{DynamicResource MenuBackground}" FontSize="16" BorderThickness="0,0,0,0"/>
                     <!--体格的标签-->
                     <TextBlock x:Name="Label_Build" Tag="Build.Block"
-                                   Grid.Row="2"
-                                   Style="{DynamicResource GeneralTextBlock}" Height="32" Width="36" Foreground="{DynamicResource MenuBackground}">
+                               Grid.Row="2"
+                               Style="{DynamicResource GeneralTextBlock}" Height="32" Width="36" Foreground="{DynamicResource MenuBackground}">
                             Build<LineBreak/>
                             <Run FontSize="15">体格</Run>
                     </TextBlock>
                     <Label x:Name="Value_Build" Content="-2"
-                               Grid.Row="2" Grid.Column="1"
-                               HorizontalContentAlignment="Left"
-                               Style="{DynamicResource XLabel}" Margin="2,2,2,2" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                           Grid.Row="2" Grid.Column="1"
+                           HorizontalContentAlignment="Left"
+                           Style="{DynamicResource XLabel}" Margin="2,2,2,2" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                     <cview:TraitBox x:Name="Box_Dodge" Tag="DODGE" Grid.Row="3" Grid.ColumnSpan="2" Margin="12,4,12,4"/>
                 </Grid>
                 <Grid Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2">
@@ -208,13 +208,12 @@
                 </Grid>
                 <!--页尾-->
                 <Label x:Name="Label_Page_Trail" Tag="Page.Trail"
-                           Content="- Investigator -"
-                           Grid.Row="99" Grid.Column="0" 
-                           Grid.ColumnSpan="{Binding ColumnDefinitions.Count, ElementName=InvestigatorView, Mode=OneWay}"
-                           Style="{DynamicResource XLabel}"
-                           Foreground="#FFACACAC"
-                           HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
-                           HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                       Content="- Investigator -"
+                       Grid.Row="99" Grid.Column="0" Grid.ColumnSpan="{Binding ColumnDefinitions.Count, ElementName=MainGrid, Mode=OneWay}"
+                       Style="{DynamicResource XLabel}"
+                       Foreground="#FFACACAC"
+                       HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                       HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
             </Grid>
         </Viewbox>
     </ScrollViewer>

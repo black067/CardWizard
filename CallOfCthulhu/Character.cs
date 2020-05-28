@@ -144,6 +144,7 @@ namespace CallOfCthulhu
         /// <summary>
         /// 名称
         /// </summary>
+        [Description("名称")]
         public string Name
         {
             get => name;
@@ -157,6 +158,7 @@ namespace CallOfCthulhu
         /// <summary>
         /// 年龄
         /// </summary>
+        [Description("年龄")]
         public int Age
         {
             get => age;
@@ -170,6 +172,7 @@ namespace CallOfCthulhu
         /// <summary>
         /// 时代
         /// </summary>
+        [Description("时代")]
         public string Era
         {
             get => era;
@@ -183,6 +186,7 @@ namespace CallOfCthulhu
         /// <summary>
         /// 性别
         /// </summary>
+        [Description("性别")]
         public string Gender
         {
             get => gender;
@@ -196,6 +200,7 @@ namespace CallOfCthulhu
         /// <summary>
         /// 学历
         /// </summary>
+        [Description("学历")]
         public string Education
         {
             get => education;
@@ -209,6 +214,7 @@ namespace CallOfCthulhu
         /// <summary>
         /// 职业
         /// </summary>
+        [Description("职业")]
         public string Occupation
         {
             get => occupation;
@@ -222,6 +228,7 @@ namespace CallOfCthulhu
         /// <summary>
         /// 角色的现居地
         /// </summary>
+        [Description("角色的现居地")]
         public string Address
         {
             get => address;
@@ -235,6 +242,7 @@ namespace CallOfCthulhu
         /// <summary>
         /// 故乡
         /// </summary>
+        [Description("故乡")]
         public string Homeland
         {
             get => homeland;
@@ -246,8 +254,29 @@ namespace CallOfCthulhu
         }
 
         /// <summary>
+        /// 形象描述
+        /// </summary>
+        [Description("形象描述")]
+        public string PersonalDescription
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// 思想与信念
+        /// </summary>
+        [Description("思想与信念")]
+        public string IdeologyAndBeliefs
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// 技能列表
         /// </summary>
+        [Description("技能列表")]
         public string[] Skills
         {
             get => skills;
@@ -261,16 +290,19 @@ namespace CallOfCthulhu
         /// <summary>
         /// 角色属性初始值
         /// </summary>
+        [Description("角色属性初始值")]
         public Dictionary<string, int> Initials { get; set; }
 
         /// <summary>
         /// 角色属性成长值
         /// </summary>
+        [Description("角色属性成长值")]
         public Dictionary<string, int> Growths { get; set; }
 
         /// <summary>
         /// 角色属性调整值
         /// </summary>
+        [Description("角色属性调整值")]
         public Dictionary<string, int> Adjustments { get; set; }
 
         /// <summary>
