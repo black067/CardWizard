@@ -33,6 +33,7 @@ namespace CardWizard.View
         /// <returns></returns>
         public static CommandBinding AddCommandsBindings(this UIElement element, RoutedCommand command, ExecutedRoutedEventHandler handler, InputGesture gesture = null)
         {
+            if (element == null) throw new Exception("elememt is null");
             var binding = new CommandBinding(command, handler);
             element.CommandBindings.Add(binding);
             if (gesture != null)
@@ -271,7 +272,7 @@ namespace CardWizard.View
         /// <param name="pxHeight"></param>
         /// <param name="dpiX"></param>
         /// <param name="dpiY"></param>
-        public static void CapturePng(Visual visual, string filePath, int pxWidth, int pxHeight, double dpiX, double dpiY)
+        public static void SaveAsPng(Visual visual, string filePath, int pxWidth, int pxHeight, double dpiX, double dpiY)
         {
             RenderTargetBitmap renderTargetBitmap = new RenderTargetBitmap(pxWidth, pxHeight, dpiX, dpiY, PixelFormats.Pbgra32);
             renderTargetBitmap.Render(visual);
@@ -279,23 +280,6 @@ namespace CardWizard.View
             pngImage.Frames.Add(BitmapFrame.Create(renderTargetBitmap));
             using Stream fileStream = File.Create(filePath);
             pngImage.Save(fileStream);
-        }
-
-        /// <summary>
-        /// 载入图片资源
-        /// </summary>
-        /// <param name="path"></param>
-        /// <returns></returns>
-        public static async Task<BitmapImage> LoadBitmapImage(string path)
-        {
-            var buffer = await File.ReadAllBytesAsync(path).ConfigureAwait(false);
-            using MemoryStream stream = new MemoryStream(buffer);
-            var bitmapImage = new BitmapImage();
-            bitmapImage.BeginInit();
-            bitmapImage.StreamSource = stream;
-            bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-            bitmapImage.EndInit();
-            return bitmapImage;
         }
 
         /// <summary>

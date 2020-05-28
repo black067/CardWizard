@@ -32,7 +32,6 @@ namespace CallOfCthulhu
             { "Gender.Others", "保密" },
             { "Age", "年龄" },
             { "Age.ToolTip", "调查员的年龄应当在 15 至 90 之间。若调查员超过了这个年龄范围，请找您的守秘人进行调整吧。" },
-            { "Age.Penalty.ToolTip", "角色超过 40 岁时, 每超过 10 年, 从以下属性中选择 1 点减去: {STR} / {CON} / {DEX} / {APP}." },
             { "Education", "学历" },
             { "Address", "居住地" },
             { "Homeland", "故乡" },
@@ -186,14 +185,19 @@ namespace CallOfCthulhu
             { "MenuBar.Button.SavePicture.ToolTip", "Ctrl + Shift + S\n将你的调查员档案保存为一张图片" },
             { "MenuBar.Button.Settings", "设置" },
             { "MenuBar.Button.ShowToolTip", "显示提示浮窗" },
-            { "Investigator.Document.Title", "Document 档案" },
+            // 界面元素
+            { "Investigator.Document.Title", "DOCUMENT 档案" },
+            { "Investigator.Traits.Title", "CHARACTERISTICS 属性" },
+            { "Investigator.Combat.Title", "COMBAT 格斗" },
+            { "Investigator.Weapons.Title", "WEAPONS 武器" },
+            { "Investigator.Skills.Title", "INVESTIGATOR SKILLS 武器" },
+            // 控件显示
             { "Card.Image.Avatar", "点击可导入新头像" },
-            { "Investigator.Traits.Title", "Characteristics 属性" },
             { "Card.Button.Regenerate", "🎲" },
             { "Card.Button.Regenerate.ToolTip", "重新生成角色属性" },
             { "Card.Button.DMGBonus", "🎲" },
             { "Card.Button.DMGBonus.ToolTip", "掷一次伤害加值" },
-            { "Message.RollADMGBonus", "根据公式 {0}, 本轮掷出了 {1}" },
+            // 其它窗口
             { "GenerationWindow.Title", "生成了以下属性..." },
             { "GenerationWindow.Message", $"选择一组数据作为调查员的基础属性\n* 请确认调查员年龄, 并按照年龄调整属性点\n* {{LUCK}} 将在确认后自动骰出" },
             { "GenerationWindow.Helper", "* 此行填写调整值" },
@@ -202,10 +206,13 @@ namespace CallOfCthulhu
             { "OccupationWindow.Message", "" },
             { "Dialog.Import.Avatar.Title", "选择调查员的照片 (*.png)" },
             { "Dialog.Overwrite.Confirmation", "是否确认用\n{0}\n覆盖现有的文件?" },
+            // 消息
+            { "Message.RollADMGBonus", "根据公式 {0}, 本轮掷出了 {1}" },
             { "Message.Character.Saved", "调查员的文档已保存至: {0}" },
             { "Message.Character.SavedPic", "调查员的图像档案已保存至: {0}" },
             { "Message.Character.Switched", "已切换至调查员: {0}" },
             { "Message.Trait.Overflow", "属性: {0} 的值不能超过 {1}" },
+            // 页首与页尾
             { "Page.Head", "- Call of Cthulhu -" },
             { "Page.Trail", "- ★ -" },
         };

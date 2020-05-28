@@ -159,7 +159,7 @@ namespace CardWizard.View
         /// <param name="window"></param>
         public MainManager(MainWindow window)
         {
-            Window = window ?? throw new NullReferenceException("Window is null");
+            Window = window ?? throw new NullReferenceException("MainWindow is null");
             // 设置 Logger
             Messenger.OnEnqueue += Messenger_OnEnqueue;
             // 如果项目路径下存在文件"DEBUG", 就执行以下下操作
@@ -351,24 +351,27 @@ namespace CardWizard.View
             {
                 var c = (Color)ColorConverter.ConvertFromString(Config.PrintSettings_BackgroundColor);
                 source.Background = new SolidColorBrush(c);
+                var originH = source.Height;
+                cache.Add(source, () => source.Height = originH);
+                source.Height = source.ActualWidth * Config.PrintSettings_H_W_Scale;
                 // 等待控件属性的变化刷新
                 source.UpdateLayout();
                 // 期望的 DPI
-                var tDpi = Config.PrintSettings_Dpi;
+                var destDpi = Config.PrintSettings_Dpi;
                 // 查询得出当前的 真实尺寸 与 DPI
-                var aSize = UIExtension.GetActualSize(source);
-                var aDpi = UIExtension.GetDpi(source);
-                var tWidth = (tDpi / aDpi) * aSize.Width;
-                var tHeight = (tDpi / aDpi) * aSize.Height;
+                var actualSize = UIExtension.GetActualSize(source);
+                var actualDpi = UIExtension.GetDpi(source);
+                int fileWidth = (int)(actualSize.Width * destDpi / actualDpi);
+                int fileHeight = (int)(actualSize.Height * destDpi / actualDpi);
                 var dest = Path.Combine(Paths.PathSave, Current.Name + Config.FileExtensionForCardPic);
-                UIExtension.CapturePng(source, dest, (int)tWidth, (int)tHeight, tDpi, tDpi);
+                UIExtension.SaveAsPng(source, dest, fileWidth, fileHeight, destDpi, destDpi);
                 Messenger.EnqueueFormat(Translator.Translate("Message.Character.SavedPic", "Saved at {0}"), dest.Replace("\\", "/"));
             });
             // 将被更改的元素还原
             Window.InvestigatorView.Background = bg;
-            foreach (var kvp in cache.Values)
+            foreach (var restore in cache.Values)
             {
-                kvp();
+                restore();
             }
         }
 

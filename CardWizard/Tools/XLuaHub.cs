@@ -82,6 +82,7 @@ end";
 
         /// <summary>
         /// 构造一个子环境
+        /// <para>为保证资源释放, 建议配合 <see cref="using"/> 关键字使用</para>
         /// </summary>
         /// <param name="variables"></param>
         /// <returns></returns>

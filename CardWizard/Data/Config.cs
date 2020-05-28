@@ -64,10 +64,10 @@ namespace CardWizard.Data
         public double PrintSettings_Dpi = 300;
 
         /// <summary>
-        /// 打印时的尺寸
+        /// 打印时的高宽比值
         /// </summary>
-        [Description("打印时的尺寸")]
-        public int[] PrintSettings_Size = new int[] { 2480, 3508 };
+        [Description("打印时的高宽比值")]
+        public double PrintSettings_H_W_Scale = 297.0 / 210.0;
 
         /// <summary>
         /// 调查员的图像文档在打印时的页面背景色
@@ -209,7 +209,8 @@ namespace CardWizard.Data
             var target = Paths;
             var fields = ProcessIndexAttribute.SortField(target);
             var getters = new Dictionary<string, Func<string>>(
-                from f in fields where f.FieldType == typeofStr
+                from f in fields
+                where f.FieldType == typeofStr
                 select new KeyValuePair<string, Func<string>>(f.Name, () => f.GetValue(target)?.ToString() ?? f.Name));
             foreach (var field in fields)
             {

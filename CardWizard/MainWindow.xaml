@@ -111,22 +111,21 @@
                         <ColumnDefinition Width="10"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
-                        <RowDefinition/>
-                        <RowDefinition Height="40"/>
-                        <RowDefinition Height="240"/>
-                        <RowDefinition Height="80"/>
-                        <RowDefinition Height="400"/>
-                        <RowDefinition Height="180"/>
-                        <RowDefinition/>
+                        <RowDefinition Height="36"/>
+                        <RowDefinition Height="42"/>
+                        <RowDefinition Height="272"/>
+                        <RowDefinition Height="84"/>
+                        <RowDefinition x:Name="Row_Skills"/>
+                        <RowDefinition Height="210"/>
+                        <RowDefinition Height="36"/>
                     </Grid.RowDefinitions>
                     <!--页首的显示-->
                     <Label x:Name="Label_Page_Head" Style="{DynamicResource XLabel}"
                            Content="- Call of Cthulhu Investigator -"
                            Grid.ColumnSpan="{Binding ColumnDefinitions.Count, ElementName=InvestigatorView, Mode=OneWay}" 
-                           HorizontalContentAlignment="Center" VerticalContentAlignment="Stretch" 
+                           HorizontalContentAlignment="Center" VerticalContentAlignment="Center" 
                            Foreground="#FFACACAC"
                            Tag="Page.Head" Cursor="Arrow" IsHitTestVisible="False"/>
-                    <!--<Border Grid.Row="1" Grid.Column="1" Grid.RowSpan="3" BorderThickness="2" Margin="1,2,1,0" BorderBrush="{DynamicResource MenuBackground}" CornerRadius="0,0,10,10"/>-->
                     <!--背景信息的标题-->
                     <Label Content="Document 档案" Tag="Investigator.Document.Title"
                            Grid.ColumnSpan="1" Grid.Column="1" Grid.Row="1" Style="{DynamicResource XLabel}" 
@@ -210,6 +209,7 @@
                         <cview:TraitBox Tag="MP" Grid.Column="2" Grid.Row="0" Style="{DynamicResource TraitBoxStyle}" Foreground="{DynamicResource MenuBackground}"/>
                         <cview:TraitBox Tag="HP" Grid.Column="3" Grid.Row="0" Style="{DynamicResource TraitBoxStyle}" Foreground="{DynamicResource MenuBackground}"/>
                     </Grid>
+                    <!--技能面板-->
                     <Grid x:Name="SkillsPanle" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="42"/>
@@ -220,13 +220,10 @@
                             <ColumnDefinition Width="144"/>
                             <ColumnDefinition Width="144"/>
                         </Grid.ColumnDefinitions>
-                        <Label Grid.Row="0" Content="Skills" Tag="Skills"
-                               Grid.Column="0" Grid.ColumnSpan="3" 
-                               HorizontalContentAlignment="Center" VerticalAlignment="Stretch" 
-                               Style="{DynamicResource XLabel}" FontSize="22" 
-                               Margin="0" Padding="0,0,0,0"/>
-                        <Label x:Name="OccupationPoints" Content="9999" Grid.Column="1" Style="{DynamicResource XLabel}" FontSize="16"/>
-                        <Label x:Name="InterestPoints" Content="9999" Grid.Column="2" Style="{DynamicResource XLabel}" FontSize="16"/>
+                        <Label Content="INVESTIGATOR SKILLS" Tag="Investigator.Skills.Title"
+                               FontSize="22" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3"
+                               Foreground="{DynamicResource ButtonForeground}"
+                               Style="{DynamicResource XLabel}" Background="{DynamicResource TraitBorderBrush}"/>
                         <WrapPanel x:Name="SkillsContainer" 
                                Orientation="Vertical" 
                                Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3">
@@ -240,57 +237,76 @@
                     </Grid>
 
                     <!--伤害奖励与体格的显示-->
-                    <Border Grid.Row="5" Grid.Column="3" BorderThickness="1,1,1,1" Background="{DynamicResource MenuBackground}" Opacity="0.2" Margin="1,1,1,1"/>
+                    <Border Grid.Row="5" Grid.Column="3" BorderThickness="1,10,1,1" Background="{DynamicResource MenuBackground}" Opacity="0.2" Margin="1,1,1,1"/>
                     <Grid Grid.Row="5" Grid.Column="3" Margin="0,4,0,4">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="9*"/>
                             <ColumnDefinition Width="9*"/>
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
+                            <RowDefinition Height="42"/>
                             <RowDefinition/>
                             <RowDefinition/>
                             <RowDefinition/>
                         </Grid.RowDefinitions>
                         <Grid.Resources>
                         </Grid.Resources>
+                        <Label Content="Combat 格斗" Tag="Investigator.Combat.Title"
+                           Grid.ColumnSpan="2" Grid.Column="0" Grid.Row="0" Style="{DynamicResource XLabel}" 
+                           FontSize="22" Padding="0,0,0,0"
+                           Background="{DynamicResource MenuBackground}" Foreground="{DynamicResource ButtonForeground}"/>
                         <!--伤害加深的标签-->
                         <TextBlock x:Name="Label_DamageBonus" Tag="DamageBonus.Block"
-                                   Grid.Row="0" 
+                                   Grid.Row="1" 
                                    Style="{DynamicResource GeneralTextBlock}" Height="45" Width="60" Foreground="{DynamicResource MenuBackground}">
                             Damage<LineBreak/>
                             Bonus<LineBreak/>
                             <Run FontSize="15">伤害加深</Run></TextBlock>
                         <Label x:Name="Value_DamageBonus" Content="10D6"
-                               Grid.Row="0" Grid.Column="1"
+                               Grid.Row="1" Grid.Column="1"
                                HorizontalContentAlignment="Left"
                                Style="{DynamicResource XLabel}" Margin="2,2,2,2" VerticalAlignment="Center" HorizontalAlignment="Left"/>
                         <!--伤害加深掷骰按钮-->
                         <Button x:Name="Button_Roll_DMGBonus" Content="🎲"
-                                Grid.Row="0" Grid.Column="1"
+                                Grid.Row="1" Grid.Column="1"
                                 Tag="Card.Button.DMGBonus" Cursor="Hand"
                                 HorizontalAlignment="Right" Margin="6,6,8,6" Width="{Binding ActualHeight, ElementName=Button_Regenerate, Mode=OneWay}" 
                                 Background="{x:Null}" Foreground="{DynamicResource MenuBackground}" FontSize="16" BorderThickness="0,0,0,0"/>
                         <!--体格的标签-->
                         <TextBlock x:Name="Label_Build" Tag="Build.Block"
-                                   Grid.Row="1"
+                                   Grid.Row="2"
                                    Style="{DynamicResource GeneralTextBlock}" Height="32" Width="36" Foreground="{DynamicResource MenuBackground}">
                             Build<LineBreak/>
                             <Run FontSize="15">体格</Run>
                         </TextBlock>
                         <Label x:Name="Value_Build" Content="-2"
-                               Grid.Row="1" Grid.Column="1"
+                               Grid.Row="2" Grid.Column="1"
                                HorizontalContentAlignment="Left"
                                Style="{DynamicResource XLabel}" Margin="2,2,2,2" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                         <cview:TraitBox x:Name="Box_Dodge" Tag="DODGE" Grid.Row="3" Grid.ColumnSpan="2" Margin="12,4,12,4"/>
+                    </Grid>
+                    <Grid Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
                     </Grid>
                     <!--页尾-->
                     <Label x:Name="Label_Page_Trail" Tag="Page.Trail"
                            Content="- Investigator -"
                            Grid.Row="99" Grid.Column="0" 
                            Grid.ColumnSpan="{Binding ColumnDefinitions.Count, ElementName=InvestigatorView, Mode=OneWay}"
-                           Foreground="{DynamicResource PlaceholderForeground}" 
-                           HorizontalAlignment="Center" VerticalAlignment="Stretch" 
-                           HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Margin="2,8,2,8"/>
+                           Style="{DynamicResource XLabel}"
+                           Foreground="#FFACACAC"
+                           HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                           HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
                 </Grid>
             </Viewbox>
         </ScrollViewer>

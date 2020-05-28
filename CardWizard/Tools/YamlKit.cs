@@ -11,16 +11,6 @@ namespace CardWizard.Tools
     /// </summary>
     public static class YamlKit
     {
-        /// <summary>
-        /// Yaml 文件后缀名 .yaml
-        /// </summary>
-        public const string EXTENSION_A = ".yaml";
-
-        /// <summary>
-        /// Yaml 文件后缀名 .yml
-        /// </summary>
-        public const string EXTENSION_B = ".yml";
-
         public static T Parse<T>(string text)
         {
             Deserializer deserializer = new Deserializer();
@@ -44,7 +34,7 @@ namespace CardWizard.Tools
                 item = Parse<T>(text);
                 return true;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 switch (behavior)
                 {
