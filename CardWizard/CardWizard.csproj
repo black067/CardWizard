@@ -33,6 +33,7 @@
     <None Remove="Resources\Scripts\debug.lua" />
     <None Remove="Resources\Scripts\formula.lua" />
     <None Remove="Resources\Scripts\startup.lua" />
+    <None Remove="Resources\xlua.dll" />
   </ItemGroup>
 
   <ItemGroup>
@@ -53,6 +54,9 @@
     </Content>
     <Content Include="Resources\Scripts\startup.lua">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Libs\xlua.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 
@@ -85,6 +89,6 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="echo f|xcopy $(SolutionDir)Assets\XLua\xlua.dll $(TargetDir)xlua.dll /Y" />
+    <Exec Command="REM echo f|xcopy $(SolutionDir)Assets\XLua\xlua.dll $(TargetDir)xlua.dll /Y" />
   </Target>
 </Project>

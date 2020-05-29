@@ -12,6 +12,7 @@
     using System.ComponentModel;
     using System.IO;
     using System.Linq;
+    using System.Reflection.PortableExecutable;
     using System.Text.RegularExpressions;
     using System.Windows;
     using System.Windows.Controls;
@@ -174,23 +175,17 @@
         /// 创建主窗口管理器
         /// </summary>
         /// <param name="window"></param>
-        public MainManager(MainWindow window)
+        public MainManager(MainWindow window, Config config)
         {
             Window = window ?? throw new NullReferenceException("MainWindow is null");
+            Config = config ?? throw new NullReferenceException("config is null");
+            // 如果消息管理器中已经有消息, 将其打印
+            if (!string.IsNullOrWhiteSpace(Messenger.Peek))
+            {
+                Messenger_OnEnqueue(Messenger.DequeueAll());
+            }
             // 设置 Logger
             Messenger.OnEnqueue += Messenger_OnEnqueue;
-            // 如果项目路径下存在文件"DEBUG", 就执行以下下操作
-            if (File.Exists("DEBUG"))
-            {
-                YamlKit.SaveFile(Resources.FileConfig, new Config());
-            }
-            // 读取配置表
-            Config = YamlKit.LoadFile<Config>(Resources.FileConfig).Process();
-            // 关闭窗口的时候保存配置表
-            Window.Closing += (o, e) =>
-            {
-                YamlKit.SaveFile(Resources.FileConfig, Config);
-            };
             // 设置定期 Garbage Collect
             GCDispatcher = new DispatcherTimer()
             {
@@ -544,6 +539,7 @@
                     element.RegisterName(tooltipKey.Replace('.', '_'), toolTip);
                     element.ToolTip = toolTip;
                 }
+                // 否则不添加 ToolTip
                 else
                 {
                     element.ToolTip = null;

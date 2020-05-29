@@ -18,6 +18,18 @@ namespace CardWizard.Data
         public string PathResources = "./Resources";
 
         /// <summary>
+        /// 动态链接库的目录
+        /// </summary>
+        [Config.ProcessIndex(1)]
+        public string PathLibs = "{PathResources}/Libs";
+
+        /// <summary>
+        /// XLua.dll 文件的位置
+        /// </summary>
+        [Config.ProcessIndex(2)]
+        public string FileXLuaDll = "{PathLibs}/xlua.dll";
+
+        /// <summary>
         /// 数据存放的根目录
         /// </summary>
         [Config.ProcessIndex(1)]

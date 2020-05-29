@@ -1,6 +1,7 @@
 ﻿using CardWizard.Tools;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -263,6 +264,58 @@ namespace CardWizard.View
             return 96 * (source?.CompositionTarget.TransformToDevice.M11 ?? 1);
         }
 
+        [System.Diagnostics.Conditional("DEBUG")]
+        private static void Example_BitmapMetadata(TiffBitmapDecoder decoder2)
+        {
+            FileStream stream3 = new FileStream("image2.tif", FileMode.Create);
+            TiffBitmapEncoder encoder3 = new TiffBitmapEncoder();
+
+            BitmapMetadata myBitmapMetadata = new BitmapMetadata("tiff")
+            {
+                ApplicationName = "Microsoft Digital Image Suite 10",
+                Author = new ReadOnlyCollection<string>(new List<string>() { "Lori Kane" }),
+                CameraManufacturer = "Tailspin Toys",
+                CameraModel = "TT23",
+                Comment = "Nice Picture",
+                Copyright = "2010",
+                DateTaken = "5/23/2010",
+                Keywords = new ReadOnlyCollection<string>(new List<string>() { "Lori", "Kane" }),
+                Rating = 5,
+                Subject = "Lori",
+                Title = "Lori's photo"
+            };
+
+            // Create a new frame that is identical to the one 
+            // from the original image, except for the new metadata. 
+            encoder3.Frames.Add(
+                BitmapFrame.Create(
+                decoder2.Frames[0],
+                decoder2.Frames[0].Thumbnail,
+                myBitmapMetadata,
+                decoder2.Frames[0].ColorContexts));
+
+            encoder3.Save(stream3);
+            stream3.Close();
+        }
+
+        /// <summary>
+        /// 初始化一个默认的 <see cref="BitmapMetadata"/> 实例
+        /// </summary>
+        /// <returns></returns>
+        public static BitmapMetadata CreateStandardMetadata(string title)
+        {
+            var dateNow = DateTime.Now;
+            var meta = new BitmapMetadata("png")
+            {
+                Title = title,
+                ApplicationName = nameof(CardWizard),
+                Author = new ReadOnlyCollection<string>(new List<string>() { Environment.UserName }),
+                Copyright = dateNow.Year.ToString(),
+                DateTaken = dateNow.ToShortDateString()
+            };
+            return meta;
+        }
+
         /// <summary>
         /// 将控件保存为 png
         /// </summary>
@@ -272,12 +325,19 @@ namespace CardWizard.View
         /// <param name="pxHeight"></param>
         /// <param name="dpiX"></param>
         /// <param name="dpiY"></param>
-        public static void SaveAsPng(Visual visual, string filePath, int pxWidth, int pxHeight, double dpiX, double dpiY)
+        public static void SaveAsPng(Visual visual, string filePath, int pxWidth, int pxHeight, double dpiX, double dpiY, BitmapMetadata meta = null)
         {
             RenderTargetBitmap renderTargetBitmap = new RenderTargetBitmap(pxWidth, pxHeight, dpiX, dpiY, PixelFormats.Pbgra32);
             renderTargetBitmap.Render(visual);
             PngBitmapEncoder pngImage = new PngBitmapEncoder();
             pngImage.Frames.Add(BitmapFrame.Create(renderTargetBitmap));
+            // MetaData
+            if (meta == null)
+            {
+                meta = CreateStandardMetadata("Investigator Document");
+            }
+            pngImage.Metadata = meta;
+            // 保存为文件
             using Stream fileStream = File.Create(filePath);
             pngImage.Save(fileStream);
         }

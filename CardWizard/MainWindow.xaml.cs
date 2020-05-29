@@ -1,21 +1,16 @@
-﻿using System;
+﻿using CardWizard.View;
+using System;
+using System.Reflection;
+using System.Windows;
+using System.Windows.Input;
+using System.IO;
+using CardWizard.Tools;
+using CardWizard.Data;
+using CardWizard.Properties;
+using AppResources = CardWizard.Properties.Resources;
+using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.IO;
-using CardWizard.Data;
-using CardWizard.View;
-using CardWizard.Tools;
 
 namespace CardWizard
 {
@@ -24,11 +19,6 @@ namespace CardWizard
     /// </summary>
     public partial class MainWindow : Window
     {
-        /// <summary>
-        /// 处理逻辑与数据
-        /// </summary>
-        public MainManager manager;
-
         public MainWindow()
         {
             InitializeComponent();
@@ -36,10 +26,36 @@ namespace CardWizard
             CommandSave.InputGestures.Add(new KeyGesture(Key.S, ModifierKeys.Control));
             CommandCapture.InputGestures.Add(new KeyGesture(Key.S, ModifierKeys.Control | ModifierKeys.Shift));
             CommandConfirm.InputGestures.Add(new KeyGesture(Key.Enter));
+            var fileConfig = AppResources.FileConfig;
+            // 如果项目路径下存在文件"DEBUG", 就执行以下操作
+            if (File.Exists("DEBUG"))
+            {
+                YamlKit.SaveFile(fileConfig, new Config());
+            }
+            // 读取配置表
+            var config = YamlKit.LoadFile<Config>(fileConfig).Process();
+            // 关闭窗口的时候保存配置表
+            Closing += (o, e) =>
+            {
+                YamlKit.SaveFile(fileConfig, config);
+            };
+            // 将动态链接库的目录添加到 PATH
+            AddEnvironmentPaths(config.Paths.PathLibs);
             // UI 逻辑处理
-            manager = new MainManager(this);
+            _ = new MainManager(this, config);
         }
+        /// <summary>
+        /// 将目录添加到环境变量中
+        /// </summary>
+        /// <param name="paths"></param>
+        static void AddEnvironmentPaths(params string[] paths)
+        {
+            var path = new[] { Environment.GetEnvironmentVariable("PATH") ?? string.Empty };
 
+            string newPath = string.Join(Path.PathSeparator.ToString(), path.Concat(paths));
+
+            Environment.SetEnvironmentVariable("PATH", newPath);
+        }
         /// <summary>
         /// 新建
         /// </summary>

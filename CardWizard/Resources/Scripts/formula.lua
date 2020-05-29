@@ -1,5 +1,5 @@
 ﻿--- 此文件声明了一些重要的算法, 如果不清楚如何修改/修改了会产生何种后果, 请不要修改.
-Utilities = CS.CardWizard.Tools.Utilities
+-- 默认年龄是 24 岁
 DEFAULT_AGE = CS.CallOfCthulhu.Character.DEFAULT_AGE
 
 DOC_DamageBonus = [[ DamageBonus 的算法参考以下数据 (来自第七版规则书)
