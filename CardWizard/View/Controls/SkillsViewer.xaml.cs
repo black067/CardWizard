@@ -1,6 +1,7 @@
 ﻿using CallOfCthulhu;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -37,13 +38,14 @@ namespace CardWizard.View
         public void InitializeSkills(MainManager manager, IEnumerable<Skill> skills)
         {
             if (manager == null) throw new NullReferenceException("manager is null");
+            if (skills == null || !skills.Any()) return;
             Manager = manager;
             foreach (var item in skills)
             {
                 var box = AddBox(Container, ConvertSkill(item));
-                var iTraitChanged = box.BindToSkill(item, () => Manager.Current, Manager.OnCharacterTraitEdited);
-                Manager.TraitChanged += iTraitChanged;
-                Manager.InfoUpdated += MainManager.GetHandlerForTraitBox(iTraitChanged, box.Key);
+                var iChanged = box.BindToSkill(item, () => Manager.Current, Manager.OnCharacteristicEdited);
+                Manager.CharacteristicChanged += iChanged;
+                Manager.InfoUpdated += MainManager.GetHandlerForCharacteristicBox(iChanged, box.Key);
             }
         }
 
@@ -55,9 +57,9 @@ namespace CardWizard.View
             return inlines;
         }
 
-        private static TraitBox AddBox(Panel panel, IEnumerable<TextElement> inlines)
+        private static CharacteristicBox AddBox(Panel panel, IEnumerable<TextElement> inlines)
         {
-            var box = new TraitBox();
+            var box = new CharacteristicBox();
             box.BeginInit();
             box.Name = $"Box_{panel.Children.Count}";
             box.Margin = new Thickness(1, 2, 1, 2);

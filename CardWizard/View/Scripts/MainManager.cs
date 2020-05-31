@@ -9,6 +9,7 @@
     using System.Collections;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using System.Collections.Specialized;
     using System.ComponentModel;
     using System.IO;
     using System.Linq;
@@ -34,9 +35,14 @@
         public MainWindow Window { get; private set; }
 
         /// <summary>
-        /// 调查员信息的主页面
+        /// 调查员文档的正面
         /// </summary>
-        public MainPage IMainPage { get => Window.InvestigatorPage; }
+        public MainPage IMainPage { get => Window.MainPage; }
+
+        /// <summary>
+        /// 调查员文档的背面
+        /// </summary>
+        public BackstoryPage IBackstoryPage { get => Window.BackstoryPage; }
 
         /// <summary>
         /// 配置表
@@ -103,14 +109,14 @@
         /// <summary>
         /// 角色的属性值被改变时, 触发的事件
         /// </summary>
-        public event TraitChangedEventHandler TraitChanged;
+        public event CharacteristicChangedEventHandler CharacteristicChanged;
 
         /// <summary>
         /// 用于绑定到角色: 角色的属性值被改变时, 触发的事件
         /// </summary>
         /// <param name="c"></param>
         /// <param name="e"></param>
-        private void OnTraitChanged(Character c, TraitChangedEventArgs e) => TraitChanged?.Invoke(c, e);
+        private void OnCharacteristicChanged(Character c, CharacteristicChangedEventArgs e) => CharacteristicChanged?.Invoke(c, e);
 
         /// <summary>
         /// 已载入的所有角色
@@ -163,7 +169,7 @@
                     current?.ClearObservers();
                     if (value != null)
                     {
-                        value.TraitChanged += OnTraitChanged;
+                        value.CharacteristicChanged += OnCharacteristicChanged;
                         value.PropertyChanged += OnPropertyChanged;
                     }
                 }
@@ -177,8 +183,8 @@
         /// <param name="window"></param>
         public MainManager(MainWindow window, Config config)
         {
-            Window = window ?? throw new NullReferenceException("MainWindow is null");
-            Config = config ?? throw new NullReferenceException("config is null");
+            Window = window ?? throw new ArgumentNullException(nameof(window));
+            Config = config ?? throw new ArgumentNullException(nameof(config));
             // 如果消息管理器中已经有消息, 将其打印
             if (!string.IsNullOrWhiteSpace(Messenger.Peek))
             {
@@ -223,17 +229,12 @@
             }
             else
             {
-                Current = Character.Create(Config.BaseModelDict, CalcTrait);
+                Current = Character.Create(Config.BaseModelDict, CalcCharacteristic);
                 AddToCharacters(Current);
             }
             #region 设置界面的交互逻辑
-            Window.CommandConfirmGestured += (o, e) =>
-            {
-                var focused = Keyboard.FocusedElement;
-                if (focused is TextBoxBase box) box.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
-            };
             // 绑定各种事件
-            Window.CommandCreateGestured += GetHandlerForReGenerateTraits(() => Character.Create(Config.BaseModelDict));
+            Window.CommandCreateGestured += GetHandlerForReGenerateCharacteristics(() => Character.Create(Config.BaseModelDict));
             Window.CommandSaveGestured += DoSave;
             //Window.Button_Debug.Click += DoDebug;
             Window.CommandCaptureGestured += DoCapturePicture;
@@ -243,8 +244,9 @@
             Window.MenuItemSwitchToolTip.IsChecked = Config.ToolTipAvailable;
             // 可查看的角色卡列表初始化
             InitializeCardList(Window.List_Cards);
-            // 角色主页初始化
+            // 角色文档初始化
             InitializeMainPage(IMainPage);
+            InitializeBackstoryPage(Window.BackstoryPage);
             #endregion
             // 刷新界面
             OnInfoUpdate(Current);
@@ -289,13 +291,6 @@
                 }
             }
             var source = YamlKit.SaveFile(dest, Current);
-            if (Config.SaveTranslationDoc)
-            {
-                var deserializer = new YamlDotNet.Serialization.Deserializer();
-                var dict = deserializer.Deserialize<Dictionary<string, object>>(source);
-                Translator.TranslateKeys(dict);
-                YamlKit.SaveFile(Path.Combine(Paths.PathSave, Current.Name + Config.FileExtensionForCardDoc), dict);
-            }
             var message = Translator.Translate("Message.Character.Saved", "Saved at {0}");
             Messenger.EnqueueFormat(message, dest.Replace("\\", "/"));
             CharacterFiles[Current] = dest;
@@ -306,7 +301,11 @@
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void DoCapturePicture(object sender, RoutedEventArgs e) => IMainPage.CapturePng(Config, Current.Name);
+        private void DoCapturePicture(object sender, RoutedEventArgs e)
+        {
+            IMainPage.CapturePng(Config, Current.Name + ".Main");
+            IBackstoryPage.CapturePng(Config, Current.Name + ".Back");
+        }
 
         /// <summary>
         /// 切换提示信息的显示与隐藏
@@ -315,7 +314,6 @@
         /// <param name="e"></param>
         private void DoSwitchToolTip(object sender, RoutedEventArgs e)
         {
-
             Config.ToolTipAvailable = !Config.ToolTipAvailable;
             if (Config.ToolTipAvailable)
             {
@@ -325,6 +323,7 @@
             {
                 ToolTipOpacity = 0;
             }
+            Window.MenuItemSwitchToolTip.IsChecked = Config.ToolTipAvailable;
         }
 
         /// <summary>
@@ -408,37 +407,33 @@
         /// <param name="page"></param>
         private void InitializeMainPage(MainPage page)
         {
-            if (page == null) return;
             // 初始化杂项信息显示面板
             page.Miscellaneous.InitializeControl(this);
             // 属性重生成按钮
-            page.Button_Regenerate.Click += GetHandlerForReGenerateTraits(() => Current);
+            page.Button_Regenerate.Click += GetHandlerForReGenerateCharacteristics(() => Current);
             // 角色属性数值面板初始化
             Character charactergetter() => Current;
-            var traitBoxes = (from UIElement c in page.TraitsGrid.Children
-                              where c is TraitBox
-                              select c as TraitBox).ToList();
-            traitBoxes.AddRange(from UIElement c in page.SecondaryTraitsGrid.Children
-                                where c is TraitBox
-                                select c as TraitBox);
+            var traitBoxes = (from UIElement c in page.CharacteristicsGrid.Children
+                              where c is CharacteristicBox
+                              select c as CharacteristicBox).ToList();
             traitBoxes.Add(page.Box_Dodge);
             foreach (var box in traitBoxes)
             {
-                var iTraitChanged = box.BindToTraitByTag(charactergetter, OnCharacterTraitEdited);
-                TraitChanged += iTraitChanged;
-                InfoUpdated += GetHandlerForTraitBox(iTraitChanged, box.Key);
+                var iChanged = box.BindToCharacteristicByTag(charactergetter, OnCharacteristicEdited);
+                CharacteristicChanged += iChanged;
+                InfoUpdated += GetHandlerForCharacteristicBox(iChanged, box.Key);
             }
             // 角色伤害奖励的控制
             InfoUpdated += UpdateDamageBonus;
             page.SkillPanel.InitializeSkills(this, DataBus.Skills.Values);
             // 监控角色的属性变化
-            TraitChanged += MainManager_TraitChanged;
+            CharacteristicChanged += MainManager_CharacteristicChanged;
             // 绑定事件: 点击骰一次按钮时触发
             page.Button_Roll_DMGBonus.Click += (o, e) =>
             {
                 var message = Translator.Translate("Message.RollADMGBonus", "{1}");
                 var formula = page.Value_DamageBonus.Content.ToString();
-                var result = CalcTrait(formula, Current.Initials);
+                var result = CalcCharacteristic(formula, Current.Initials);
                 Messenger.EnqueueFormat(message, page.Value_DamageBonus.Content, result);
             };
             // 头像绑定事件: 点击时可以选择图片导入
@@ -447,6 +442,29 @@
                 InfoUpdating += c => AvatarUpdate(c, image);
                 image.MouseDown += DoImportAvatar;
             });
+        }
+
+        /// <summary>
+        /// 初始化背景信息面板
+        /// </summary>
+        /// <param name="page"></param>
+        private void InitializeBackstoryPage(BackstoryPage page)
+        {
+            var children = page.GetChildren();
+            foreach (var child in children)
+            {
+                if (!(child is TextBox box)) continue;
+                var tag = box.Tag?.ToString() ?? string.Empty;
+                if (string.IsNullOrWhiteSpace(tag)) continue;
+                if (tag.StartsWith("Backstory"))
+                {
+                    InfoUpdated += c =>
+                    {
+                        var b = new Binding(path: $"{nameof(Current)}.{nameof(Character.Backstory)}[{tag}]") { Source = this, };
+                        box.SetBinding(TextBox.TextProperty, b);
+                    };
+                }
+            }
         }
         #endregion
 
@@ -502,6 +520,11 @@
         /// </summary>
         public static void Localize(FrameworkElement container, Translator translator, HashSet<Visual> histories = null)
         {
+            // 在 ToolTip 浮现时, 同步其透明度
+            static void SynchronizeOpacity(object o, RoutedEventArgs e)
+            {
+                if (o is ToolTip tip) tip.Opacity = ToolTipOpacity;
+            }
             static void translate(FrameworkElement element, Translator translator)
             {
                 if (translator == null) return;
@@ -511,10 +534,12 @@
                     switch (element)
                     {
                         case MenuItem menuItem: menuItem.Header = text; break;
+                        case HeaderedContentControl headered: headered.Header = text; break;
                         case Image image: image.ToolTip = text; break;
                         case Label label: label.Content = text; break;
                         case Button button: button.Content = text; break;
                         case Window window: window.Title = text; break;
+                        case TextBox textBox: textBox.DataContext = text; break;
                         case TextBlock block:
                             var inlines = UIExtension.ResolveTextElements(text);
                             if (!inlines.Any()) break;
@@ -527,20 +552,10 @@
                 var tooltipKey = $"{path}.ToolTip";
                 if (translator.TryTranslate(tooltipKey, out text) && !string.IsNullOrWhiteSpace(text))
                 {
-                    var toolTip = element.ToolTip is ToolTip ? (element.ToolTip as ToolTip) : new ToolTip();
-                    toolTip.BeginInit();
-                    toolTip.Style = (Style)Application.Current.FindResource("XToolTip");
-                    toolTip.Content = text;
-                    toolTip.Opened += (o, e) =>
-                    {
-                        toolTip.Opacity = ToolTipOpacity;
-                    };
-                    toolTip.EndInit();
-                    element.RegisterName(tooltipKey.Replace('.', '_'), toolTip);
-                    element.ToolTip = toolTip;
+                    element.AddOrSetToolTip(text, (Style)Application.Current.FindResource("XToolTip"), SynchronizeOpacity);
                 }
                 // 否则不添加 ToolTip
-                else
+                else if (element.ToolTip != null)
                 {
                     element.ToolTip = null;
                 }
@@ -555,7 +570,7 @@
                 histories.Add(container);
             }
             // 查询所有的子控件
-            var subElements = container.SelectAllSubElement();
+            var subElements = container.GetChildren();
             var elements = from e in subElements where e is FrameworkElement select e as FrameworkElement;
             // 遍历子控件, 尝试对其本地化
             foreach (var element in elements)
@@ -612,7 +627,7 @@
         /// </summary>
         /// <param name="character"></param>
         /// <param name="args"></param>
-        private void MainManager_TraitChanged(Character character, TraitChangedEventArgs args)
+        private void MainManager_CharacteristicChanged(Character character, CharacteristicChangedEventArgs args)
         {
             var key = args.Key;
             if (Config.BaseModelDict.TryGetValue(key, out var model))
@@ -623,9 +638,9 @@
                 UpdateDamageBonus(character);
             var source = args.Segment switch
             {
-                Trait.Segment.INITIAL => character.Initials,
-                Trait.Segment.GROWTH => character.Growths,
-                Trait.Segment.ADJUSTMENT => character.Adjustments,
+                Characteristic.Segment.INITIAL => character.Initials,
+                Characteristic.Segment.GROWTH => character.Growths,
+                Characteristic.Segment.ADJUSTMENT => character.Adjustments,
                 _ => null,
             };
             if (source == null) return;
@@ -633,8 +648,8 @@
             foreach (var m in Config.DataModels)
             {
                 if (!m.Formula.Contains(key)) continue;
-                var value = CalcTrait(m.Formula, source);
-                OnCharacterTraitEdited(character, args.Segment, m.Name, value);
+                var value = CalcCharacteristic(m.Formula, source);
+                OnCharacteristicEdited(character, args.Segment, m.Name, value);
             }
         }
 
@@ -644,16 +659,16 @@
         /// <param name="segment"></param>
         /// <param name="traitName"></param>
         /// <param name="value"></param>
-        internal void OnCharacterTraitEdited(Character character, Trait.Segment segment, string traitName, int value)
+        internal void OnCharacteristicEdited(Character character, Characteristic.Segment segment, string traitName, int value)
         {
-            int i = Current.GetTraitInitial(traitName),
-                a = Current.GetTraitAdjustment(traitName),
-                g = Current.GetTraitGrowth(traitName);
+            int i = Current.GetInitial(traitName),
+                a = Current.GetAdjustment(traitName),
+                g = Current.GetGrowth(traitName);
             var (after, func) = segment switch
             {
-                Trait.Segment.INITIAL => (value + a + g, (Action<string, int>)Current.SetTraitInitial),
-                Trait.Segment.ADJUSTMENT => (value + i + g, Current.SetTraitAdjustment),
-                Trait.Segment.GROWTH => (value + i + a, Current.SetTraitGrowth),
+                Characteristic.Segment.INITIAL => (value + a + g, (Action<string, int>)Current.SetInitial),
+                Characteristic.Segment.ADJUSTMENT => (value + i + g, Current.SetAdjustment),
+                Characteristic.Segment.GROWTH => (value + i + a, Current.SetGrowth),
                 _ => (0, null),
             };
             // 判断总值是否超过范围
@@ -662,7 +677,7 @@
                 if (model.Upper > 0 && after > model.Upper)
                 {
                     value = model.Upper - (after - value);
-                    var message = Translator.Translate("Message.Trait.Overflow", "{0} 的值不能超过 {1}");
+                    var message = Translator.Translate("Message.Characteristic.Overflow", "{0} 的值不能超过 {1}");
                     Messenger.EnqueueFormat(message, model.Name, model.Upper);
                 }
             }
@@ -677,22 +692,23 @@
         public void UpdateDamageBonus(Character c)
         {
             if (c == null) return;
-            var scrtipt = string.Format("return DamageBonus({0}, {1})", c.GetTrait("STR"), c.GetTrait("SIZ"));
+            var scrtipt = string.Format("return DamageBonus({0}, {1})", c.GetTotal("STR"), c.GetTotal("SIZ"));
             var results = LuaHub.DoString(scrtipt);
-            Window.InvestigatorPage.SetDamageBonus(results[0], Convert.ToInt32(results[1]));
+            Window.MainPage.SetDamageBonus(results[0], Convert.ToInt32(results[1]));
         }
 
         /// <summary>
-        /// 取得一个事件: 更新属性显示盒的面板
+        /// 生成一个事件: 在角色页面更新时, 调用 <paramref name="handler"/>
+        /// <para>配合 <see cref="InfoUpdated"/>, <see cref="InfoUpdating"/> 使用</para>
         /// </summary>
         /// <param name="handler"></param>
         /// <param name="key"></param>
         /// <returns></returns>
-        internal static Action<Character> GetHandlerForTraitBox(TraitChangedEventHandler handler, string key)
+        internal static Action<Character> GetHandlerForCharacteristicBox(CharacteristicChangedEventHandler handler, string key)
         {
             void updated(Character c)
             {
-                handler.Invoke(c, new TraitChangedEventArgs(key));
+                handler.Invoke(c, new CharacteristicChangedEventArgs(key));
             }
             return updated;
         }
@@ -702,13 +718,13 @@
         /// </summary>
         /// <param name="getter"></param>
         /// <returns></returns>
-        public RoutedEventHandler GetHandlerForReGenerateTraits(Func<Character> getter)
+        public RoutedEventHandler GetHandlerForReGenerateCharacteristics(Func<Character> getter)
         {
             void regenerateprops(object o, EventArgs _)
             {
                 var character = getter?.Invoke();
                 if (character == null) return;
-                var generator = new GenerationWindow(this, CalcTrait)
+                var generator = new GenerationWindow(this, CalcCharacteristic)
                 {
                     Owner = Window,
                     Age = character.Age,
@@ -722,12 +738,12 @@
                     foreach (var kvp in selection)
                     {
                         if (Config.BaseModelDict.ContainsKey(kvp.Key))
-                            character.SetTraitInitial(kvp.Key, kvp.Value);
+                            character.SetInitial(kvp.Key, kvp.Value);
                     }
                     // 将年龄的影响作用到角色上
                     generator.ApplyAgeBonus(character);
                     // 重算派生属性
-                    RecalcTraitsInitial(character, t => t.Derived);
+                    RecalcInitials(character, t => t.Derived);
                     if (!Characters.Contains(character))
                         AddToCharacters(character);
                     OnInfoUpdate(character);
@@ -755,7 +771,7 @@
         /// <param name="traits"></param>
         /// <param name="formula"></param>
         /// <returns></returns>
-        public int CalcTrait(string formula, Dictionary<string, int> traitValues = null)
+        public int CalcCharacteristic(string formula, Dictionary<string, int> traitValues = null)
         {
             if (string.IsNullOrWhiteSpace(formula)) return 0;
             var segments = formula.Split(";");
@@ -776,12 +792,12 @@
         /// </summary>
         /// <param name="character"></param>
         /// <param name="filter"></param>
-        public void RecalcTraitsInitial(Character character, Func<Trait, bool> filter = null)
+        public void RecalcInitials(Character character, Func<Characteristic, bool> filter = null)
         {
             if (character == null) return;
             if (filter == null)
             {
-                static bool filterDefault(Trait m) => true;
+                static bool filterDefault(Characteristic m) => true;
                 filter = filterDefault;
             }
             var variables = new Dictionary<string, int>(character.Initials)
@@ -790,8 +806,8 @@
             };
             foreach (var model in Config.DataModels.Where(filter))
             {
-                var value = CalcTrait(model.Formula, variables);
-                character.SetTraitInitial(model.Name, value);
+                var value = CalcCharacteristic(model.Formula, variables);
+                character.SetInitial(model.Name, value);
             }
         }
 

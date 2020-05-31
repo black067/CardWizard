@@ -39,17 +39,17 @@
             <ColumnDefinition Width="10"/>
         </Grid.ColumnDefinitions>
         <Border x:Name="border" Background="{DynamicResource MenuBackground}" Grid.ColumnSpan="{Binding ColumnDefinitions.Count, ElementName=MainGrid, Mode=OneWay}" />
-        <local:TraitsViewItem x:Name="Headers"
+        <local:CustomRowView x:Name="Headers"
                              Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="4"
                              Background="{DynamicResource MenuBackground}" Foreground="White" Margin="5,1,5,1"/>
         <ListBox x:Name="ListMain"
                  Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="4"
                  Background="{x:Null}" BorderBrush="{x:Null}" HorizontalContentAlignment="Stretch">
-            <local:TraitsViewItem Height="{Binding ActualHeight, ElementName=border, Mode=OneWay}"/>
-            <local:TraitsViewItem Height="{Binding ActualHeight, ElementName=border, Mode=OneWay}"/>
-            <local:TraitsViewItem Height="{Binding ActualHeight, ElementName=border, Mode=OneWay}"/>
-            <local:TraitsViewItem Height="{Binding ActualHeight, ElementName=border, Mode=OneWay}"/>
-            <local:TraitsViewItem Height="{Binding ActualHeight, ElementName=border, Mode=OneWay}"/>
+            <local:CustomRowView Height="{Binding ActualHeight, ElementName=border, Mode=OneWay}"/>
+            <local:CustomRowView Height="{Binding ActualHeight, ElementName=border, Mode=OneWay}"/>
+            <local:CustomRowView Height="{Binding ActualHeight, ElementName=border, Mode=OneWay}"/>
+            <local:CustomRowView Height="{Binding ActualHeight, ElementName=border, Mode=OneWay}"/>
+            <local:CustomRowView Height="{Binding ActualHeight, ElementName=border, Mode=OneWay}"/>
         </ListBox>
         <Grid x:Name="AgeSettings"
               Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="4">
@@ -63,7 +63,7 @@
                 <ColumnDefinition x:Name="last" Width="80"/>
                 <ColumnDefinition Width="64"/>
             </Grid.ColumnDefinitions>
-            <local:TraitsViewItem x:Name="AdjustmentsEditor" Grid.ColumnSpan="4" HorizontalAlignment="Stretch" Margin="7,0,7,0"/>
+            <local:CustomRowView x:Name="AdjustmentsEditor" Grid.ColumnSpan="4" HorizontalAlignment="Stretch" Margin="7,0,7,0"/>
             <Label Content="* 在本行填写调整值" Tag="GenerationWindow.Helper"
                    Grid.Column="2" Grid.ColumnSpan="3" HorizontalContentAlignment="Center"
                    Style="{DynamicResource AgeBonusCommentStyle}" Foreground="{DynamicResource PlaceholderForeground}"/>
@@ -75,10 +75,10 @@
                Grid.Row="99" Grid.Column= "1"
                Style="{DynamicResource XLabel}"
                Content="年龄"/>
-            <TextBox x:Name="Text_Age" 
+            <TextBox x:Name="Text_Age" Tag="Age.Placeholder"
                      Grid.Row="99" Grid.Column="2"
                      InputScope="Number"
-                     Style="{DynamicResource TextField}" Cursor="IBeam">
+                     Style="{DynamicResource PlaceholderedTextBox}" Cursor="IBeam">
             </TextBox>
             <Button x:Name="Button_AgeCheck" Content="Check" Tag="GenerationWindow.ValidationCheck"
                     Grid.Row="99" Grid.Column="3"

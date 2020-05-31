@@ -21,7 +21,7 @@
         <Label x:Name="LabelField" Style="{DynamicResource XLabel}">标题</Label>
         <Button x:Name="DecTen" Content="◀◀" Grid.Column="1" Style="{DynamicResource XButtonStyle}" Margin="{DynamicResource Margin2}"/>
         <Button x:Name="DecOne" Content="◀" Grid.Column="2" Style="{DynamicResource XButtonStyle}" Margin="{DynamicResource Margin2}"/>
-        <TextBox x:Name="InputField" Text="0" Grid.Column="3" HorizontalContentAlignment="Center" Style="{DynamicResource TextField}"/>
+        <TextBox x:Name="InputField" Text="0" Grid.Column="3" HorizontalContentAlignment="Center" Margin="2"/>
         <Button x:Name="IncOne" Content="▶" Grid.Column="4" Style="{DynamicResource XButtonStyle}" Margin="{DynamicResource Margin2}"/>
         <Button x:Name="IncTen" Content="▶▶" Grid.Column="5" Style="{DynamicResource XButtonStyle}" Margin="{DynamicResource Margin2}"/>
     </Grid>

@@ -1,0 +1,150 @@
+﻿<UserControl x:Class="CardWizard.View.BackstoryPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:System="clr-namespace:System;assembly=System.Runtime"
+             xmlns:local="clr-namespace:CardWizard.View"
+             mc:Ignorable="d" 
+             d:DesignHeight="1188" d:DesignWidth="840">
+    <Grid x:Name="MainGrid" x:FieldModifier="public">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="28"/>
+            <RowDefinition Height="42"/>
+            <RowDefinition Height="604"/>
+            <RowDefinition Height="284"/>
+            <RowDefinition Height="194"/>
+            <RowDefinition Height="28"/>
+        </Grid.RowDefinitions>
+        <!--页首的显示-->
+        <Label Tag="Page.Backstory.Head" 
+                       Style="{DynamicResource XLabel}"
+                       Content="- Call of Cthulhu Investigator -"
+                       Grid.ColumnSpan="{Binding ColumnDefinitions.Count, ElementName=MainGrid, Mode=OneWay}" 
+                       HorizontalContentAlignment="Center" VerticalContentAlignment="Center" 
+                       Foreground="#FFACACAC"
+                       Cursor="Arrow" IsHitTestVisible="False" Padding="{DynamicResource DefaultMargin}"/>
+        <!--背景描述-->
+        <Label Content="BACKSTORY" Tag="Investigator.Backstory.Title"
+                       Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="99" Style="{DynamicResource XTitle}"/>
+        <!--<Grid Grid.Row="2" Height="120" Width="418">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="22"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <Label Name="DataLabel" Content="asd"
+                                   HorizontalAlignment="Left" VerticalAlignment="Top" 
+                                   FontWeight="Bold" FontSize="14" Padding="0,0,0,0"/>
+            <TextBox Grid.Row="1" TextWrapping="Wrap">
+                bahsoidfjoasjdgponagijunpfdiojgoaijgocmvoikcmapijdgfoiajsdfopweghewpiofrasdfasdfasf
+                
+            </TextBox>
+        </Grid>-->
+        <WrapPanel x:Name="BackstoryGrid" Grid.Row="2" Margin="{DynamicResource DefaultMargin}" ItemHeight="120" ItemWidth="418">
+            <TextBox x:Name="Text_PersonalDescription" Tag="Backstory.PersonalDescription" Style="{DynamicResource LabeledBox}">
+                <TextBox.DataContext>Personal Description</TextBox.DataContext>
+                噫嘘唏，危乎高哉！蜀道之难，难于上青天。蚕丛及鱼凫，开国何茫然！尔来四万八千岁，不与秦塞通人烟。
+            </TextBox>
+            <TextBox x:Name="Text_Traits" Tag="Backstory.Traits" Style="{DynamicResource LabeledBox}">
+                <TextBox.DataContext>Traits</TextBox.DataContext>
+                个人特质有哪些？
+            </TextBox>
+            <TextBox x:Name="Text_IdeologyAndBeliefs" Tag="Backstory.IdeologyAndBeliefs" Style="{DynamicResource LabeledBox}">
+                <TextBox.DataContext>Ideology &amp; Beliefs</TextBox.DataContext>
+                黑云压城城欲摧，甲光向日金鳞开。
+            </TextBox>
+            <TextBox x:Name="Text_InjuriesAndScars" Tag="Backstory.InjuriesAndScars" Style="{DynamicResource LabeledBox}">
+                <TextBox.DataContext>Injuries &amp; Scars</TextBox.DataContext>
+                黑云压城城欲摧，甲光向日金鳞开。
+            </TextBox>
+            <TextBox x:Name="Text_SignificantPeople" Tag="Backstory.SignificantPeople" Style="{DynamicResource LabeledBox}">
+                <TextBox.DataContext>Significant People</TextBox.DataContext>
+                黑云压城城欲摧，甲光向日金鳞开。
+            </TextBox>
+            <TextBox x:Name="Text_PhobiasAndManias" Tag="Backstory.PhobiasAndManias" Style="{DynamicResource LabeledBox}">
+                <TextBox.DataContext>Phobias &amp; Manias</TextBox.DataContext>
+                黑云压城城欲摧，甲光向日金鳞开。
+            </TextBox>
+            <TextBox x:Name="Text_MeaningfulLocations" Tag="Backstory.MeaningfulLocations" Style="{DynamicResource LabeledBox}">
+                <TextBox.DataContext>Meaningful Locations</TextBox.DataContext>
+                黑云压城城欲摧，甲光向日金鳞开。
+            </TextBox>
+            <TextBox x:Name="Text_ArcaneTomesAndETC" Tag="Backstory.ArcaneTomesAndETC" Style="{DynamicResource LabeledBox}">
+                <TextBox.DataContext>Arcane Tomes, Spells &amp; Artifacts</TextBox.DataContext>
+                黑云压城城欲摧，甲光向日金鳞开。
+            </TextBox>
+            <TextBox x:Name="Text_TreasuredPossesions" Tag="Backstory.TreasuredPossessions" Style="{DynamicResource LabeledBox}">
+                <TextBox.DataContext>Treasured Possessions</TextBox.DataContext>
+                黑云压城城欲摧，甲光向日金鳞开。
+            </TextBox>
+            <TextBox x:Name="Text_EncountersWithStrangeEntities" Tag="Backstory.EncountersWithStrangeEntities" Style="{DynamicResource LabeledBox}">
+                <TextBox.DataContext>Encounters with Strange Entities</TextBox.DataContext>
+                黑云压城城欲摧，甲光向日金鳞开。
+            </TextBox>
+        </WrapPanel>
+        <!--持有的物品与资产-->
+        <Grid Grid.Row="3">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="42"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="540"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <Label Content="GEAR &amp; POSSESSIONS" Tag="Investigator.Gears.Title"
+                           FontSize="22" Grid.Row="0" Grid.Column="0" Style="{DynamicResource XTitle}"/>
+            <Label Content="CASH &amp; ASSETS" Tag="Investigator.Assets.Title"
+                           FontSize="22" Grid.Row="0" Grid.Column="1" Style="{DynamicResource XTitle}"/>
+            <WrapPanel x:Name="Panel_Gears" Grid.Row="1" Margin="{DynamicResource DefaultMargin}" ItemWidth="160" ScrollViewer.VerticalScrollBarVisibility="Auto">
+
+            </WrapPanel>
+            <StackPanel VerticalAlignment="Bottom" HorizontalAlignment="Right" Grid.Row="1" Orientation="Horizontal">
+                <TextBox x:Name="Text_NewItem" Tag="Card.NewItem.Placeholder" DataContext="Got New Possssion?"
+                         Width="{Binding ElementName=Panel_Gears, Path=ItemWidth}" VerticalContentAlignment="Center" Padding="4,0,0,0"
+                         Margin="{DynamicResource DefaultMargin}" MaxLines="1" Style="{DynamicResource PlaceholderedTextBox}"></TextBox>
+                <Button x:Name="Button_NewIitem" Width="52" Height="32" Margin="{DynamicResource DefaultMargin}" Style="{DynamicResource XButtonStyle}" Tag="Card.Button.AddItem" FontSize="16">➕</Button>
+            </StackPanel>
+            <StackPanel x:Name="Assets" Grid.Row="1" Grid.Column="1" Margin="{DynamicResource DefaultMargin}">
+                <TextBox x:Name="Text_SpendingLevel" Tag="CreditRating.SpendingLevel" Style="{DynamicResource LabeledBox}" AcceptsReturn="False" MaxLines="1" VerticalScrollBarVisibility="Hidden">
+                    <TextBox.DataContext>Spending Level</TextBox.DataContext> 一般
+                </TextBox>
+                <TextBox x:Name="Text_Cash"  Tag="CreditRating.Cash"  Style="{DynamicResource LabeledBox}" AcceptsReturn="False" MaxLines="1" VerticalScrollBarVisibility="Hidden">
+                    <TextBox.DataContext>Cash</TextBox.DataContext> $82
+                </TextBox>
+                <TextBox x:Name="Text_Assets" Tag="CreditRating.Assets" Style="{DynamicResource LabeledBox}" Height="128" Padding="0,-10,0,0">
+                    <TextBox.DataContext>Assets</TextBox.DataContext> $2050、出租公寓
+                </TextBox>
+            </StackPanel>
+        </Grid>
+        <Grid Name="AddtionInfosGird" Grid.Row="4">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="42"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="360"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Label Content="QUICK REFERENCE RULES" Tag="Investigator.Rules.Title" Style="{DynamicResource XTitle}"/>
+            <TextBlock Tag="QuickReferenceRules"
+                               Grid.Row="1"/>
+            <Label Content="FELLOW INVESTIGATORS" Tag="Investigator.Partners.Title"
+                           Grid.Column="1"
+                           Style="{DynamicResource XTitle}"/>
+            <TextBox x:Name="Text_FellowInvestigators" Grid.Row="1" Grid.Column="1" Background="{x:Null}" BorderBrush="{x:Null}">
+            </TextBox>
+        </Grid>
+
+        <!--页尾-->
+        <Label Tag="Page.Backstory.Trail"
+                       Content="- Backstory -"
+                       Grid.Row="99" Grid.Column="0" Grid.ColumnSpan="{Binding ColumnDefinitions.Count, ElementName=MainGrid, Mode=OneWay}"
+                       Style="{DynamicResource XLabel}"
+                       Foreground="#FFACACAC"
+                       HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                       HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="{DynamicResource DefaultMargin}"/>
+    </Grid>
+</UserControl>

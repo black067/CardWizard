@@ -4,11 +4,11 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CardWizard.View" x:Name="userControl"
-             x:Class="CardWizard.View.TraitsViewItem"
+             x:Class="CardWizard.View.CustomRowView"
              mc:Ignorable="d" 
              d:DesignHeight="30" d:DesignWidth="660" Focusable="True">
     <UserControl.Resources>
-        <Style x:Key="TraitsInputField" TargetType="TextBox">
+        <Style x:Key="CellField" TargetType="TextBox">
             <Setter Property="BorderBrush" Value="Transparent"/>
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
@@ -33,26 +33,26 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <TextBox Grid.Column="0" Text="STR"
-                 Style="{DynamicResource TraitsInputField}"/>
+                 Style="{DynamicResource CellField}"/>
         <TextBox Grid.Column="1" Text="CON"
-                 Style="{DynamicResource TraitsInputField}"/>
+                 Style="{DynamicResource CellField}"/>
         <TextBox Grid.Column="2" Text="DEX"
-                 Style="{DynamicResource TraitsInputField}"/>
+                 Style="{DynamicResource CellField}"/>
         <TextBox Grid.Column="3" Text="SIZ"
-                 Style="{DynamicResource TraitsInputField}"/>
+                 Style="{DynamicResource CellField}"/>
         <TextBox Grid.Column="4"
-                 Style="{DynamicResource TraitsInputField}"/>
+                 Style="{DynamicResource CellField}"/>
         <TextBox Grid.Column="5"
-                 Style="{DynamicResource TraitsInputField}"/>
+                 Style="{DynamicResource CellField}"/>
         <TextBox Grid.Column="6"
-                 Style="{DynamicResource TraitsInputField}"/>
+                 Style="{DynamicResource CellField}"/>
         <TextBox Grid.Column="7"
-                 Style="{DynamicResource TraitsInputField}"/>
+                 Style="{DynamicResource CellField}"/>
         <TextBox Grid.Column="8"
-                 Style="{DynamicResource TraitsInputField}" Cursor="IBeam"/>
+                 Style="{DynamicResource CellField}" Cursor="IBeam"/>
         <TextBox Grid.Column="9"
-                 Style="{DynamicResource TraitsInputField}"/>
+                 Style="{DynamicResource CellField}"/>
         <TextBox Grid.Column="10"
-                 Style="{DynamicResource TraitsInputField}"/>
+                 Style="{DynamicResource CellField}"/>
     </Grid>
 </UserControl>

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Text.RegularExpressions;
 
 namespace CallOfCthulhu
 {
@@ -17,22 +16,15 @@ namespace CallOfCthulhu
         public const int DEFAULT_AGE = 24;
 
         private string name;
-
         private string era;
-
         private string gender;
-
         private int age;
-
         private string education;
-
         private string occupation;
-
         private string address;
-
         private string homeland;
-
         private string[] skills;
+        private ContextDict backstory = new ContextDict(10);
 
         #region 角色属性值与其成长值的获取与赋值
 
@@ -41,20 +33,20 @@ namespace CallOfCthulhu
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public int GetTraitInitial(string key) => Initials.TryGetValue(key, out int value) ? value : 0;
+        public int GetInitial(string key) => Initials.TryGetValue(key, out int value) ? value : 0;
 
         /// <summary>
         /// 设置特点的基础值
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
-        public void SetTraitInitial(string key, int value)
+        public void SetInitial(string key, int value)
         {
             var original = Initials.ContainsKey(key) ? Initials[key] : 0;
             Initials[key] = value;
-            UpdateTrait(new TraitChangedEventArgs(key)
+            UpdateCharacteristic(new CharacteristicChangedEventArgs(key)
             {
-                Segment = Trait.Segment.INITIAL,
+                Segment = Characteristic.Segment.INITIAL,
                 NewValue = value,
                 OriginValue = original,
             });
@@ -65,7 +57,7 @@ namespace CallOfCthulhu
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public int GetTraitGrowth(string key)
+        public int GetGrowth(string key)
         {
             if (Growths == null) return 0;
             return Growths.TryGetValue(key, out int value) ? value : 0;
@@ -76,14 +68,14 @@ namespace CallOfCthulhu
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
-        public void SetTraitGrowth(string key, int value)
+        public void SetGrowth(string key, int value)
         {
             if (Growths == null) Growths = new Dictionary<string, int>();
             int original = Growths.ContainsKey(key) ? Growths[key] : 0;
             Growths[key] = value;
-            UpdateTrait(new TraitChangedEventArgs(key)
+            UpdateCharacteristic(new CharacteristicChangedEventArgs(key)
             {
-                Segment = Trait.Segment.GROWTH,
+                Segment = Characteristic.Segment.GROWTH,
                 NewValue = value,
                 OriginValue = original,
             });
@@ -94,7 +86,7 @@ namespace CallOfCthulhu
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public int GetTraitAdjustment(string key)
+        public int GetAdjustment(string key)
         {
             if (Adjustments == null) return 0;
             return Adjustments.TryGetValue(key, out int v) ? v : 0;
@@ -106,14 +98,14 @@ namespace CallOfCthulhu
         /// <param name="key"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public void SetTraitAdjustment(string key, int value)
+        public void SetAdjustment(string key, int value)
         {
             if (Adjustments == null) Adjustments = new Dictionary<string, int>();
             int original = Adjustments.ContainsKey(key) ? Adjustments[key] : 0;
             Adjustments[key] = value;
-            UpdateTrait(new TraitChangedEventArgs(key)
+            UpdateCharacteristic(new CharacteristicChangedEventArgs(key)
             {
-                Segment = Trait.Segment.ADJUSTMENT,
+                Segment = Characteristic.Segment.ADJUSTMENT,
                 NewValue = value,
                 OriginValue = original,
             });
@@ -124,7 +116,7 @@ namespace CallOfCthulhu
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public int GetTrait(string key) => GetTraitInitial(key) + GetTraitGrowth(key) + GetTraitAdjustment(key);
+        public int GetTotal(string key) => GetInitial(key) + GetGrowth(key) + GetAdjustment(key);
 
         /// <summary>
         /// 设置特点的值
@@ -133,11 +125,11 @@ namespace CallOfCthulhu
         /// <param name="base"></param>
         /// <param name="growth"></param>
         /// <param name="adjustment"></param>
-        public void SetTrait(string key, int initial, int growth, int adjustment)
+        public void SetTotal(string key, int initial, int growth, int adjustment)
         {
-            SetTraitInitial(key, initial);
-            SetTraitGrowth(key, growth);
-            SetTraitAdjustment(key, adjustment);
+            SetInitial(key, initial);
+            SetGrowth(key, growth);
+            SetAdjustment(key, adjustment);
         }
         #endregion
 
@@ -254,25 +246,23 @@ namespace CallOfCthulhu
         }
 
         /// <summary>
-        /// 形象描述
+        /// 背景故事
         /// </summary>
-        [Description("形象描述")]
-        public string PersonalDescription
+        [Description("背景故事")]
+        public ContextDict Backstory
         {
-            get;
-            set;
-        }
+            get
+            {
+                if (backstory == null) backstory = new ContextDict(10);
+                return backstory;
+            }
 
-        /// <summary>
-        /// 思想与信念
-        /// </summary>
-        [Description("思想与信念")]
-        public string IdeologyAndBeliefs
-        {
-            get;
-            set;
+            set
+            {
+                backstory = value;
+                UpdateData();
+            }
         }
-
         /// <summary>
         /// 技能列表
         /// </summary>
@@ -307,14 +297,14 @@ namespace CallOfCthulhu
 
         /// <summary>
         /// 角色名称等信息发生改变时, 触发的事件
-        /// <para>注意, 角色的属性 (Characteristic) 数值变化需要监听事件 <see cref="TraitChanged"/> </para>
+        /// <para>注意, 角色的属性 (Characteristic) 数值变化需要监听事件 <see cref="CharacteristicChanged"/> </para>
         /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
 
         /// <summary>
         /// 角色的特点数值发生改变时, 触发的事件
         /// </summary>
-        public event TraitChangedEventHandler TraitChanged;
+        public event CharacteristicChangedEventHandler CharacteristicChanged;
 
         /// <summary>
         /// 更新角色信息
@@ -326,21 +316,22 @@ namespace CallOfCthulhu
         /// 更新特点数值
         /// </summary>
         /// <param name="e"></param>
-        private void UpdateTrait(TraitChangedEventArgs e) => TraitChanged?.Invoke(this, e);
+        protected void UpdateCharacteristic(CharacteristicChangedEventArgs e) => CharacteristicChanged?.Invoke(this, e);
 
         /// <summary>
         /// 清空所有对角色数值/属性改变的监听
-        /// <para>清空 <see cref="TraitChanged"/> 与 <see cref="PropertyChanged"/></para>
+        /// <para>清空 <see cref="CharacteristicChanged"/> 与 <see cref="PropertyChanged"/></para>
         /// </summary>
         public void ClearObservers()
         {
-            TraitChanged = null;
+            CharacteristicChanged = null;
             PropertyChanged = null;
+            Backstory.ClearObservers();
         }
 
         /// <summary>
         /// 此构造器仅用于数据序列化, 请避免直接使用此方法构造角色
-        /// <para>使用 <see cref="Create(Dictionary{string, Trait}, CalculateTrait)"/></para>
+        /// <para>使用 <see cref="Create(Dictionary{string, Characteristic}, CalculateCharacteristic)"/></para>
         /// </summary>
         public Character() { }
 
@@ -350,7 +341,7 @@ namespace CallOfCthulhu
         /// <param name="baseModelDict"></param>
         /// <param name="calculator">属性计算器</param>
         /// <returns></returns>
-        public static Character Create(Dictionary<string, Trait> baseModelDict, CalculateTrait calculator = null)
+        public static Character Create(Dictionary<string, Characteristic> baseModelDict, CalculateCharacteristic calculator = null)
         {
             var character = new Character()
             {
@@ -363,9 +354,9 @@ namespace CallOfCthulhu
                 bool hasCalculator = calculator != null;
                 foreach (var prop in baseModelDict.Values)
                 {
-                    character.SetTraitInitial(prop.Name, hasCalculator ? calculator(prop.Formula, character.Initials) : 0);
-                    character.SetTraitGrowth(prop.Name, 0);
-                    character.SetTraitAdjustment(prop.Name, 0);
+                    character.SetInitial(prop.Name, hasCalculator ? calculator(prop.Formula, character.Initials) : 0);
+                    character.SetGrowth(prop.Name, 0);
+                    character.SetAdjustment(prop.Name, 0);
                 }
             }
             return character;
@@ -378,5 +369,5 @@ namespace CallOfCthulhu
     /// <param name="traits"></param>
     /// <param name="key"></param>
     /// <returns></returns>
-    public delegate int CalculateTrait(string formula, Dictionary<string, int> traits);
+    public delegate int CalculateCharacteristic(string formula, Dictionary<string, int> traits);
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -14,6 +15,7 @@ namespace CallOfCthulhu
         /// <summary>
         /// 可选择的时代
         /// </summary>
+        [Description("可选择的时代")]
         public string[] labelForEras = new string[]
         {
                 "1890s", "1920s", "现代"
@@ -21,26 +23,31 @@ namespace CallOfCthulhu
         /// <summary>
         /// 名词翻译
         /// </summary>
+        [Description("名词对照表")]
         public Dictionary<string, string> dictionary = new Dictionary<string, string>
         {
             { "Era", "时代" },
             { "Name", "名称" },
+            { "Name.Placeholder", "请输入名称…" },
             { "Name.Default", "无名小卒" },
             { "Gender", "性别" },
-            { "Gender.Male", "男" },
-            { "Gender.Female", "女" },
-            { "Gender.Others", "保密" },
+            { "Gender.Male", "♂" },
+            { "Gender.Female", "♀" },
+            { "Gender.Others", "⚥" },
             { "Age", "年龄" },
             { "Age.ToolTip", "调查员的年龄应当在 15 至 90 之间。若调查员超过了这个年龄范围，请找您的守秘人进行调整吧。" },
             { "Education", "学历" },
+            { "Education.Placeholder", "请输入学历…" },
             { "Address", "居住地" },
+            { "Address.Placeholder", "请输入居住地…" },
             { "Homeland", "故乡" },
+            { "Homeland.Placeholder", "请输入故乡…" },
             { "Occupation", "职业"},
             { "Occupation.Select", "选择职业" },
             { "Occupation.Select.ToolTip", "为你的角色指定职业" },
             { "Description", "描述" },
             { "Skills", "技能" },
-            { "Traits", "属性" },
+            { "Characteristics", "属性" },
             // 力量
             { "STR", "力量" },
             { "STR.ToolTip", @"力量是调查员肌肉能力的量化。力量越高，调查员就能举起更重的东西或更强有力的抓住物体。
@@ -126,23 +133,25 @@ namespace CallOfCthulhu
 调查员可能明白如何将硫酸倒入水中，或者将水倒入硫酸中（不管她是否学过化学），或者他可能知道西藏的地理信息（而不需要地质学检定），或者了解蜘蛛有多少只腿（哪怕只有一点生物学）。
 辨认俗语俚语便是知识检定的一个绝佳的应用。
 因为没有人可以知道一切，{KNOW}检定永远不能到达99，哪怕一个调查员有21点教育。" },
-            // 信用评级
+            // 信用评级与资产相关
             { "CreditRating", "信用评级" },
             { "CreditRatingRange", "信用评级范围" },
             { "CreditRating.ToolTip", "调查员的日日所需取决于信用评级。你的主要所有物，包括房子和汽车，都取决于信用评级。" },
-            // 资产
+            { "CreditRating.SpendingLevel", "消费水平" },
+            { "CreditRating.Cash", "现金" },
+            { "CreditRating.Assets", "资产" },
             { "AST", "资产" },
             { "AST.ToolTip", @"调查员拥有财产和其他价值年收入五倍的{AST}；
 一个现代的调查员投出55000美元拥有275000的{AST}。这些资产的十分之一存入银行当作现金。另外十分之一是股份和债券，可以在30天内转移。余下的是老书，房子或者是任何符合角色的东西。" },
             { "SUM", "总计" },
-            { "Initial", "初" },
+            { "Initial", "初始" },
             { "Initials", "属性初始值" },
             { "Initial.ToolTip", "初始值, 撰写档案时掷骰得出" },
             { "Adjustments", "属性值调整" },
-            { "Adjustment", "调" },
+            { "Adjustment", "调整" },
             { "Adjustment.ToolTip", "调整值, 计算相关影响因素后得出" },
             { "Growths", "属性值成长" },
-            { "Growth", "成" },
+            { "Growth", "成长" },
             { "Growth.ToolTip", "成长值, 随着游戏进行可能获得成长" },
             { "OccupationPoints", "职业点数" },
             { "InterestPoints", "兴趣点数" },
@@ -164,6 +173,17 @@ namespace CallOfCthulhu
 闪避可以通过经验来提升，就像其他的技能一样。如果一次攻击可以被看见，一名角色可以尝试闪避开它。
 想要闪避子弹是不可能的，因为运动中的它们是不可能被看见的；一名角色所能做到的最好的是做逃避的行动来造成自己更难被命中——“寻找掩体（Diving for cover）”" },
             { "DODGE.Block", "DODGE # FontSize: 10\n 闪避 # FontSize: 14" },
+            // 背景故事相关
+            { "Backstory.PersonalDescription", "个人描述" },
+            { "Backstory.Traits", "特质" },
+            { "Backstory.IdeologyAndBeliefs", "思想 / 信仰" },
+            { "Backstory.InjuriesAndScars", "伤口 & 疤痕" },
+            { "Backstory.SignificantPeople", "重要之人" },
+            { "Backstory.PhobiasAndManias", "恐惧症 & 躁狂症" },
+            { "Backstory.MeaningfulLocations", "意义非凡之地" },
+            { "Backstory.ArcaneTomesAndETC", "神话典籍、法术和魔法物品" },
+            { "Backstory.TreasuredPossessions", "宝贵之物" },
+            { "Backstory.EncountersWithStrangeEntities", "异常接触史" },
             // 职业相关
             { "Occupation.PointFormula", "技能点数公式" },
             // 技能相关
@@ -185,21 +205,30 @@ namespace CallOfCthulhu
             { "MenuBar.Button.SavePicture", "生成图片" },
             { "MenuBar.Button.SavePicture.ToolTip", "Ctrl + Shift + S\n将你的调查员档案保存为一张图片" },
             { "MenuBar.Button.Settings", "设置" },
-            { "MenuBar.Button.ShowToolTip", "显示提示浮窗" },
+            { "MenuBar.Button.ShowToolTip", "显示 Tool Tip 提示" },
+            { "Tab.Front.Header", "角色卡·正面" },
+            { "Tab.Back.Header", "角色卡·背面" },
             // 界面元素
-            { "Investigator.Document.Title", "DOCUMENT 档案" },
-            { "Investigator.Traits.Title", "CHARACTERISTICS 属性" },
-            { "Investigator.Combat.Title", "COMBAT 格斗" },
-            { "Investigator.Weapons.Title", "WEAPONS 武器" },
-            { "Investigator.Skills.Title", "INVESTIGATOR SKILLS 技能" },
+            { "Investigator.Document.Title", "DOCUMENT" },
+            { "Investigator.Characteristics.Title", "CHARACTERISTICS" },
+            { "Investigator.Combat.Title", "COMBAT" },
+            { "Investigator.Weapons.Title", "WEAPONS" },
+            { "Investigator.Skills.Title", "INVESTIGATOR SKILLS" },
+            { "Investigator.Backstory.Title", "BACKSTORY" },
+            { "Investigator.Gears.Title", "GEAR & POSSESSIONS" },
+            { "Investigator.Assets.Title", "CASH & ASSETS" },
+            { "Investigator.Rules.Title", "QUICK REFERENCE RULES" },
+            { "Investigator.Partners.Title", "FELLOW INVESTIGATORS" },
             // 控件显示
             { "Card.Image.Avatar", "点击可导入新头像" },
             { "Card.Button.Regenerate", "🎲" },
             { "Card.Button.Regenerate.ToolTip", "重新生成角色属性" },
             { "Card.Button.DMGBonus", "🎲" },
             { "Card.Button.DMGBonus.ToolTip", "掷一次伤害加值" },
+            { "Card.NewItem.Placeholder", "添加新物品?"},
+            { "Card.Button.AddItem", "➕"},
             // 其它窗口
-            { "GenerationWindow.Title", "生成了以下属性..." },
+            { "GenerationWindow.Title", "生成了以下属性" },
             { "GenerationWindow.Message", $"选择一组数据作为调查员的基础属性\n* 请确认调查员年龄, 并按照年龄调整属性点\n* {{LUCK}} 将在确认后自动骰出" },
             { "GenerationWindow.Helper", "* 此行填写调整值" },
             { "GenerationWindow.ValidationCheck", "校验" },
@@ -212,10 +241,12 @@ namespace CallOfCthulhu
             { "Message.Character.Saved", "调查员的文档已保存至: {0}" },
             { "Message.Character.SavedPic", "调查员的图像档案已保存至: {0}" },
             { "Message.Character.Switched", "已切换至调查员: {0}" },
-            { "Message.Trait.Overflow", "属性: {0} 的值不能超过 {1}" },
+            { "Message.Characteristic.Overflow", "属性: {0} 的值不能超过 {1}" },
             // 页首与页尾
-            { "Page.Head", "- Call of Cthulhu -" },
-            { "Page.Trail", "- ★ -" },
+            { "Page.Main.Head", "- Call of Cthulhu -" },
+            { "Page.Main.Trail", "- ★ -" },
+            { "Page.Backstory.Head", "- Call of Cthulhu -" },
+            { "Page.Backstory.Trail", "- ⚝ -" },
         };
 
         /// <summary>

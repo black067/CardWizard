@@ -93,6 +93,55 @@
             </ListBox.ItemTemplate>
         </ListBox>
         <!--角色数据-->
-        <cview:MainPage x:Name="InvestigatorPage" Grid.Column="1" Grid.Row="1"/>
+        <TabControl x:Name="PageTab" Grid.Row="1" Grid.Column="1" Background="{x:Null}" Padding="0,0,0,0" BorderBrush="#FFDADADA" BorderThickness="0,1,0,1">
+            <TabControl.Resources>
+                <Style x:Key="XTabItem" TargetType="TabItem">
+                    <Setter Property="Margin" Value="0,0,0,0"/>
+                    <Setter Property="Padding" Value="16,10,16,10"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="TabItem">
+                                <Label x:Name="_label" Content="{TemplateBinding Header}" Style="{DynamicResource XTitle}" 
+                                       FontSize="{TemplateBinding FontSize}" Margin="{TemplateBinding Margin}" Padding="{TemplateBinding Padding}"
+                                       Cursor="Hand"/>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter TargetName="_label" Property="Style" Value="{DynamicResource XLabel}"/>
+                                        <Setter TargetName="_label" Property="Background" Value="{Binding ElementName=PageTab, Path=BorderBrush}"/>
+                                        <Setter TargetName="_label" Property="Cursor" Value="Arrow"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                    <!--<Style.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="TabItem">
+                                        <Label Content="{TemplateBinding Header}" Style="{DynamicResource XLabel}" 
+                                               FontSize="{TemplateBinding FontSize}" Padding="{TemplateBinding Padding}" Margin="{TemplateBinding Margin}" Background="{Binding ElementName=PageTab, Path=BorderBrush}"/>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Trigger>
+                    </Style.Triggers>-->
+                </Style>
+            </TabControl.Resources>
+            <TabItem Header="Front" Tag="Tab.Front.Header" Style="{DynamicResource XTabItem}">
+                <ScrollViewer>
+                    <Viewbox HorizontalAlignment="Left" VerticalAlignment="Top">
+                        <cview:MainPage x:Name="MainPage" Width="840" Height="1180"/>
+                    </Viewbox>
+                </ScrollViewer>
+            </TabItem>
+            <TabItem Header="Back" Tag="Tab.Back.Header" Style="{DynamicResource XTabItem}">
+                <ScrollViewer>
+                    <Viewbox HorizontalAlignment="Left" VerticalAlignment="Top">
+                        <cview:BackstoryPage x:Name="BackstoryPage" Width="840" Height="1180" />
+                    </Viewbox>
+                </ScrollViewer>
+            </TabItem>
+        </TabControl>
     </Grid>
 </Window>

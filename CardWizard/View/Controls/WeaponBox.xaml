@@ -1,0 +1,26 @@
+﻿<UserControl x:Class="CardWizard.View.WeaponBox"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:CardWizard.View"
+             mc:Ignorable="d" 
+             d:DesignHeight="320">
+    <UserControl.Resources>
+    </UserControl.Resources>
+    <Grid>
+        <DataGrid Style="{DynamicResource DataGridStyle}">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="武器" Width="160"/>
+                <DataGridTextColumn Header="常规" Width="48"/>
+                <DataGridTextColumn Header="困难" Width="48"/>
+                <DataGridTextColumn Header="极难" Width="48"/>
+                <DataGridTextColumn Header="伤害" Width="80"/>
+                <DataGridTextColumn Header="射程" Width="80"/>
+                <DataGridTextColumn Header="次数" Width="80"/>
+                <DataGridTextColumn Header="装弹量" Width="80"/>
+                <DataGridTextColumn Header="故障值" Width="80"/>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</UserControl>

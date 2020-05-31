@@ -102,7 +102,9 @@ namespace CallOfCthulhu
                 if (value != old)
                 {
                     base[key] = value;
-                    var e = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newItem: KeyValuePair.Create(key, value), oldItem: KeyValuePair.Create(key, old));
+                    var e = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace,
+                                                                 newItem: KeyValuePair.Create(key, value),
+                                                                 oldItem: KeyValuePair.Create(key, old));
                     CollectionChanged?.Invoke(this, e);
                 }
             }

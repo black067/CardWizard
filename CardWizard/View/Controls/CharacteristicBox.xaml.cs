@@ -21,9 +21,9 @@ using YamlDotNet.Core.Tokens;
 namespace CardWizard.View
 {
     /// <summary>
-    /// TraitBox.xaml 的交互逻辑
+    /// CharacteristicBox.xaml 的交互逻辑
     /// </summary>
-    public partial class TraitBox : UserControl
+    public partial class CharacteristicBox : UserControl
     {
         private readonly TextBox[] texts;
 
@@ -100,17 +100,19 @@ namespace CardWizard.View
         /// <summary>
         /// Constructor
         /// </summary>
-        public TraitBox()
+        public CharacteristicBox()
         {
             InitializeComponent();
             texts = new TextBox[] { Text_Initial, Text_Adjustment, Text_Growth };
-            MouseEnter += TraitBox_ShowEditBoxes;
-            MouseLeave += TraitBox_HideEditBoxes;
+            MouseEnter += Box_ShowEditBoxes;
+            MouseLeave += Box_HideEditBoxes;
             EditGrid.Visibility = Visibility.Hidden;
             foreach (var box in texts)
             {
                 box.GotFocus += InputField_GotFocus;
+                box.GotKeyboardFocus += InputField_GotFocus;
                 box.LostFocus += InputField_LostFocus;
+                box.LostKeyboardFocus += InputField_LostFocus;
             }
             UpdateValueView();
             IsReadOnly = false;
@@ -119,35 +121,35 @@ namespace CardWizard.View
         private void InputField_GotFocus(object sender, RoutedEventArgs _)
         {
             IsEditing = true;
-            TraitBox_ShowEditBoxes(sender, null);
+            Box_ShowEditBoxes(sender, null);
         }
 
         private void InputField_LostFocus(object sender, RoutedEventArgs _)
         {
             IsEditing = false;
-            TraitBox_HideEditBoxes(sender, null);
+            Box_HideEditBoxes(sender, null);
             UpdateValueView();
             if (sender is TextBox box && texts.Contains(box))
             {
                 var c = CharacterGetter();
                 if (c == null) return;
                 if (box.Equals(Text_Initial))
-                    InputFieldEndEdit?.Invoke(CharacterGetter(), Trait.Segment.INITIAL, Key, ValueInitial);
+                    InputFieldEndEdit?.Invoke(CharacterGetter(), Characteristic.Segment.INITIAL, Key, ValueInitial);
                 else if (box.Equals(Text_Adjustment))
-                    InputFieldEndEdit?.Invoke(CharacterGetter(), Trait.Segment.ADJUSTMENT, Key, ValueAdjustment);
+                    InputFieldEndEdit?.Invoke(CharacterGetter(), Characteristic.Segment.ADJUSTMENT, Key, ValueAdjustment);
                 else
-                    InputFieldEndEdit?.Invoke(CharacterGetter(), Trait.Segment.GROWTH, Key, ValueGrowth);
+                    InputFieldEndEdit?.Invoke(CharacterGetter(), Characteristic.Segment.GROWTH, Key, ValueGrowth);
             }
         }
 
-        private void TraitBox_ShowEditBoxes(object sender, EventArgs _)
+        private void Box_ShowEditBoxes(object sender, EventArgs _)
         {
             if (IsReadOnly) { return; }
             EditGrid.Visibility = Visibility.Visible;
             Label_Value.Visibility = Visibility.Hidden;
         }
 
-        private void TraitBox_HideEditBoxes(object sender, EventArgs _)
+        private void Box_HideEditBoxes(object sender, EventArgs _)
         {
             if (!IsEditing)
             {
@@ -168,12 +170,12 @@ namespace CardWizard.View
             Label_ValueOneFifth.Content = (int)(value / 5);
         }
 
-        private void TraitChanged(Character c, TraitChangedEventArgs e)
+        private void CharacteristicChanged(Character c, CharacteristicChangedEventArgs e)
         {
             if (!e.Key.EqualsIgnoreCase(Key)) { return; }
-            ValueInitial = c.GetTraitInitial(Key);
-            ValueAdjustment = c.GetTraitAdjustment(Key);
-            ValueGrowth = c.GetTraitGrowth(Key);
+            ValueInitial = c.GetInitial(Key);
+            ValueAdjustment = c.GetAdjustment(Key);
+            ValueGrowth = c.GetGrowth(Key);
             UpdateValueView();
         }
 
@@ -182,25 +184,25 @@ namespace CardWizard.View
         /// </summary>
         /// <param name="key"></param>
         /// <param name="targetGetter"></param>
-        public TraitChangedEventHandler BindToTrait(string key, Func<Character> getter, EndEditBoxEventHandler onEndEdit)
+        public CharacteristicChangedEventHandler BindToCharacteristic(string key, Func<Character> getter, EndEditBoxEventHandler onEndEdit)
         {
             Key = key;
             CharacterGetter = getter;
             Block_Key.SetValue(TagProperty, $"{Key}.Block");
             InputFieldEndEdit += onEndEdit;
             GrowthMarkColumn.Width = new GridLength(0, GridUnitType.Star);
-            return TraitChanged;
+            return CharacteristicChanged;
         }
 
         /// <summary>
-        /// 根据自身的 <see cref="TraitBox.Tag"/>, 绑定到指定的属性
+        /// 根据自身的 <see cref="CharacteristicBox.Tag"/>, 绑定到指定的属性
         /// </summary>
         /// <param name="onEndEdit"></param>
         /// <returns></returns>
-        public TraitChangedEventHandler BindToTraitByTag(Func<Character> getter, EndEditBoxEventHandler onEndEdit)
+        public CharacteristicChangedEventHandler BindToCharacteristicByTag(Func<Character> getter, EndEditBoxEventHandler onEndEdit)
         {
             var tag = Tag?.ToString();
-            return BindToTrait(tag, getter, onEndEdit);
+            return BindToCharacteristic(tag, getter, onEndEdit);
         }
 
         /// <summary>
@@ -210,7 +212,7 @@ namespace CardWizard.View
         /// <param name="getter"></param>
         /// <param name="onEndEdit"></param>
         /// <returns></returns>
-        public TraitChangedEventHandler BindToSkill(Skill skill, Func<Character> getter, EndEditBoxEventHandler onEndEdit)
+        public CharacteristicChangedEventHandler BindToSkill(Skill skill, Func<Character> getter, EndEditBoxEventHandler onEndEdit)
         {
             CharacterGetter = getter;
             Key = skill.Name;
@@ -225,15 +227,15 @@ namespace CardWizard.View
             Label_ValueOneFifth.FontSize = 12;
 
             if (!skill.Growable) GrowthMark.Visibility = Visibility.Hidden;
-            return TraitChanged;
+            return CharacteristicChanged;
         }
     }
 
     /// <summary>
-    /// 委托: 可绑定到 <see cref="TraitBox.InputFieldEndEdit"/> 结束编辑的事件
+    /// 委托: 可绑定到 <see cref="CharacteristicBox.InputFieldEndEdit"/> 结束编辑的事件
     /// </summary>
     /// <param name="segment"></param>
     /// <param name="traitName"></param>
     /// <param name="value"></param>
-    public delegate void EndEditBoxEventHandler(Character characterGetter, Trait.Segment segment, string traitName, int value);
+    public delegate void EndEditBoxEventHandler(Character characterGetter, Characteristic.Segment segment, string traitName, int value);
 }

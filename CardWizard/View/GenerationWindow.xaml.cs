@@ -56,7 +56,7 @@ namespace CardWizard.View
 
         public Dictionary<string, string> Bonus { get; set; } = new Dictionary<string, string>();
 
-        private CalculateTrait TraitRoller { get; set; }
+        private CalculateCharacteristic CharacteristicsRoller { get; set; }
 
         public void OnPropertyChanged([CallerMemberName] string propertyName = "") => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
@@ -65,13 +65,13 @@ namespace CardWizard.View
         /// </summary>
         /// <param name="m"></param>
         /// <returns></returns>
-        private static bool Filter(Trait m) => !m.Derived && !m.Name.EqualsIgnoreCase("LUCK");
+        private static bool Filter(Characteristic m) => !m.Derived && !m.Name.EqualsIgnoreCase("LUCK");
 
         /// <summary>
         /// 构造一个角色生成器窗口
         /// </summary>
         /// <param name="manager"></param>
-        public GenerationWindow(MainManager manager, CalculateTrait traitRoller)
+        public GenerationWindow(MainManager manager, CalculateCharacteristic traitRoller)
         {
             if (manager == null) throw new NullReferenceException("manager is null");
             InitializeComponent();
@@ -83,7 +83,7 @@ namespace CardWizard.View
             Closed += ListWindow_Closed;
             var translator = manager.Translator;
             var dataModels = manager.Config.DataModels;
-            TraitRoller = traitRoller;
+            CharacteristicsRoller = traitRoller;
             // 初始化标题行
             Headers.Process(_ =>
             {
@@ -94,7 +94,7 @@ namespace CardWizard.View
                 Headers.InitAsHeaders(properties.ToArray(), translator);
             });
             // 列表
-            List<TraitsViewItem> items = (from object i in ListMain.Items where i is TraitsViewItem select i as TraitsViewItem).ToList();
+            List<CustomRowView> items = (from object i in ListMain.Items where i is CustomRowView select i as CustomRowView).ToList();
             // 初始化年龄惩罚的显示列
             BindAgeBox(manager.LuaHub, Text_Age, Label_AgeBonus, Button_AgeCheck, AdjustmentsEditor, dataModels);
             // 生成几组角色的属性
@@ -107,7 +107,7 @@ namespace CardWizard.View
                                                              select new KeyValuePair<string, int>(m.Name, 0));
                 foreach (var key in properties.Keys.ToArray())
                 {
-                    properties[key] = TraitRoller(datas[key].Formula, properties);
+                    properties[key] = CharacteristicsRoller(datas[key].Formula, properties);
                 }
                 var sum = properties.Sum(kvp => kvp.Value);
                 properties["SUM"] = sum;
@@ -150,8 +150,8 @@ namespace CardWizard.View
         /// <summary>
         /// 初始化年龄惩罚列
         /// </summary>
-        /// <param name="traitsView"></param>
-        private void BindAgeBox(ScriptHub hub, TextBox inputField, Label description, Button checkButton, TraitsViewItem traitsView, List<Trait> models)
+        /// <param name="CustomRowView"></param>
+        private void BindAgeBox(ScriptHub hub, TextBox inputField, Label description, Button checkButton, CustomRowView CustomRowView, List<Characteristic> models)
         {
             // 设置数据绑定
             var binding = new Binding(nameof(Age)) { Source = this, };
@@ -164,7 +164,7 @@ namespace CardWizard.View
             var properties = new Dictionary<string, int>(from m in models
                                                          where Filter(m)
                                                          select new KeyValuePair<string, int>(m.Name, 0));
-            traitsView.InitAsDatas(properties, true);
+            CustomRowView.InitAsDatas(properties, true);
             // 设置编辑结束时执行的事件
             bool ValidCheck()
             {
@@ -173,11 +173,11 @@ namespace CardWizard.View
                 // 显示说明文字
                 description.Content = comment;
                 // 屏蔽那些不需要调整的属性输入框
-                foreach (var box in traitsView.Children.Values) box.Visibility = Visibility.Hidden;
+                foreach (var box in CustomRowView.Children.Values) box.Visibility = Visibility.Hidden;
                 var matches = Regex.Matches(rule, @"[A-Z|a-z]{1,}");
                 foreach (Match match in matches)
                 {
-                    if (traitsView.Children.TryGetValue(match.Value, out var box))
+                    if (CustomRowView.Children.TryGetValue(match.Value, out var box))
                     {
                         box.Visibility = Visibility.Visible;
                         box.IsEnabled = true;
@@ -187,12 +187,12 @@ namespace CardWizard.View
                 foreach (var t in bonus)
                 {
                     Bonus.Add(t.key, t.formula);
-                    if (traitsView.Children.TryGetValue(t.key, out var box))
+                    if (CustomRowView.Children.TryGetValue(t.key, out var box))
                     {
                         if (int.TryParse(t.formula, out int v))
                         {
                             box.Text = t.formula;
-                            traitsView.Values[t.key] = v;
+                            CustomRowView.Values[t.key] = v;
                             // 可见不可编辑
                             box.Visibility = Visibility.Visible;
                             box.IsEnabled = false;
@@ -201,7 +201,7 @@ namespace CardWizard.View
                     }
                 }
                 // 判断是否有按照规则调整
-                using var subhub = hub.CreateSubEnv(traitsView.Values);
+                using var subhub = hub.CreateSubEnv(CustomRowView.Values);
                 bool isValid = (bool)subhub.DoString(rule, isGlobal: true).First();
                 Button_Confirm.IsEnabled = isValid;
                 description.DataContext = isValid ? string.Empty : "Invalid";
@@ -246,14 +246,14 @@ namespace CardWizard.View
             foreach (var kvp in Bonus)
             {
                 if (!character.Initials.ContainsKey(kvp.Key)) continue;
-                var delta = TraitRoller?.Invoke(kvp.Value, character.Initials) ?? 0;
-                character.SetTraitAdjustment(kvp.Key, delta);
+                var delta = CharacteristicsRoller?.Invoke(kvp.Value, character.Initials) ?? 0;
+                character.SetAdjustment(kvp.Key, delta);
             }
             foreach (var kvp in AdjustmentsEditor.Values)
             {
                 if (!character.Initials.ContainsKey(kvp.Key) || kvp.Value == 0) continue;
-                var old = character.GetTraitAdjustment(kvp.Key);
-                character.SetTraitAdjustment(kvp.Key, old + kvp.Value);
+                var old = character.GetAdjustment(kvp.Key);
+                character.SetAdjustment(kvp.Key, old + kvp.Value);
             }
         }
 

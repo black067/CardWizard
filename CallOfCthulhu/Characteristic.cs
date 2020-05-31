@@ -3,7 +3,7 @@
     /// <summary>
     /// 角色属性的模型 (Characteristic)
     /// </summary>
-    public class Trait
+    public class Characteristic
     {
         private string name;
         private string formula = "3D6";

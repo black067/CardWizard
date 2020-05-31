@@ -71,13 +71,11 @@ namespace CardWizard.View
                             }
                         }
                     }
-                    var block = AddBlock(MainPanel, item.Name);
+                    var block = UIExtension.AddBlock(MainPanel, item.Name, style, inlines);
                     block.BeginInit();
                     block.MouseDown += Block_MouseClick;
                     block.DataContext = item;
-                    block.Style = style;
                     block.EndInit();
-                    block.Inlines.AddRange(inlines);
                 }
             }
         }
@@ -106,22 +104,6 @@ namespace CardWizard.View
         {
             DialogResult = false;
             Close();
-        }
-
-        /// <summary>
-        /// 添加文字块
-        /// </summary>
-        /// <param name="parent"></param>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        public static TextBlock AddBlock(FrameworkElement parent, string name)
-        {
-            name = name.Replace('.', '_');
-            TextBlock block = new TextBlock();
-            block.Name = name;
-            parent.RegisterName(name, block);
-            if (parent is Panel panel) panel.Children.Add(block);
-            return block;
         }
 
         /// <summary>

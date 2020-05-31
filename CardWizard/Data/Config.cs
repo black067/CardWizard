@@ -22,12 +22,6 @@ namespace CardWizard.Data
         public int GCInterval = 20;
 
         /// <summary>
-        /// 是否保存翻译后的文本
-        /// </summary>
-        [Description("是否保存翻译后的文本")]
-        public bool SaveTranslationDoc = true;
-
-        /// <summary>
         /// 是否显示提示信息
         /// </summary>
         [Description("是否显示提示信息")]
@@ -37,7 +31,7 @@ namespace CardWizard.Data
         /// 提示浮窗出现时, 其背景的透明度
         /// </summary>
         [Description("提示浮窗出现时, 其背景的透明度")]
-        public double ToolTipOpacity = 0.77;
+        public double ToolTipOpacity = 0.87;
 
         /// <summary>
         /// 角色存档文件的标准后缀名
@@ -60,13 +54,13 @@ namespace CardWizard.Data
         /// <summary>
         /// 调查员的图像文档在打印时的页面DPI
         /// </summary>
-        [Description("调查员的图像文档在打印时的页面DPI")]
+        [Description("打印时的页面DPI")]
         public double PrintSettings_Dpi = 300;
 
         /// <summary>
         /// 打印时的高宽比值
         /// </summary>
-        [Description("打印时的高宽比值")]
+        [Description("打印时页面高度与宽度的比值")]
         public double PrintSettings_H_W_Scale = 297.0 / 210.0;
 
         /// <summary>
@@ -78,53 +72,53 @@ namespace CardWizard.Data
         /// <summary>
         /// 文本翻译工具
         /// </summary>
-        [Description("文本翻译工具")]
+        [Description("文本字典")]
         public Translator Translator = new Translator();
 
         /// <summary>
         /// 路径数据, 缓存了应用的特殊路径
         /// </summary>
-        [Description("保存应用的资源路径")]
+        [Description("重要文件与文件夹的路径")]
         public Paths Paths = new Paths();
 
         /// <summary>
         /// 基础属性模型
         /// </summary>
         [Description("基础属性模型")]
-        public List<Trait> DataModels = new List<Trait>()
+        public List<Characteristic> DataModels = new List<Characteristic>()
         {
-            new Trait() { Name = "STR", Formula = "5 * (3D6)", Derived = false },
-            new Trait() { Name = "CON", Formula = "5 * (3D6)", Derived = false },
-            new Trait() { Name = "DEX", Formula = "5 * (3D6)", Derived = false },
-            new Trait() { Name = "APP", Formula = "5 * (3D6)", Derived = false },
-            new Trait() { Name = "POW", Formula = "5 * (3D6)", Derived = false },
-            new Trait() { Name = "SIZ", Formula = "5 * (2D6 + 6)", Derived = false },
-            new Trait() { Name = "INT", Formula = "5 * (2D6 + 6)",Derived = false },
-            new Trait() { Name = "EDU", Formula = "5 * (2D6 + 6)", Derived = false, Upper = 99},
-            new Trait() { Name = "LUCK", Formula = "5 * (3D6)", Derived = false, Upper = 99 },
-            new Trait() { Name = "AST", Formula = "1D10", Derived = true},
-            new Trait() { Name = "SAN", Formula = "POW", Derived = true, Upper = 99},
-            new Trait() { Name = "IDEA", Formula = "INT",Derived = true },
-            new Trait() { Name = "MOV", Formula = "GetMOV(SIZ, DEX, STR, AGE)", Derived = true},
-            new Trait() { Name = "MP", Formula = "POW / 5", Derived = true},
-            new Trait() { Name = "HP", Formula = "(SIZ + CON) / 5", Derived = true},
-            new Trait() { Name = "DODGE", Formula = "DEX / 2", Derived = true},
+            new Characteristic() { Name = "STR", Formula = "5 * (3D6)", Derived = false },
+            new Characteristic() { Name = "CON", Formula = "5 * (3D6)", Derived = false },
+            new Characteristic() { Name = "DEX", Formula = "5 * (3D6)", Derived = false },
+            new Characteristic() { Name = "APP", Formula = "5 * (3D6)", Derived = false },
+            new Characteristic() { Name = "POW", Formula = "5 * (3D6)", Derived = false },
+            new Characteristic() { Name = "SIZ", Formula = "5 * (2D6 + 6)", Derived = false },
+            new Characteristic() { Name = "INT", Formula = "5 * (2D6 + 6)",Derived = false },
+            new Characteristic() { Name = "EDU", Formula = "5 * (2D6 + 6)", Derived = false, Upper = 99},
+            new Characteristic() { Name = "LUCK", Formula = "5 * (3D6)", Derived = false, Upper = 99 },
+            new Characteristic() { Name = "AST", Formula = "1D10", Derived = true},
+            new Characteristic() { Name = "SAN", Formula = "POW", Derived = true, Upper = 99},
+            new Characteristic() { Name = "IDEA", Formula = "INT",Derived = true },
+            new Characteristic() { Name = "MOV", Formula = "GetMOV(SIZ, DEX, STR, AGE)", Derived = true},
+            new Characteristic() { Name = "MP", Formula = "POW / 5", Derived = true},
+            new Characteristic() { Name = "HP", Formula = "(SIZ + CON) / 5", Derived = true},
+            new Characteristic() { Name = "DODGE", Formula = "DEX / 2", Derived = true},
         };
 
         [YamlIgnore]
-        private Dictionary<string, Trait> baseModelDict;
+        private Dictionary<string, Characteristic> baseModelDict;
 
         /// <summary>
         /// 属性模型的字典
         /// </summary>
         [YamlIgnore]
-        public Dictionary<string, Trait> BaseModelDict
+        public Dictionary<string, Characteristic> BaseModelDict
         {
             get
             {
                 if (baseModelDict == null)
                 {
-                    baseModelDict = new Dictionary<string, Trait>(DataModels.Select(m => new KeyValuePair<string, Trait>(m.Name, m)));
+                    baseModelDict = new Dictionary<string, Characteristic>(from m in DataModels select KeyValuePair.Create(m.Name, m));
                 }
                 return baseModelDict;
             }

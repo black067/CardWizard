@@ -12,7 +12,7 @@ namespace CardWizard.View
     /// <summary>
     /// ListItemCustom.xaml 的交互逻辑
     /// </summary>
-    public partial class TraitsViewItem : UserControl
+    public partial class CustomRowView : UserControl
     {
         /// <summary>
         /// 值的集合
@@ -28,7 +28,7 @@ namespace CardWizard.View
         /// <summary>
         /// 新建此控件
         /// </summary>
-        public TraitsViewItem()
+        public CustomRowView()
         {
             InitializeComponent();
             Children = new Dictionary<string, TextBox>();

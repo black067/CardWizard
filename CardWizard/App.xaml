@@ -13,9 +13,13 @@
         <SolidColorBrush x:Key="ButtonBackground" Color="#FF69A6E4"/>
         <SolidColorBrush x:Key="ValidForeground" Color="#FF00FF51"/>
         <SolidColorBrush x:Key="InvalidForeground" Color="#FFFF3030"/>
-        <SolidColorBrush x:Key="TraitBorderBrush" Color="#FF3C6185"/>
+        <SolidColorBrush x:Key="CharacteristicBorderBrush" Color="#FF3C6185"/>
         <SolidColorBrush x:Key="SkillBorderBrush" Color="slategray"/>
         <System:String x:Key="AgeBonusMark">⚠</System:String>
+        <!--默认字体-->
+        <FontFamily x:Key="WindowFontFamily">Hack</FontFamily>
+        <!--默认的 Margin-->
+        <Thickness x:Key="DefaultMargin">2,2,2,2</Thickness>
         <!--提示信息窗口的显示样式-->
         <Style x:Key="XToolTip" TargetType="ToolTip">
             <Setter Property="FontSize" Value="14"/>
@@ -24,7 +28,8 @@
         </Style>
         <!-- 定义Label 的样式-->
         <Style x:Key="XLabel" TargetType="Label">
-            <Setter Property="Margin" Value="2,2,2,2"/>
+            <Setter Property="Margin" Value="{DynamicResource DefaultMargin}"/>
+            <Setter Property="Padding" Value="0"/>
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
@@ -33,6 +38,21 @@
             <Setter Property="Foreground" Value="Gray"/>
             <Setter Property="Cursor" Value="Arrow"/>
         </Style>
+        <!--标题-->
+        <Style x:Key="XTitle" TargetType="Label">
+            <Setter Property="Margin" Value="{DynamicResource DefaultMargin}"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
+            <Setter Property="Cursor" Value="Arrow"/>
+            <Setter Property="Background" Value="#FF426E93"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="22"/>
+        </Style>
+        <!--下拉弹窗-->
         <Style x:Key="ComboGenceral" TargetType="ComboBox">
             <Setter Property="Background" Value="WhiteSmoke"/>
             <Setter Property="BorderThickness" Value="1"/>
@@ -77,66 +97,150 @@
             <Setter Property="TextWrapping" Value="WrapWithOverflow"/>
             <Setter Property="TextAlignment" Value="Center"/>
         </Style>
-        <!-- 定义 TextBox 的 Placeholder 样式 -->
-        <Style x:Key="TextField" TargetType="TextBox">
+        <!--带有标签的 TextBox-->
+        <Style x:Key="LabeledBox" TargetType="TextBox">
+            <Setter Property="BorderBrush" Value="{x:Null}"/>
+            <Setter Property="Background" Value="{x:Null}"/>
+            <Setter Property="AcceptsReturn" Value="True"/>
+            <Setter Property="MaxLines" Value="5"/>
+            <Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Margin" Value="4,6,4,0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Grid Margin="{DynamicResource DefaultMargin}">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="24"/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Label Name="DataLabel" Content="{TemplateBinding DataContext}"
+                                   HorizontalAlignment="Left" VerticalAlignment="Top" 
+                                   FontWeight="Bold" FontSize="14" Padding="0,0,0,0"/>
+                            <TextBox Grid.Row="1" Padding="{TemplateBinding Padding}"
+                                     Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" 
+                                     MaxLines="{TemplateBinding MaxLines}" FontSize="{TemplateBinding FontSize}"
+                                     Text="{Binding Path=Text, RelativeSource={RelativeSource TemplatedParent}}" AcceptsReturn="{TemplateBinding AcceptsReturn}"
+                                     VerticalScrollBarVisibility="{TemplateBinding VerticalScrollBarVisibility}" TextWrapping="Wrap"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <!--定义带有 Placeholder 的 TextBox-->
+        <Style x:Key="PlaceholderedTextBox" TargetType="TextBox">
             <Style.Resources>
-                <!-- 定义 TextBox 的 Placeholder 样式 -->
-                <VisualBrush x:Key="HintText" TileMode="None" Opacity="0.5" Stretch="None" AlignmentX="Left">
-                    <VisualBrush.Visual>
-                        <TextBlock FontStyle="Italic" Text="Enter your data" Foreground="{DynamicResource PlaceholderForeground}"/>
-                    </VisualBrush.Visual>
-                </VisualBrush>
+                <ControlTemplate x:Key="placeholder" TargetType="TextBox">
+                    <Label x:Name="placeholder_label" FontStyle="Italic" 
+                           Content="{TemplateBinding DataContext}" 
+                           HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                           HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" 
+                           Cursor="{TemplateBinding Cursor}"
+                           Padding="{TemplateBinding Padding}" Margin="0"
+                           Foreground="{DynamicResource PlaceholderForeground}" Background="{TemplateBinding Background}"
+                           BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                    </Label>
+                </ControlTemplate>
             </Style.Resources>
-            
-            <Style.Triggers>
-                <Trigger Property="Text" Value="{x:Null}">
-                    <Setter Property="Background" Value="{DynamicResource HintText}"/>
-                </Trigger>
-                <Trigger Property="Text" Value="">
-                    <Setter Property="Background" Value="{DynamicResource HintText}"/>
-                </Trigger>
-            </Style.Triggers>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="Cursor" Value="IBeam"/>
             <Setter Property="MaxLines" Value="1"/>
             <Setter Property="HorizontalAlignment" Value="Stretch"/>
             <Setter Property="VerticalAlignment" Value="Stretch"/>
-            <Setter Property="Margin" Value="2,2,2,2"/>
-            <!--<Setter Property="MaxLength" Value="10"/>-->
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="Padding" Value="0"/>
             <Setter Property="TextWrapping" Value="WrapWithOverflow"/>
-        </Style>
-        <!-- 定义 RadioButton 的 Placeholder 样式 -->
-        <Style x:Key="RadioGroup" TargetType="RadioButton">
             <Style.Triggers>
-                <Trigger Property="IsChecked" Value="False">
-                    <Setter Property="Foreground" Value="{StaticResource PlaceholderForeground}"/>
-                </Trigger>
-                <Trigger Property="IsChecked" Value="True">
-                    <Setter Property="Foreground" Value="{StaticResource TextForeground}"/>
-                </Trigger>
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition Property="Text" Value=""/>
+                        <Condition Property="IsFocused" Value="False"/>
+                        <Condition Property="IsMouseOver" Value="True"/>
+                    </MultiTrigger.Conditions>
+                    <Setter Property="BorderBrush" Value="{DynamicResource MenuBackground}"/>
+                    <Setter Property="Template" Value="{DynamicResource placeholder}"/>
+                </MultiTrigger>
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition Property="Text" Value=""/>
+                        <Condition Property="IsFocused" Value="False"/>
+                    </MultiTrigger.Conditions>
+                    <Setter Property="Template" Value="{DynamicResource placeholder}"/>
+                </MultiTrigger>
             </Style.Triggers>
-            <Setter Property="VerticalContentAlignment" Value="Center"/>
-            <Setter Property="HorizontalContentAlignment" Value="Center"/>
-            <Setter Property="HorizontalAlignment" Value="Left"/>
         </Style>
+        
         <!--属性显示盒的样式-->
-        <Style x:Key="TraitBoxStyle" TargetType="cview:TraitBox">
+        <Style x:Key="CharacteristicBoxStyle" TargetType="cview:CharacteristicBox">
             <Setter Property="Margin" Value="0,0,0,0"/>
             <Setter Property="HorizontalAlignment" Value="Left"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="Width" Value="144"/>
             <Setter Property="Height" Value="54"/>
         </Style>
-        <!--默认字体-->
-        <FontFamily x:Key="WindowFontFamily">Hack</FontFamily>
-        <!--默认的 Margin-->
-        <Thickness x:Key="DefaultMargin">2,2,2,2</Thickness>
         <!--合法性检查标签的样式-->
         <Style x:Key="ValidityCheck" TargetType="Label">
             <Setter Property="FontWeight" Value="ExtraBold"/>
             <Setter Property="FontSize" Value="16"/>
             <Setter Property="Padding" Value="5,0,5,0"/>
             <Setter Property="Foreground" Value="WhiteSmoke"/>
+        </Style>
+        <!--数据表的样式-->
+        <Style x:Key="DataGridStyle" TargetType="DataGrid">
+            <Setter Property="ColumnHeaderStyle" Value="{DynamicResource ColumnHeaderStyle}"></Setter>
+            <Setter Property="CellStyle" Value="{DynamicResource CellStyle}"></Setter>
+            <Setter Property="RowStyle" Value="{DynamicResource RowStyle}"></Setter>
+            <Setter Property="Background" Value="White"></Setter>
+            <Setter Property="EnableRowVirtualization" Value="False"></Setter>
+            <Setter Property="GridLinesVisibility" Value="None"></Setter>
+            <Setter Property="CanUserAddRows" Value="False"></Setter>
+            <!--禁止在尾行手动添加数据-->
+            <Setter Property="AutoGenerateColumns" Value="False"></Setter>
+            <Setter Property="IsEnabled" Value="True"></Setter>
+        </Style>
+        <!--表头的样式-->
+        <Style x:Key="ColumnHeaderStyle" TargetType="DataGridColumnHeader">
+            <Setter Property="Height" Value="35"></Setter>
+            <Setter Property="Background" Value="#F2F2F2"></Setter>
+            <Setter Property="BorderThickness" Value="1"></Setter>
+            <Setter Property="BorderBrush" Value="#CBCBCB"></Setter>
+            <Setter Property="VerticalContentAlignment" Value="Center"></Setter>
+            <!--水平居中-->
+            <Setter Property="HorizontalContentAlignment" Value="Center"></Setter>
+            <!--垂直居中-->
+        </Style>
+        <!--表行的样式-->
+        <Style x:Key="RowStyle" TargetType="DataGridRow">
+            <Setter Property="Cursor" Value="Hand"></Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="true">
+                    <Setter Property="Background" Value="#F2F2F2"/>
+                </Trigger>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background"  Value="#CBCBCB" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <!--单元格的样式-->
+        <Style x:Key="CellStyle" TargetType="DataGridCell">
+            <Setter Property="Height" Value="35"></Setter>
+            <Setter Property="FontSize" Value="13"></Setter>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="DataGridCell">
+                        <Border x:Name="Bg" Background="Transparent" BorderThickness="1" UseLayoutRounding="True" BorderBrush="#FFCBCBCB">
+                            <ContentPresenter HorizontalAlignment="Center"  VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background"  Value="#CBCBCB" />
+                    <Setter Property="Foreground" Value="#000000" />
+                </Trigger>
+            </Style.Triggers>
         </Style>
     </Application.Resources>
 </Application>

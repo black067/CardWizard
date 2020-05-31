@@ -1,4 +1,4 @@
-﻿<UserControl x:Name="userControl" x:Class="CardWizard.View.TraitBox"
+﻿<UserControl x:Name="userControl" x:Class="CardWizard.View.CharacteristicBox"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -8,7 +8,7 @@
              xmlns:System="clr-namespace:System;assembly=System.Runtime"
              mc:Ignorable="d"
              d:DesignWidth="144" d:DesignHeight="52" 
-             BorderBrush="{DynamicResource TraitBorderBrush}" Foreground="{DynamicResource MenuBackground}">
+             BorderBrush="{DynamicResource CharacteristicBorderBrush}" Foreground="{DynamicResource MenuBackground}">
     <UserControl.Resources>
         <Style x:Key="XInput" TargetType="TextBox">
             <Setter Property="BorderThickness" Value="0,0,0,0"/>
@@ -92,7 +92,7 @@
             <Label x:Name="Label_Initial" Tag="Initial" 
                    Content="初始" Grid.Row="0" 
                    Style="{DynamicResource XLabel}" FontSize="{DynamicResource InputLabelFontSize}" 
-                   Margin="{DynamicResource XLabelMargin}" Padding="{DynamicResource XLabelPadding}" FontWeight="Normal"/>
+                   Margin="{DynamicResource XLabelMargin}" Padding="{DynamicResource XLabelPadding}" FontWeight="Normal" Cursor="Arrow"/>
             <Label x:Name="Label_Adjustment" Tag="Adjustment" 
                    Content="调整" Grid.Row="1"
                    Style="{DynamicResource XLabel}" FontSize="{DynamicResource InputLabelFontSize}" 

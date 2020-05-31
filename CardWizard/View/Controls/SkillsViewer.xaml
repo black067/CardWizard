@@ -20,8 +20,7 @@
         </Grid.ColumnDefinitions>
         <Label Content="INVESTIGATOR SKILLS" Tag="Investigator.Skills.Title"
                FontSize="22" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="99"
-               Foreground="{DynamicResource ButtonForeground}"
-               Style="{DynamicResource XLabel}" Background="{DynamicResource SkillBorderBrush}"/>
+               Style="{DynamicResource XTitle}"/>
         <WrapPanel x:Name="Container" 
                    Orientation="Vertical" 
                    Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="99" Margin="2,2,2,2"
