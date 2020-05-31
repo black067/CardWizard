@@ -35,7 +35,7 @@
         <!--菜单栏-->
         <Menu x:Name="MainMenuBar"
               Background="{DynamicResource MenuBackground}" Grid.ColumnSpan="2" 
-              FontFamily="{DynamicResource WindowFontFamily}" Padding="10,0,10,0" 
+              FontFamily="{DynamicResource WindowFontFamily}" Padding="2,0,2,0" 
               Foreground="{DynamicResource ButtonForeground}" FontSize="16">
             <Menu.Resources>
                 <Thickness x:Key="MenuItemMargin">6,0,6,0</Thickness>
@@ -47,7 +47,8 @@
                         </Trigger>
                     </Style.Triggers>
                     <Setter Property="BorderBrush" Value="Transparent"/>
-                    <Setter Property="Margin" Value="{DynamicResource MenuItemMargin}"/>
+                    <Setter Property="Margin" Value="0"/>
+                    <Setter Property="Padding" Value="10,0,10,0"/>
                 </Style>
             </Menu.Resources>
             <MenuItem Header="Create" Tag="MenuBar.Button.Create" 
@@ -58,13 +59,9 @@
                       Command="{x:Static local:MainWindow.CommandSave}"
                       Height="{Binding ActualHeight, ElementName=MainMenuBar, Mode=OneWay}"
                       Style="{DynamicResource MenuItemTop}"/>
-            <MenuItem Header="SavePicture" Tag="MenuBar.Button.SavePicture" 
-                      Command="{x:Static local:MainWindow.CommandCapture}"
-                      Height="{Binding ActualHeight, ElementName=MainMenuBar, Mode=OneWay}"
-                      Style="{DynamicResource MenuItemTop}"/>
             <MenuItem Header="Settings" Tag="MenuBar.Button.Settings" 
                       Height="{Binding ActualHeight, ElementName=MainMenuBar, Mode=OneWay}"
-                      Style="{DynamicResource MenuItemTop}">
+                      Style="{DynamicResource MenuItemTop}" HorizontalAlignment="Stretch">
                 <MenuItem x:Name="MenuItemSwitchToolTip" Header="Show Tool Tip" Tag="MenuBar.Button.ShowToolTip" 
                           Command="{x:Static local:MainWindow.CommandSwitchToolTip}"
                           Foreground="{DynamicResource MenuBackground}"/>
@@ -103,39 +100,37 @@
                             <ControlTemplate TargetType="TabItem">
                                 <Label x:Name="_label" Content="{TemplateBinding Header}" Style="{DynamicResource XTitle}" 
                                        FontSize="{TemplateBinding FontSize}" Margin="{TemplateBinding Margin}" Padding="{TemplateBinding Padding}"
-                                       Cursor="Hand"/>
+                                       Cursor="Hand">
+                                </Label>
                                 <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="_label" Property="Background" Value="{DynamicResource ButtonBackground}"/>
+                                    </Trigger>
                                     <Trigger Property="IsSelected" Value="True">
                                         <Setter TargetName="_label" Property="Style" Value="{DynamicResource XLabel}"/>
-                                        <Setter TargetName="_label" Property="Background" Value="{Binding ElementName=PageTab, Path=BorderBrush}"/>
+                                        <Setter TargetName="_label" Property="Background" Value="White"/>
                                         <Setter TargetName="_label" Property="Cursor" Value="Arrow"/>
+                                        
+                                        <Setter TargetName="_label" Property="Effect">
+                                            <Setter.Value>
+                                                <DropShadowEffect Direction="-90" Opacity="0.6" ShadowDepth="1" BlurRadius="10"/>
+                                            </Setter.Value>
+                                        </Setter>
                                     </Trigger>
                                 </ControlTemplate.Triggers>
                             </ControlTemplate>
                         </Setter.Value>
                     </Setter>
-                    <!--<Style.Triggers>
-                        <Trigger Property="IsSelected" Value="True">
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="TabItem">
-                                        <Label Content="{TemplateBinding Header}" Style="{DynamicResource XLabel}" 
-                                               FontSize="{TemplateBinding FontSize}" Padding="{TemplateBinding Padding}" Margin="{TemplateBinding Margin}" Background="{Binding ElementName=PageTab, Path=BorderBrush}"/>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                        </Trigger>
-                    </Style.Triggers>-->
                 </Style>
             </TabControl.Resources>
-            <TabItem Header="Front" Tag="Tab.Front.Header" Style="{DynamicResource XTabItem}">
+            <TabItem x:Name="TabItem_Front" Header="Front" Tag="Tab.Front.Header" Style="{DynamicResource XTabItem}">
                 <ScrollViewer>
                     <Viewbox HorizontalAlignment="Left" VerticalAlignment="Top">
                         <cview:MainPage x:Name="MainPage" Width="840" Height="1180"/>
                     </Viewbox>
                 </ScrollViewer>
             </TabItem>
-            <TabItem Header="Back" Tag="Tab.Back.Header" Style="{DynamicResource XTabItem}">
+            <TabItem x:Name="TabItem_Back" Header="Back" Tag="Tab.Back.Header" Style="{DynamicResource XTabItem}">
                 <ScrollViewer>
                     <Viewbox HorizontalAlignment="Left" VerticalAlignment="Top">
                         <cview:BackstoryPage x:Name="BackstoryPage" Width="840" Height="1180" />
@@ -143,5 +138,11 @@
                 </ScrollViewer>
             </TabItem>
         </TabControl>
+        <Button x:Name="Button_Print" Tag="MenuBar.Button.SavePicture"
+                Command="{x:Static local:MainWindow.CommandCapture}"
+                Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Top"
+                Style="{DynamicResource XButtonStyle}" Padding="0,0,0,0" Width="36" Height="36" FontSize="18">
+            🖨
+        </Button>
     </Grid>
 </Window>

@@ -17,11 +17,11 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="28"/>
-            <RowDefinition Height="42"/>
+            <RowDefinition Height="{DynamicResource TitleRowHeight}"/>
             <RowDefinition Height="200"/>
             <RowDefinition Height="68"/>
-            <RowDefinition x:Name="Row_Skills" Height="584"/>
-            <RowDefinition Height="210"/>
+            <RowDefinition x:Name="Row_Skills" Height="640"/>
+            <RowDefinition Height="180"/>
             <RowDefinition Height="28"/>
         </Grid.RowDefinitions>
         <!--页首的显示-->
@@ -104,7 +104,7 @@
                 <ColumnDefinition Width="9*"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="42"/>
+                <RowDefinition Height="{DynamicResource TitleRowHeight}"/>
                 <RowDefinition/>
                 <RowDefinition/>
                 <RowDefinition/>

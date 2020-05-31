@@ -22,17 +22,17 @@ namespace CardWizard.Data
         /// <summary>
         /// 技能数据
         /// </summary>
-        public Dictionary<string, Skill> Skills { get => skills; set => skills = value; }
+        public Dictionary<string, Skill> Skills { get => skills; private set => skills = value; }
 
         /// <summary>
         /// 职业数据
         /// </summary>
-        public Dictionary<string, Occupation> Occupations { get => occupations; set => occupations = value; }
+        public Dictionary<string, Occupation> Occupations { get => occupations; private set => occupations = value; }
 
         /// <summary>
         /// 武器数据
         /// </summary>
-        public Dictionary<string, Weapon> Weapons { get => weapons; set => weapons = value; }
+        public Dictionary<string, Weapon> Weapons { get => weapons; private set => weapons = value; }
 
         /// <summary>
         /// 根据技能名称查询技能
@@ -144,7 +144,14 @@ namespace CardWizard.Data
                     Description = "钻研学习医学科学技术，挽救生命，以治病为业。",
                     Skills = new string[]
                     {
-                        "急救", "其它语言(拉丁文)", "医学", "心理学", "科学(生物学)", "科学(药学)", Skill.CUSTOM_PRO, Skill.CUSTOM_PRO
+                        "急救",
+                        "其它语言(拉丁文)",
+                        "医学",
+                        "心理学",
+                        "科学(生物学)", 
+                        "科学(药学)", 
+                        Skill.CUSTOM_PRO, 
+                        Skill.CUSTOM_PRO
                     },
                     CreditRatingRange = "30 ~ 80",
                     PointFormula = "EDU * 4",
@@ -155,7 +162,15 @@ namespace CardWizard.Data
                     Description = "执行侦探破案工作的警察。",
                     Skills = new string[]
                     {
-                        "艺术与手艺(表演)", "乔装", "射击", "法律", "聆听", "心理学", "侦察", Skill.CUSTOM_SOCIAL, Skill.CUSTOM
+                        "艺术与手艺(表演)", 
+                        "乔装", 
+                        "射击", 
+                        "法律", 
+                        "聆听", 
+                        "心理学", 
+                        "侦察", 
+                        Skill.CUSTOM_SOCIAL, 
+                        Skill.CUSTOM
                     },
                     CreditRatingRange = "20 ~ 50",
                     PointFormula = "EDU * 2 + math.max(DEX, STR) * 2",

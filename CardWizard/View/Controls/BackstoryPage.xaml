@@ -10,10 +10,10 @@
     <Grid x:Name="MainGrid" x:FieldModifier="public">
         <Grid.RowDefinitions>
             <RowDefinition Height="28"/>
-            <RowDefinition Height="42"/>
-            <RowDefinition Height="604"/>
+            <RowDefinition Height="{DynamicResource TitleRowHeight}"/>
+            <RowDefinition Height="540"/>
             <RowDefinition Height="284"/>
-            <RowDefinition Height="194"/>
+            <RowDefinition Height="264"/>
             <RowDefinition Height="28"/>
         </Grid.RowDefinitions>
         <!--页首的显示-->
@@ -41,52 +41,52 @@
                 
             </TextBox>
         </Grid>-->
-        <WrapPanel x:Name="BackstoryGrid" Grid.Row="2" Margin="{DynamicResource DefaultMargin}" ItemHeight="120" ItemWidth="418">
+        <WrapPanel x:Name="BackstoryGrid" Grid.Row="2" Margin="{DynamicResource DefaultMargin}" ItemHeight="106" ItemWidth="418">
             <TextBox x:Name="Text_PersonalDescription" Tag="Backstory.PersonalDescription" Style="{DynamicResource LabeledBox}">
                 <TextBox.DataContext>Personal Description</TextBox.DataContext>
                 噫嘘唏，危乎高哉！蜀道之难，难于上青天。蚕丛及鱼凫，开国何茫然！尔来四万八千岁，不与秦塞通人烟。
             </TextBox>
             <TextBox x:Name="Text_Traits" Tag="Backstory.Traits" Style="{DynamicResource LabeledBox}">
                 <TextBox.DataContext>Traits</TextBox.DataContext>
-                个人特质有哪些？
+                萚兮萚兮，风其吹女。叔兮伯兮，倡予和女。萚兮萚兮，风其漂女。叔兮伯兮，倡予要女。
             </TextBox>
             <TextBox x:Name="Text_IdeologyAndBeliefs" Tag="Backstory.IdeologyAndBeliefs" Style="{DynamicResource LabeledBox}">
                 <TextBox.DataContext>Ideology &amp; Beliefs</TextBox.DataContext>
-                黑云压城城欲摧，甲光向日金鳞开。
+                群峭碧摩天，逍遥不记年。拨云寻古道，倚石听流泉。花暖青牛卧，松高白鹤眠。语来江色暮，独自下寒烟。
             </TextBox>
             <TextBox x:Name="Text_InjuriesAndScars" Tag="Backstory.InjuriesAndScars" Style="{DynamicResource LabeledBox}">
                 <TextBox.DataContext>Injuries &amp; Scars</TextBox.DataContext>
-                黑云压城城欲摧，甲光向日金鳞开。
+                洞庭春晚，旧传恐是，人间尤物。收拾瑶池倾国艳，来向朱栏一壁。透户龙香，隔帘莺语，料得肌如雪。月妖真态，是谁教避人杰。
             </TextBox>
             <TextBox x:Name="Text_SignificantPeople" Tag="Backstory.SignificantPeople" Style="{DynamicResource LabeledBox}">
                 <TextBox.DataContext>Significant People</TextBox.DataContext>
-                黑云压城城欲摧，甲光向日金鳞开。
+                酒罢归对寒窗，相留昨夜，应是梅花发。赋了高唐犹想像，不管孤灯明灭。半面难期，多情易感，愁点星星发。绕梁声在，为伊忘味三月。
             </TextBox>
             <TextBox x:Name="Text_PhobiasAndManias" Tag="Backstory.PhobiasAndManias" Style="{DynamicResource LabeledBox}">
                 <TextBox.DataContext>Phobias &amp; Manias</TextBox.DataContext>
-                黑云压城城欲摧，甲光向日金鳞开。
+                定场贺老今何在，几度新声改。怨声坐使旧声阑，俗耳只知繁手，不须弹。
             </TextBox>
             <TextBox x:Name="Text_MeaningfulLocations" Tag="Backstory.MeaningfulLocations" Style="{DynamicResource LabeledBox}">
                 <TextBox.DataContext>Meaningful Locations</TextBox.DataContext>
-                黑云压城城欲摧，甲光向日金鳞开。
+                天若不爱酒，酒星不在天。地若不爱酒，地应无酒泉。天地既爱酒，爱酒不愧天。已闻清比圣，复道浊如贤。贤圣既已饮，何必求神仙。三杯通大道，一斗合自然。但得酒中趣，勿为醒者传。
             </TextBox>
             <TextBox x:Name="Text_ArcaneTomesAndETC" Tag="Backstory.ArcaneTomesAndETC" Style="{DynamicResource LabeledBox}">
                 <TextBox.DataContext>Arcane Tomes, Spells &amp; Artifacts</TextBox.DataContext>
-                黑云压城城欲摧，甲光向日金鳞开。
+                雪净胡天牧马还，月明羌笛戍楼间。借问梅花何处落，风吹一夜满关山。
             </TextBox>
             <TextBox x:Name="Text_TreasuredPossesions" Tag="Backstory.TreasuredPossessions" Style="{DynamicResource LabeledBox}">
                 <TextBox.DataContext>Treasured Possessions</TextBox.DataContext>
-                黑云压城城欲摧，甲光向日金鳞开。
+                绕池闲步看鱼游，正值儿童弄钓舟。一种爱鱼心各异，我来施食尔垂钩。
             </TextBox>
             <TextBox x:Name="Text_EncountersWithStrangeEntities" Tag="Backstory.EncountersWithStrangeEntities" Style="{DynamicResource LabeledBox}">
                 <TextBox.DataContext>Encounters with Strange Entities</TextBox.DataContext>
-                黑云压城城欲摧，甲光向日金鳞开。
+                羔羊之皮，素丝五紽。退食自公，委蛇委蛇。羔羊之革，素丝五緎。委蛇委蛇，自公退食。羔羊之缝，素丝五总。委蛇委蛇，退食自公。
             </TextBox>
         </WrapPanel>
         <!--持有的物品与资产-->
         <Grid Grid.Row="3">
             <Grid.RowDefinitions>
-                <RowDefinition Height="42"/>
+                <RowDefinition Height="{DynamicResource TitleRowHeight}"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
@@ -98,30 +98,49 @@
                            FontSize="22" Grid.Row="0" Grid.Column="0" Style="{DynamicResource XTitle}"/>
             <Label Content="CASH &amp; ASSETS" Tag="Investigator.Assets.Title"
                            FontSize="22" Grid.Row="0" Grid.Column="1" Style="{DynamicResource XTitle}"/>
-            <WrapPanel x:Name="Panel_Gears" Grid.Row="1" Margin="{DynamicResource DefaultMargin}" ItemWidth="160" ScrollViewer.VerticalScrollBarVisibility="Auto">
-
+            <WrapPanel x:Name="Panel_Gears" Grid.Row="1" Margin="{DynamicResource DefaultMargin}" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True">
+                <WrapPanel.Resources>
+                    <Style x:Key="PanelItem" TargetType="Label">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Label">
+                                    <StackPanel Orientation="Horizontal" Background="#4CFFFFFF">
+                                        <Label Content="{TemplateBinding Content}" Margin="2,2,2,2" FontSize="14" VerticalContentAlignment="Center" Background="WhiteSmoke"/>
+                                        <Button x:Name="button_delete" Content="❌" Width="28" Height="28" Margin="{DynamicResource DefaultMargin}" Style="{DynamicResource XButtonStyle}" FontSize="14" Visibility="Hidden" HorizontalAlignment="Right" Click="button_delete_Click" ToolTip="{x:Null}"/>
+                                    </StackPanel>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="button_delete" Property="Visibility" Value="Visible"></Setter>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </WrapPanel.Resources>
+                <Label Content="照相机" Style="{DynamicResource PanelItem}"/>
             </WrapPanel>
             <StackPanel VerticalAlignment="Bottom" HorizontalAlignment="Right" Grid.Row="1" Orientation="Horizontal">
                 <TextBox x:Name="Text_NewItem" Tag="Card.NewItem.Placeholder" DataContext="Got New Possssion?"
-                         Width="{Binding ElementName=Panel_Gears, Path=ItemWidth}" VerticalContentAlignment="Center" Padding="4,0,0,0"
+                         Width="160" VerticalContentAlignment="Center" Padding="4,0,0,0"
                          Margin="{DynamicResource DefaultMargin}" MaxLines="1" Style="{DynamicResource PlaceholderedTextBox}"></TextBox>
-                <Button x:Name="Button_NewIitem" Width="52" Height="32" Margin="{DynamicResource DefaultMargin}" Style="{DynamicResource XButtonStyle}" Tag="Card.Button.AddItem" FontSize="16">➕</Button>
+                <Button x:Name="Button_NewIitem" Width="32" Height="32" Margin="{DynamicResource DefaultMargin}" Style="{DynamicResource XButtonStyle}" Tag="Card.Button.AddItem" FontSize="16">➕</Button>
             </StackPanel>
             <StackPanel x:Name="Assets" Grid.Row="1" Grid.Column="1" Margin="{DynamicResource DefaultMargin}">
-                <TextBox x:Name="Text_SpendingLevel" Tag="CreditRating.SpendingLevel" Style="{DynamicResource LabeledBox}" AcceptsReturn="False" MaxLines="1" VerticalScrollBarVisibility="Hidden">
+                <TextBox x:Name="Text_SpendingLevel" Tag="Backstory.SpendingLevel" Style="{DynamicResource LabeledBox}" AcceptsReturn="False" MaxLines="1" VerticalScrollBarVisibility="Hidden" Height="50">
                     <TextBox.DataContext>Spending Level</TextBox.DataContext> 一般
                 </TextBox>
-                <TextBox x:Name="Text_Cash"  Tag="CreditRating.Cash"  Style="{DynamicResource LabeledBox}" AcceptsReturn="False" MaxLines="1" VerticalScrollBarVisibility="Hidden">
+                <TextBox x:Name="Text_Cash"  Tag="Backstory.Cash"  Style="{DynamicResource LabeledBox}" AcceptsReturn="False" MaxLines="1" VerticalScrollBarVisibility="Hidden" Height="50">
                     <TextBox.DataContext>Cash</TextBox.DataContext> $82
                 </TextBox>
-                <TextBox x:Name="Text_Assets" Tag="CreditRating.Assets" Style="{DynamicResource LabeledBox}" Height="128" Padding="0,-10,0,0">
+                <TextBox x:Name="Text_Assets" Tag="Backstory.Assets" Style="{DynamicResource LabeledBox}" Height="120" Padding="0,-10,0,0">
                     <TextBox.DataContext>Assets</TextBox.DataContext> $2050、出租公寓
                 </TextBox>
             </StackPanel>
         </Grid>
         <Grid Name="AddtionInfosGird" Grid.Row="4">
             <Grid.RowDefinitions>
-                <RowDefinition Height="42"/>
+                <RowDefinition Height="{DynamicResource TitleRowHeight}"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
@@ -129,12 +148,66 @@
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
             <Label Content="QUICK REFERENCE RULES" Tag="Investigator.Rules.Title" Style="{DynamicResource XTitle}"/>
-            <TextBlock Tag="QuickReferenceRules"
-                               Grid.Row="1"/>
+            <WrapPanel x:Name="QuickRules" Grid.Row="1">
+                <WrapPanel.Resources>
+                    <System:Double x:Key="_gridwidth">48</System:Double>
+                    <Style x:Key="gridlabel" TargetType="Label">
+                        <Setter Property="Margin" Value="0"/>
+                        <Setter Property="Padding" Value="0"/>
+                        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                        <Setter Property="VerticalContentAlignment" Value="Center"/>
+                        <Setter Property="Width" Value="{DynamicResource _gridwidth}"/>
+                        <Setter Property="BorderBrush" Value="{DynamicResource MenuBackground}"/>
+                        <Setter Property="BorderThickness" Value="1"/>
+                    </Style>
+                </WrapPanel.Resources>
+                <Label Content="技能与属性检定" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Width="{Binding Path=ActualWidth, ElementName=QuickRules}" FontWeight="Bold" FontSize="16"/>
+                <Label Content="成功等级" VerticalContentAlignment="Center" FontSize="14" Padding="2,0,2,0" FontWeight="Bold"/>
+                <Grid Width="288" Height="48">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Label Content="大失败" Style="{DynamicResource gridlabel}"/>
+                    <Label Content="失败" Style="{DynamicResource gridlabel}" Grid.Column="1"/>
+                    <Label Content="常规" Style="{DynamicResource gridlabel}" Grid.Column="2"/>
+                    <Label Content="困难" Style="{DynamicResource gridlabel}" Grid.Column="3"/>
+                    <Label Content="极难" Style="{DynamicResource gridlabel}" Grid.Column="4"/>
+                    <Label Content="大成功" Style="{DynamicResource gridlabel}" Grid.Column="5"/>
+                    <Label Content="00/96+" Style="{DynamicResource gridlabel}" Grid.Row="1"/>
+                    <Label Content=">技能" Style="{DynamicResource gridlabel}" Grid.Column="1" Grid.Row="1"/>
+                    <Label Content="≤技能" Style="{DynamicResource gridlabel}" Grid.Column="2" Grid.Row="1"/>
+                    <Label Content="¹/₂技能" Style="{DynamicResource gridlabel}" Grid.Column="3" Grid.Row="1"/>
+                    <Label Content="¹/₅技能" Style="{DynamicResource gridlabel}" Grid.Column="4" Grid.Row="1"/>
+                    <Label Content="01" Style="{DynamicResource gridlabel}" Grid.Column="5" Grid.Row="1"/>
+                </Grid>
+                <TextBlock Width="{Binding Path=ActualWidth, ElementName=QuickRules}" TextAlignment="Center" Margin="0,4,0,4">
+                    <Run FontWeight="Bold">孤注一掷:</Run> 须对再次检定做出解释; 战斗和理智检定不能孤注一掷
+                </TextBlock>
+                <Label Content="受伤和治疗" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Width="{Binding Path=ActualWidth, ElementName=QuickRules}" FontWeight="Bold" FontSize="14" Padding="5,2,5,2"/>
+                <Label Content="[急救] 回复 1 点 HP" Width="180" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="10" Padding="5,1,5,1"/>
+                <Label Content="[医学] 回复 1D3 点 HP" Width="180" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="10" Padding="5,1,5,1"/>
+                <TextBlock Width="{Binding Path=ActualWidth, ElementName=QuickRules}" TextAlignment="Left" Margin="0,2,0,0" Padding="4,0,4,0" FontSize="10" TextWrapping="Wrap">
+                    <Run FontWeight="Bold">重伤</Run> : 在单次攻击中失去的 HP ≥ ¹/₂最大HP<LineBreak/>
+                    <Run FontWeight="Bold">昏迷</Run> : HP 归零但未受 [重伤]<LineBreak/>
+                    <Run FontWeight="Bold">濒死</Run> : HP 归零且受 [重伤]<LineBreak/>
+                    <Run Text="          "/>濒死时需要 [急救] 稳定伤势, 并用 [医学] 进行后续治疗<LineBreak/>
+                    <Run FontWeight="Bold">自然恢复</Run>(一般) : 每天恢复 1 点 HP<LineBreak/>
+                    <Run FontWeight="Bold">自然恢复</Run>(重伤) : 每周 1 次恢复检定, 成功则恢复 1D3 点 HP<LineBreak/>
+                </TextBlock>
+            </WrapPanel>
             <Label Content="FELLOW INVESTIGATORS" Tag="Investigator.Partners.Title"
                            Grid.Column="1"
                            Style="{DynamicResource XTitle}"/>
-            <TextBox x:Name="Text_FellowInvestigators" Grid.Row="1" Grid.Column="1" Background="{x:Null}" BorderBrush="{x:Null}">
+            <TextBox x:Name="Text_FellowInvestigators" Tag="Backstory.FellowInvestigators" Grid.Row="1" Grid.Column="1" Background="{x:Null}" BorderBrush="{x:Null}">
             </TextBox>
         </Grid>
 

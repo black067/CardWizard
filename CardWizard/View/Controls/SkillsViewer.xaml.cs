@@ -1,4 +1,5 @@
 ﻿using CallOfCthulhu;
+using CardWizard.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,6 +38,7 @@ namespace CardWizard.View
         /// <param name="skills"></param>
         public void InitializeSkills(MainManager manager, IEnumerable<Skill> skills)
         {
+            Container.ClearAllChildren();
             if (manager == null) throw new NullReferenceException("manager is null");
             if (skills == null || !skills.Any()) return;
             Manager = manager;
@@ -47,6 +49,34 @@ namespace CardWizard.View
                 Manager.CharacteristicChanged += iChanged;
                 Manager.InfoUpdated += MainManager.GetHandlerForCharacteristicBox(iChanged, box.Key);
             }
+            Manager.InfoUpdated += o =>
+            {
+                UpdatePointsView(o);
+            };
+            Manager.CharacteristicChanged += (o, e) =>
+            {
+                UpdatePointsView(o);
+            };
+            Manager.PropertyChanged += (o, e) =>
+            {
+                if (e.PropertyName == nameof(Character.Occupation)) UpdatePointsView(o as Character);
+            };
+        }
+
+        private void UpdatePointsView(Character c)
+        {
+            int personalPoints = 0, occupationPoints = 0;
+            if (Manager.DataBus.TryGetOccupation(c.Occupation, out var occupation))
+            {
+                var formula = occupation.PointFormula;
+                occupationPoints = Manager.CalcCharacteristic(formula, c.GetCharacteristicTotal(k => formula.Contains(k)));
+                //Label_OccupationPoints.AddOrSetToolTip(occupation.PointFormula, (Style)App.Current.FindResource("XToolTip"));
+            }
+            Label_OccupationPoints.Content = occupationPoints;
+
+            var pformula = "INT * 2";
+            personalPoints = Manager.CalcCharacteristic(pformula, c.GetCharacteristicTotal(k => k == "INT"));
+            Label_PersonalPoints.Content = personalPoints;
         }
 
         private static IEnumerable<TextElement> ConvertSkill(Skill item)

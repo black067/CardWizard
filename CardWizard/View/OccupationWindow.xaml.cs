@@ -3,6 +3,7 @@ using CardWizard.Tools;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -51,7 +52,7 @@ namespace CardWizard.View
             var getters = Translator?.ToKeywordsMap();
             if (datas != null)
             {
-                MainPanel.Children.Clear();
+                MainPanel.ClearAllChildren();
                 int titleFontSize = 18;
                 var style = (Style)FindResource("OBlock");
                 foreach (Setter item in style.Setters)
@@ -120,7 +121,7 @@ namespace CardWizard.View
 {{{nameof(Occupation.CreditRatingRange)}}} {titleStyle}
 {item.CreditRatingRange}
 {{{nameof(Occupation.Skills)}}} {titleStyle}
-{item.Skills.CombineToString(", ", null)}
+{item.Skills.Select(str => str.SplitRemoveEmpty('#')[0]).CombineToString(", ", null)}
 {{{nameof(Occupation)}.{nameof(Occupation.PointFormula)}}} {titleStyle}
 {item.PointFormula}
 ";

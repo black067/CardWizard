@@ -119,13 +119,46 @@ namespace CardWizard.View
             {
                 toolTip = new ToolTip();
                 toolTip.Content = text;
-                element.RegisterName($"ToolTip_{element.GetHashCode()}", toolTip);
+                element.RegisterName($"ToolTip_{toolTip.GetHashCode()}", toolTip);
                 element.ToolTip = toolTip;
             }
             if (handler != null)
                 toolTip.Opened += handler;
             if (style != null)
                 toolTip.Style = style;
+        }
+
+        /// <summary>
+        /// 新建并添加一个子控件到指定的元素下
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parent"></param>
+        /// <param name="name"></param>
+        /// <param name="style"></param>
+        /// <returns></returns>
+        public static T AddItem<T>(FrameworkElement parent, string name, Style style = null) where T : UIElement, new()
+        {
+            name = name.Replace('.', '_');
+            var item = new T();
+            if (item is FrameworkElement fe)
+            {
+                fe.Name = name;
+                if (style != null) fe.Style = style;
+            }
+            parent.RegisterName(name, item);
+            if (parent is Panel panel)
+            {
+                panel.Children.Add(item);
+            }
+            else if (parent is ContentControl content)
+            {
+                content.Content = item;
+            }
+            else if (parent is ItemsControl itemsControl)
+            {
+                itemsControl.Items.Add(item);
+            }
+            return item;
         }
 
         /// <summary>
@@ -136,12 +169,7 @@ namespace CardWizard.View
         /// <returns></returns>
         public static TextBlock AddBlock(FrameworkElement parent, string name, Style style = null, IEnumerable<TextElement> inlines = null)
         {
-            name = name.Replace('.', '_');
-            TextBlock block = new TextBlock();
-            block.Name = name;
-            parent.RegisterName(name, block);
-            if (parent is Panel panel) panel.Children.Add(block);
-            if (style != null) block.Style = style;
+            var block = AddItem<TextBlock>(parent, name, style);
             if (inlines != null) block.Inlines.AddRange(inlines);
             return block;
         }
@@ -183,6 +211,30 @@ namespace CardWizard.View
                     break;
             }
             return result.Where(e => e != null);
+        }
+
+        /// <summary>
+        /// 移除并取消注册所有子控件
+        /// </summary>
+        /// <param name="panel"></param>
+        public static void ClearAllChildren(this Panel panel)
+        {
+            for (int i = panel.Children.Count - 1; i >= 0; i--)
+            {
+                var o = panel.Children[i];
+                if (o is FrameworkElement element)
+                {
+                    if (!string.IsNullOrEmpty(element.Name))
+                    {
+                        var item = panel.FindName(element.Name);
+                        if (item == element)
+                        {
+                            panel.UnregisterName(element.Name);
+                        }
+                    }
+                    panel.Children.Remove(element);
+                }
+            }
         }
 
         /// <summary>

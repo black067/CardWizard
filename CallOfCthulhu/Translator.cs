@@ -31,9 +31,9 @@ namespace CallOfCthulhu
             { "Name.Placeholder", "请输入名称…" },
             { "Name.Default", "无名小卒" },
             { "Gender", "性别" },
-            { "Gender.Male", "♂" },
-            { "Gender.Female", "♀" },
-            { "Gender.Others", "⚥" },
+            { "Gender.Male", "男" },
+            { "Gender.Female", "女" },
+            { "Gender.Others", "?" },
             { "Age", "年龄" },
             { "Age.ToolTip", "调查员的年龄应当在 15 至 90 之间。若调查员超过了这个年龄范围，请找您的守秘人进行调整吧。" },
             { "Education", "学历" },
@@ -137,9 +137,9 @@ namespace CallOfCthulhu
             { "CreditRating", "信用评级" },
             { "CreditRatingRange", "信用评级范围" },
             { "CreditRating.ToolTip", "调查员的日日所需取决于信用评级。你的主要所有物，包括房子和汽车，都取决于信用评级。" },
-            { "CreditRating.SpendingLevel", "消费水平" },
-            { "CreditRating.Cash", "现金" },
-            { "CreditRating.Assets", "资产" },
+            { "Backstory.SpendingLevel", "消费水平" },
+            { "Backstory.Cash", "现金" },
+            { "Backstory.Assets", "资产" },
             { "AST", "资产" },
             { "AST.ToolTip", @"调查员拥有财产和其他价值年收入五倍的{AST}；
 一个现代的调查员投出55000美元拥有275000的{AST}。这些资产的十分之一存入银行当作现金。另外十分之一是股份和债券，可以在30天内转移。余下的是老书，房子或者是任何符合角色的东西。" },
@@ -202,12 +202,12 @@ namespace CallOfCthulhu
             { "MenuBar.Button.Create.ToolTip", "Ctrl + N\n创建一份新的调查员档案" },
             { "MenuBar.Button.Save", "保存" },
             { "MenuBar.Button.Save.ToolTip", "Ctrl + S\n保存你的调查员档案" },
-            { "MenuBar.Button.SavePicture", "生成图片" },
+            { "MenuBar.Button.SavePicture", "🖨" },
             { "MenuBar.Button.SavePicture.ToolTip", "Ctrl + Shift + S\n将你的调查员档案保存为一张图片" },
             { "MenuBar.Button.Settings", "设置" },
             { "MenuBar.Button.ShowToolTip", "显示 Tool Tip 提示" },
-            { "Tab.Front.Header", "角色卡·正面" },
-            { "Tab.Back.Header", "角色卡·背面" },
+            { "Tab.Front.Header", "档案 正面" },
+            { "Tab.Back.Header", "档案 背面" },
             // 界面元素
             { "Investigator.Document.Title", "DOCUMENT" },
             { "Investigator.Characteristics.Title", "CHARACTERISTICS" },
@@ -219,6 +219,8 @@ namespace CallOfCthulhu
             { "Investigator.Assets.Title", "CASH & ASSETS" },
             { "Investigator.Rules.Title", "QUICK REFERENCE RULES" },
             { "Investigator.Partners.Title", "FELLOW INVESTIGATORS" },
+            { "Investigator.PersonalPoints" , "个人技能点" },
+            { "Investigator.OccupationPoints" , "职业技能点" },
             // 控件显示
             { "Card.Image.Avatar", "点击可导入新头像" },
             { "Card.Button.Regenerate", "🎲" },
@@ -243,6 +245,11 @@ namespace CallOfCthulhu
             { "Message.Character.Switched", "已切换至调查员: {0}" },
             { "Message.Characteristic.Overflow", "属性: {0} 的值不能超过 {1}" },
             // 页首与页尾
+            { "QuickReferenceRules", @"技能和属性检定 # { FontSize:16, FontWeight: Bold }
+成功等级 [ 大失败 : 00/96+ ] [ 失败 : 点数 > 技能 ]
+[ 常规 : 点数 <= 技能 ] [ 困难 : 点数 <= 技能 / 2 ] [ 极难 : 点数 <= 技能 / 5 ]
+
+" },
             { "Page.Main.Head", "- Call of Cthulhu -" },
             { "Page.Main.Trail", "- ★ -" },
             { "Page.Backstory.Head", "- Call of Cthulhu -" },

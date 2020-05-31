@@ -1,22 +1,9 @@
 ﻿using CallOfCthulhu;
 using CardWizard.Tools;
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using YamlDotNet.Core.Tokens;
 
 namespace CardWizard.View
 {
@@ -165,9 +152,18 @@ namespace CardWizard.View
         public void UpdateValueView()
         {
             int value = ValueInitial + ValueAdjustment + ValueGrowth;
-            Label_Value.Content = value;
-            Label_ValueHalf.Content = (int)(value / 2);
-            Label_ValueOneFifth.Content = (int)(value / 5);
+            if (value == 0)
+            {
+                Label_Value.Content = string.Empty;
+                Label_ValueHalf.Content = string.Empty;
+                Label_ValueOneFifth.Content = string.Empty;
+            }
+            else
+            {
+                Label_Value.Content = value;
+                Label_ValueHalf.Content = (int)(value / 2);
+                Label_ValueOneFifth.Content = (int)(value / 5);
+            }
         }
 
         private void CharacteristicChanged(Character c, CharacteristicChangedEventArgs e)
@@ -175,6 +171,7 @@ namespace CardWizard.View
             if (!e.Key.EqualsIgnoreCase(Key)) { return; }
             ValueInitial = c.GetInitial(Key);
             ValueAdjustment = c.GetAdjustment(Key);
+            if (ValueAdjustment != 0) GrowthMark.IsChecked = true;
             ValueGrowth = c.GetGrowth(Key);
             UpdateValueView();
         }
@@ -217,17 +214,33 @@ namespace CardWizard.View
             CharacterGetter = getter;
             Key = skill.Name;
             SetValue(TagProperty, skill.Name);
-
+            Block_Key.TextAlignment = TextAlignment.Left;
             InputFieldEndEdit += onEndEdit;
             LabelColumn.Width = new GridLength(4, GridUnitType.Star);
             ValueColumn.Width = new GridLength(1, GridUnitType.Star);
-            
+
             Label_Value.FontSize = 22;
             Label_ValueHalf.FontSize = 12;
             Label_ValueOneFifth.FontSize = 12;
 
             if (!skill.Growable) GrowthMark.Visibility = Visibility.Hidden;
             return CharacteristicChanged;
+        }
+
+        private void GrowthMark_Checked(object sender, RoutedEventArgs e)
+        {
+            if (CharacterGetter == null) return;
+            var c = CharacterGetter();
+            if (c == null) return;
+            if (c.GetAdjustment(Key) == 0) c.SetAdjustment(Key, 1);
+        }
+
+        private void GrowthMark_Unchecked(object sender, RoutedEventArgs e)
+        {
+            if (CharacterGetter == null) return;
+            var c = CharacterGetter();
+            if (c == null) return;
+            c.SetAdjustment(Key, 0);
         }
     }
 

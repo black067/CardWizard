@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -33,6 +34,7 @@ namespace CallOfCthulhu
         /// <summary>
         /// 名称
         /// </summary>
+        [Description("名称")]
         public string Name { get; set; }
 
         /// <summary>

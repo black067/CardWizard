@@ -57,6 +57,7 @@ namespace CardWizard.View
             Combo_Era.ItemsSource = translator.labelForEras;
             // 角色职业
             Button_Occupation.Click += Button_Occupation_Click;
+            Manager.InfoUpdated += GetHandler(Button_Occupation.Tag?.ToString());
             // 角色年龄的显示
             BindTextBox(Text_Age, nameof(Character.Age), Manager, new IntRangeRule(1, 99));
             AgeBonusMark = Manager.IMainPage.Label_Validity;
@@ -80,6 +81,24 @@ namespace CardWizard.View
             };
         }
 
+        private Action<Character> GetHandler(string originalTag)
+        {
+            void UpdateOccupationView(Character c)
+            {
+                if (string.IsNullOrWhiteSpace(c.Occupation))
+                {
+                    Button_Occupation.Tag = originalTag;
+                    Button_Occupation.Content = Manager.Translator.Translate(originalTag, originalTag);
+                }
+                else
+                {
+                    Button_Occupation.Tag = c.Occupation;
+                    Button_Occupation.Content = c.Occupation;
+                }
+            }
+            return UpdateOccupationView;
+        }
+
         private void Button_Occupation_Click(object sender, RoutedEventArgs e)
         {
             var window = new OccupationWindow(Manager.DataBus.Occupations.Values, Manager.Translator)
@@ -97,6 +116,7 @@ namespace CardWizard.View
                     tiptext = Translator.MapKeywords(tiptext, Manager.Translator.ToKeywordsMap());
                     tip.Content = tiptext;
                 }
+                Manager.Current.Skills = occupation.Skills.ToList();
             }
         }
 

@@ -39,9 +39,10 @@
         </Grid.Resources>
         <CheckBox x:Name="GrowthMark" Grid.RowSpan="2" 
                   HorizontalAlignment="Center" VerticalContentAlignment="Center" 
-                  HorizontalContentAlignment="Center" VerticalAlignment="Center"/>
-        <TextBlock x:Name="Block_Key" Style="{DynamicResource GeneralTextBlock}" 
-                   Grid.Column="1" Grid.RowSpan="2"  HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center"
+                  HorizontalContentAlignment="Center" VerticalAlignment="Center"
+                  Checked="GrowthMark_Checked" Unchecked="GrowthMark_Unchecked"/>
+        <TextBlock x:Name="Block_Key" x:FieldModifier="public" Style="{DynamicResource GeneralTextBlock}" 
+                   Grid.Column="1" Grid.RowSpan="2"  HorizontalAlignment="Center" VerticalAlignment="Center"
                    FontSize="10">
             <Run FontSize="8">PROP</Run><LineBreak/>
             <Run FontSize="12">属性</Run><LineBreak/>

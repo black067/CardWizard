@@ -13,6 +13,7 @@
         <SolidColorBrush x:Key="ButtonBackground" Color="#FF69A6E4"/>
         <SolidColorBrush x:Key="ValidForeground" Color="#FF00FF51"/>
         <SolidColorBrush x:Key="InvalidForeground" Color="#FFFF3030"/>
+        <GridLength x:Key="TitleRowHeight">36</GridLength>
         <SolidColorBrush x:Key="CharacteristicBorderBrush" Color="#FF3C6185"/>
         <SolidColorBrush x:Key="SkillBorderBrush" Color="slategray"/>
         <System:String x:Key="AgeBonusMark">⚠</System:String>
@@ -114,7 +115,7 @@
                                 <RowDefinition Height="24"/>
                                 <RowDefinition/>
                             </Grid.RowDefinitions>
-                            <Label Name="DataLabel" Content="{TemplateBinding DataContext}"
+                            <Label Content="{TemplateBinding DataContext}"
                                    HorizontalAlignment="Left" VerticalAlignment="Top" 
                                    FontWeight="Bold" FontSize="14" Padding="0,0,0,0"/>
                             <TextBox Grid.Row="1" Padding="{TemplateBinding Padding}"
@@ -122,7 +123,13 @@
                                      MaxLines="{TemplateBinding MaxLines}" FontSize="{TemplateBinding FontSize}"
                                      Text="{Binding Path=Text, RelativeSource={RelativeSource TemplatedParent}}" AcceptsReturn="{TemplateBinding AcceptsReturn}"
                                      VerticalScrollBarVisibility="{TemplateBinding VerticalScrollBarVisibility}" TextWrapping="Wrap"/>
+                            <Button x:Name="button_confirm" Width="16" Height="16" Margin="{DynamicResource DefaultMargin}" Style="{DynamicResource XButtonStyle}" Tag="Card.Button.AddItem" FontSize="12" Grid.Row="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" VerticalAlignment="Bottom" HorizontalAlignment="Right" Visibility="Hidden">✔</Button>
                         </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                                <Setter TargetName="button_confirm" Property="Visibility" Value="Visible"></Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>

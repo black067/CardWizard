@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 
 namespace CallOfCthulhu
@@ -23,115 +24,9 @@ namespace CallOfCthulhu
         private string occupation;
         private string address;
         private string homeland;
-        private string[] skills;
-        private ContextDict backstory = new ContextDict(10);
-
-        #region 角色属性值与其成长值的获取与赋值
-
-        /// <summary>
-        /// 取得角色特点的基础值
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        public int GetInitial(string key) => Initials.TryGetValue(key, out int value) ? value : 0;
-
-        /// <summary>
-        /// 设置特点的基础值
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        public void SetInitial(string key, int value)
-        {
-            var original = Initials.ContainsKey(key) ? Initials[key] : 0;
-            Initials[key] = value;
-            UpdateCharacteristic(new CharacteristicChangedEventArgs(key)
-            {
-                Segment = Characteristic.Segment.INITIAL,
-                NewValue = value,
-                OriginValue = original,
-            });
-        }
-
-        /// <summary>
-        /// 取得特点的成长值
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        public int GetGrowth(string key)
-        {
-            if (Growths == null) return 0;
-            return Growths.TryGetValue(key, out int value) ? value : 0;
-        }
-
-        /// <summary>
-        /// 设置特点的成长值
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        public void SetGrowth(string key, int value)
-        {
-            if (Growths == null) Growths = new Dictionary<string, int>();
-            int original = Growths.ContainsKey(key) ? Growths[key] : 0;
-            Growths[key] = value;
-            UpdateCharacteristic(new CharacteristicChangedEventArgs(key)
-            {
-                Segment = Characteristic.Segment.GROWTH,
-                NewValue = value,
-                OriginValue = original,
-            });
-        }
-
-        /// <summary>
-        /// 取得特点的衰老惩罚值
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        public int GetAdjustment(string key)
-        {
-            if (Adjustments == null) return 0;
-            return Adjustments.TryGetValue(key, out int v) ? v : 0;
-        }
-
-        /// <summary>
-        /// 设置特点的衰老惩罚值
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public void SetAdjustment(string key, int value)
-        {
-            if (Adjustments == null) Adjustments = new Dictionary<string, int>();
-            int original = Adjustments.ContainsKey(key) ? Adjustments[key] : 0;
-            Adjustments[key] = value;
-            UpdateCharacteristic(new CharacteristicChangedEventArgs(key)
-            {
-                Segment = Characteristic.Segment.ADJUSTMENT,
-                NewValue = value,
-                OriginValue = original,
-            });
-        }
-
-        /// <summary>
-        /// 取得特点的最终值, 包括基础与成长
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        public int GetTotal(string key) => GetInitial(key) + GetGrowth(key) + GetAdjustment(key);
-
-        /// <summary>
-        /// 设置特点的值
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="base"></param>
-        /// <param name="growth"></param>
-        /// <param name="adjustment"></param>
-        public void SetTotal(string key, int initial, int growth, int adjustment)
-        {
-            SetInitial(key, initial);
-            SetGrowth(key, growth);
-            SetAdjustment(key, adjustment);
-        }
-        #endregion
+        private ContextDict backstory = new ContextDict(15);
+        private List<string> skills;
+        private List<string> gearAndPossessions;
 
         /// <summary>
         /// 名称
@@ -263,19 +158,163 @@ namespace CallOfCthulhu
                 UpdateData();
             }
         }
+
+        /// <summary>
+        /// 装备和物品
+        /// </summary>
+        [Description("装备和物品")]
+        public List<string> GearAndPossessions
+        {
+            get
+            {
+                if (gearAndPossessions == null) gearAndPossessions = new List<string>();
+                return gearAndPossessions;
+            }
+
+            set
+            {
+                gearAndPossessions = value;
+                UpdateData();
+            }
+        }
+
         /// <summary>
         /// 技能列表
         /// </summary>
         [Description("技能列表")]
-        public string[] Skills
+        public List<string> Skills
         {
-            get => skills;
+            get
+            {
+                if (skills == null) skills = new List<string>();
+                return skills;
+            }
+
             set
             {
                 skills = value;
                 UpdateData();
             }
         }
+
+        /// <summary>
+        /// 角色名称等信息发生改变时, 触发的事件
+        /// <para>注意, 角色的属性 (Characteristic) 数值变化需要监听事件 <see cref="CharacteristicChanged"/> </para>
+        /// </summary>
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        /// <summary>
+        /// 更新角色信息
+        /// </summary>
+        /// <param name="name"></param>
+        protected void UpdateData([CallerMemberName] string name = "") => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+
+        #region 角色属性值与其成长值的获取与赋值
+
+        /// <summary>
+        /// 取得角色特点的基础值
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public int GetInitial(string key) => Initials.TryGetValue(key, out int value) ? value : 0;
+
+        /// <summary>
+        /// 设置特点的基础值
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        public void SetInitial(string key, int value)
+        {
+            var original = Initials.ContainsKey(key) ? Initials[key] : 0;
+            Initials[key] = value;
+            UpdateCharacteristic(new CharacteristicChangedEventArgs(key)
+            {
+                Segment = Characteristic.Segment.INITIAL,
+                NewValue = value,
+                OriginValue = original,
+            });
+        }
+
+        /// <summary>
+        /// 取得特点的成长值
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public int GetGrowth(string key)
+        {
+            if (Growths == null) return 0;
+            return Growths.TryGetValue(key, out int value) ? value : 0;
+        }
+
+        /// <summary>
+        /// 设置特点的成长值
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        public void SetGrowth(string key, int value)
+        {
+            if (Growths == null) Growths = new Dictionary<string, int>();
+            int original = Growths.ContainsKey(key) ? Growths[key] : 0;
+            Growths[key] = value;
+            UpdateCharacteristic(new CharacteristicChangedEventArgs(key)
+            {
+                Segment = Characteristic.Segment.GROWTH,
+                NewValue = value,
+                OriginValue = original,
+            });
+        }
+
+        /// <summary>
+        /// 取得特点的衰老惩罚值
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public int GetAdjustment(string key)
+        {
+            if (Adjustments == null) return 0;
+            return Adjustments.TryGetValue(key, out int v) ? v : 0;
+        }
+
+        /// <summary>
+        /// 设置特点的衰老惩罚值
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public void SetAdjustment(string key, int value)
+        {
+            if (Adjustments == null) Adjustments = new Dictionary<string, int>();
+            int original = Adjustments.ContainsKey(key) ? Adjustments[key] : 0;
+            Adjustments[key] = value;
+            UpdateCharacteristic(new CharacteristicChangedEventArgs(key)
+            {
+                Segment = Characteristic.Segment.ADJUSTMENT,
+                NewValue = value,
+                OriginValue = original,
+            });
+        }
+
+        /// <summary>
+        /// 取得特点的最终值, 包括基础与成长
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public int GetTotal(string key) => GetInitial(key) + GetGrowth(key) + GetAdjustment(key);
+
+        /// <summary>
+        /// 设置特点的值
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="base"></param>
+        /// <param name="growth"></param>
+        /// <param name="adjustment"></param>
+        public void SetTotal(string key, int initial, int growth, int adjustment)
+        {
+            SetInitial(key, initial);
+            SetGrowth(key, growth);
+            SetAdjustment(key, adjustment);
+        }
+        #endregion
 
         /// <summary>
         /// 角色属性初始值
@@ -296,21 +335,17 @@ namespace CallOfCthulhu
         public Dictionary<string, int> Adjustments { get; set; }
 
         /// <summary>
-        /// 角色名称等信息发生改变时, 触发的事件
-        /// <para>注意, 角色的属性 (Characteristic) 数值变化需要监听事件 <see cref="CharacteristicChanged"/> </para>
+        /// 获取数据的总值
         /// </summary>
-        public event PropertyChangedEventHandler PropertyChanged;
+        public Dictionary<string, int> GetCharacteristicTotal(Func<string, bool> filterForKey = null)
+        {
+            return new Dictionary<string, int>(from k in Initials.Keys where filterForKey?.Invoke(k) ?? true select KeyValuePair.Create(k, GetTotal(k)));
+        }
 
         /// <summary>
         /// 角色的特点数值发生改变时, 触发的事件
         /// </summary>
         public event CharacteristicChangedEventHandler CharacteristicChanged;
-
-        /// <summary>
-        /// 更新角色信息
-        /// </summary>
-        /// <param name="name"></param>
-        protected void UpdateData([CallerMemberName] string name = "") => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 
         /// <summary>
         /// 更新特点数值
@@ -347,7 +382,6 @@ namespace CallOfCthulhu
             {
                 Initials = new Dictionary<string, int>(),
                 Age = DEFAULT_AGE,
-                Skills = new string[0],
             };
             if (baseModelDict != null)
             {

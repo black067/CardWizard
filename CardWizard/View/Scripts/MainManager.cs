@@ -266,6 +266,8 @@
         /// <param name="e"></param>
         private void DoSave(object sender, RoutedEventArgs e)
         {
+            Keyboard.ClearFocus();
+
             string dest;
             if (!CharacterFiles.TryGetValue(Current, out dest))
             {
@@ -303,8 +305,10 @@
         /// <param name="e"></param>
         private void DoCapturePicture(object sender, RoutedEventArgs e)
         {
-            IMainPage.CapturePng(Config, Current.Name + ".Main");
-            IBackstoryPage.CapturePng(Config, Current.Name + ".Back");
+            if (Window.TabItem_Front.IsSelected)
+                IMainPage.CapturePng(Config, Current.Name + ".Main");
+            else
+                IBackstoryPage.CapturePng(Config, Current.Name + ".Back");
         }
 
         /// <summary>
@@ -444,6 +448,10 @@
             });
         }
 
+        /// <summary>
+        /// 初始化角色卡的背面
+        /// </summary>
+        /// <param name="page"></param>
         private void InitializeBackstoryPage(BackstoryPage page)
         {
             var children = page.GetChildren();
@@ -462,6 +470,18 @@
                     };
                 }
             }
+            page.GearsCollectionChanged += (o, e) =>
+            {
+                if (e.Action == NotifyCollectionChangedAction.Add)
+                {
+                    Current.GearAndPossessions.Add(e.NewItems[0] as string);
+                }
+                else if (e.Action == NotifyCollectionChangedAction.Remove)
+                {
+                    var index = e.OldStartingIndex;
+                    Current.GearAndPossessions.RemoveAt(index);
+                }
+            };
         }
         #endregion
 

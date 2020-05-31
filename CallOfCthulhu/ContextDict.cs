@@ -85,29 +85,44 @@ namespace CallOfCthulhu
         /// <param name="key"></param>
         public new bool Remove(string key) => Remove(key, out _);
 
+        /// <summary>
+        /// 查询元素, 如果键不存在, 会返回 null
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public object GetValue(string key)
+        {
+            if (!ContainsKey(key)) return null;
+            return base[key];
+        }
+
+        /// <summary>
+        /// 设置元素的值, 如果键不存在, 会添加
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        public void SetValue(string key, object value)
+        {
+            if (!ContainsKey(key))
+            {
+                Add(key, value);
+                return;
+            }
+            var old = base[key];
+            if (value != old)
+            {
+                base[key] = value;
+                var e = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace,
+                                                             newItem: KeyValuePair.Create(key, value),
+                                                             oldItem: KeyValuePair.Create(key, old));
+                CollectionChanged?.Invoke(this, e);
+            }
+        }
+
         public new object this[string key]
         {
-            get
-            {
-                return base[key];
-            }
-            set
-            {
-                if (!ContainsKey(key))
-                {
-                    Add(key, value);
-                    return;
-                }
-                var old = base[key];
-                if (value != old)
-                {
-                    base[key] = value;
-                    var e = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace,
-                                                                 newItem: KeyValuePair.Create(key, value),
-                                                                 oldItem: KeyValuePair.Create(key, old));
-                    CollectionChanged?.Invoke(this, e);
-                }
-            }
+            get => GetValue(key);
+            set => SetValue(key, value);
         }
 
         /// <summary>
