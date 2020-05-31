@@ -444,10 +444,6 @@
             });
         }
 
-        /// <summary>
-        /// 初始化背景信息面板
-        /// </summary>
-        /// <param name="page"></param>
         private void InitializeBackstoryPage(BackstoryPage page)
         {
             var children = page.GetChildren();
@@ -458,9 +454,10 @@
                 if (string.IsNullOrWhiteSpace(tag)) continue;
                 if (tag.StartsWith("Backstory"))
                 {
+                    tag = tag.Replace("Backstory.", string.Empty);
                     InfoUpdated += c =>
                     {
-                        var b = new Binding(path: $"{nameof(Current)}.{nameof(Character.Backstory)}[{tag}]") { Source = this, };
+                        var b = new Binding(path: $"{nameof(Character.Backstory)}[{tag}]") { Source = c, };
                         box.SetBinding(TextBox.TextProperty, b);
                     };
                 }
