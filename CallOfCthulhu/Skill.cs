@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace CallOfCthulhu
@@ -96,6 +97,13 @@ namespace CallOfCthulhu
                 context = new ContextDict();
             }
             return s;
+        }
+
+        public override string ToString()
+        {
+            var builder = new StringBuilder($"{Name} {BaseValue}% # ");
+
+            return builder.ToString();
         }
     }
 }

@@ -6,6 +6,19 @@
              xmlns:local="clr-namespace:CardWizard.View"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="916">
+    <UserControl.Resources>
+        <Style x:Key="ValueLabel" TargetType="Label">
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Style.Triggers>
+                <Trigger Property="DataContext" Value="invalid">
+                    <Setter Property="Foreground" Value="{StaticResource InvalidForeground}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
     <!--技能面板-->
     <Grid x:Name="MainGrid">
         <Grid.RowDefinitions>
@@ -22,16 +35,17 @@
                FontSize="22" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="99"
                Style="{DynamicResource XTitle}"/>
         <StackPanel Orientation="Horizontal" Grid.ColumnSpan="2" >
-            <Label Tag="Investigator.OccupationPoints" FontWeight="Bold" Foreground="White" VerticalContentAlignment="Center" Padding="6,5,6,5">
+            <Label Tag="Investigator.OccupationPoints" Style="{StaticResource ValueLabel}" Padding="6,5,6,5">
                 职业技能点
             </Label>
-            <Label x:Name="Label_OccupationPoints"  FontWeight="Bold" Foreground="White" VerticalContentAlignment="Center" Padding="10,5,20,5">
+            <Label x:Name="Label_OccupationPoints"  Style="{StaticResource ValueLabel}" Padding="10,5,20,5">
                 550
             </Label>
-            <Label Tag="Investigator.PersonalPoints" FontWeight="Bold" Foreground="White" VerticalContentAlignment="Center" Padding="6,5,6,5">
+            <Label Tag="Investigator.PersonalPoints" Style="{StaticResource ValueLabel}" Padding="6,5,6,5">
                 个人技能点
             </Label>
-            <Label x:Name="Label_PersonalPoints"  FontWeight="Bold" Foreground="White" VerticalContentAlignment="Center" HorizontalContentAlignment="Right" Padding="10,5,20,5">
+            <Label x:Name="Label_PersonalPoints"  Style="{StaticResource ValueLabel}" HorizontalContentAlignment="Right" Padding="10,5,20,5">
+                <!--<Label.DataContext>invalid</Label.DataContext>-->
                 241
             </Label>
         </StackPanel>

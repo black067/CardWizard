@@ -21,6 +21,7 @@
         </Style>
         <Style x:Key="XBorder" TargetType="Border">
             <Setter Property="BorderBrush" Value="{Binding BorderBrush, ElementName=userControl}"/>
+            <Setter Property="Background" Value="#4CFFFFFF"/>
         </Style>
     </UserControl.Resources>
     <Grid x:Name="MainGrid">
@@ -34,9 +35,6 @@
             <RowDefinition/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <Grid.Resources>
-            <SolidColorBrush x:Key="BorderBackground" Color="Transparent"/>
-        </Grid.Resources>
         <CheckBox x:Name="GrowthMark" Grid.RowSpan="2" 
                   HorizontalAlignment="Center" VerticalContentAlignment="Center" 
                   HorizontalContentAlignment="Center" VerticalAlignment="Center"

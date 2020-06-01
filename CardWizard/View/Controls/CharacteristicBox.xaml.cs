@@ -218,11 +218,14 @@ namespace CardWizard.View
             InputFieldEndEdit += onEndEdit;
             LabelColumn.Width = new GridLength(4, GridUnitType.Star);
             ValueColumn.Width = new GridLength(1, GridUnitType.Star);
-
+            
             Label_Value.FontSize = 22;
             Label_ValueHalf.FontSize = 12;
             Label_ValueOneFifth.FontSize = 12;
 
+            Label_Initial.Tag = "PersonalPoints.Label";
+            Label_Adjustment.Tag = "OccupationPoints.Label";
+            Label_Growth.Tag = "GrowthPoints.Label";
             if (!skill.Growable) GrowthMark.Visibility = Visibility.Hidden;
             return CharacteristicChanged;
         }
@@ -232,7 +235,8 @@ namespace CardWizard.View
             if (CharacterGetter == null) return;
             var c = CharacterGetter();
             if (c == null) return;
-            if (c.GetAdjustment(Key) == 0) c.SetAdjustment(Key, 1);
+            //if (c.GetGrowth(Key) == 0) c.SetGrowth(Key, 1);
+            var skillname = c.Skills.FirstOrDefault(s => s.EqualsIgnoreCase(Key));
         }
 
         private void GrowthMark_Unchecked(object sender, RoutedEventArgs e)
@@ -240,7 +244,7 @@ namespace CardWizard.View
             if (CharacterGetter == null) return;
             var c = CharacterGetter();
             if (c == null) return;
-            c.SetAdjustment(Key, 0);
+            //c.SetGrowth(Key, 0);
         }
     }
 

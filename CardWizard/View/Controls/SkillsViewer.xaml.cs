@@ -21,15 +21,19 @@ namespace CardWizard.View
     /// </summary>
     public partial class SkillsViewer : UserControl
     {
+        public SkillsViewer()
+        {
+            InitializeComponent();
+        }
+
         /// <summary>
         /// 缓存主管理器
         /// </summary>
         MainManager Manager { get; set; }
 
-        public SkillsViewer()
-        {
-            InitializeComponent();
-        }
+        private List<string> SkillNames { get; set; }
+
+        private bool SkillFilter(string key) => SkillNames?.Contains(key) ?? false;
 
         /// <summary>
         /// 初始化技能面板
@@ -42,6 +46,7 @@ namespace CardWizard.View
             if (manager == null) throw new NullReferenceException("manager is null");
             if (skills == null || !skills.Any()) return;
             Manager = manager;
+            SkillNames = (from s in skills select s.Name).ToList();
             foreach (var item in skills)
             {
                 var box = AddBox(Container, ConvertSkill(item));
@@ -49,10 +54,7 @@ namespace CardWizard.View
                 Manager.CharacteristicChanged += iChanged;
                 Manager.InfoUpdated += MainManager.GetHandlerForCharacteristicBox(iChanged, box.Key);
             }
-            Manager.InfoUpdated += o =>
-            {
-                UpdatePointsView(o);
-            };
+            Manager.InfoUpdated += UpdatePointsView;
             Manager.CharacteristicChanged += (o, e) =>
             {
                 UpdatePointsView(o);
@@ -63,20 +65,33 @@ namespace CardWizard.View
             };
         }
 
+        /// <summary>
+        /// 刷新剩余点数的显示
+        /// </summary>
+        /// <param name="c"></param>
         private void UpdatePointsView(Character c)
         {
-            int personalPoints = 0, occupationPoints = 0;
+            int personalPoints = 0, ppConsumed = 0, ppSum = 0, occupationPoints = 0, opConsumed = 0, opSum = 0;
             if (c.Occupation != null && Manager.DataBus.TryGetOccupation(c.Occupation, out var occupation))
             {
                 var formula = occupation.PointFormula;
                 occupationPoints = Manager.CalcCharacteristic(formula, c.GetCharacteristicTotal(k => formula.Contains(k)));
-                //Label_OccupationPoints.AddOrSetToolTip(occupation.PointFormula, (Style)App.Current.FindResource("XToolTip"));
+                Label_OccupationPoints.AddOrSetToolTip(occupation.PointFormula, (Style)App.Current.FindResource("XToolTip"));
             }
-            Label_OccupationPoints.Content = occupationPoints;
+            opConsumed = (from kvp in c.Initials where SkillFilter(kvp.Key) select kvp.Value).Sum();
+            opSum = occupationPoints - opConsumed;
+            Label_OccupationPoints.Content = opSum;
+            if (opSum < 0) Label_OccupationPoints.DataContext = "invalid";
+            else Label_OccupationPoints.DataContext = string.Empty;
+
 
             var pformula = "INT * 2";
             personalPoints = Manager.CalcCharacteristic(pformula, c.GetCharacteristicTotal(k => k == "INT"));
-            Label_PersonalPoints.Content = personalPoints;
+            ppConsumed = (from kvp in c.Adjustments where SkillFilter(kvp.Key) select kvp.Value).Sum();
+            ppSum = personalPoints - ppConsumed;
+            Label_PersonalPoints.Content = ppSum;
+            if (ppSum < 0) Label_PersonalPoints.DataContext = "invalid";
+            else Label_PersonalPoints.DataContext = string.Empty;
         }
 
         private static IEnumerable<TextElement> ConvertSkill(Skill item)

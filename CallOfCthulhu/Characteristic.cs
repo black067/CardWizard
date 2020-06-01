@@ -9,6 +9,7 @@
         private string formula = "3D6";
         private bool derived = false;
         private int upper = 0;
+        private int lower;
 
         /// <summary>
         /// 名称
@@ -24,6 +25,11 @@
         /// 是否为派生属性
         /// </summary>
         public bool Derived { get => derived; set => derived = value; }
+
+        /// <summary>
+        /// 下限
+        /// </summary>
+        public int Lower { get => lower; set => lower = value; }
 
         /// <summary>
         /// 上限
