@@ -66,7 +66,7 @@ namespace CardWizard.View
         private void UpdatePointsView(Character c)
         {
             int personalPoints = 0, occupationPoints = 0;
-            if (Manager.DataBus.TryGetOccupation(c.Occupation, out var occupation))
+            if (c.Occupation != null && Manager.DataBus.TryGetOccupation(c.Occupation, out var occupation))
             {
                 var formula = occupation.PointFormula;
                 occupationPoints = Manager.CalcCharacteristic(formula, c.GetCharacteristicTotal(k => formula.Contains(k)));

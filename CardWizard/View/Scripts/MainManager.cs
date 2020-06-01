@@ -404,7 +404,7 @@
         }
         #endregion
 
-        #region Initialize Main Page
+        #region Initialize Document Pages
         /// <summary>
         /// 角色主页面的初始化
         /// </summary>
@@ -566,8 +566,7 @@
                     }
                 }
                 // 查询是否存在这个子控件的提示信息, 若有, 添加 ToolTip
-                var tooltipKey = $"{path}.ToolTip";
-                if (translator.TryTranslate(tooltipKey, out text) && !string.IsNullOrWhiteSpace(text))
+                if (!string.IsNullOrWhiteSpace(path) && translator.TryTranslate($"{path}.ToolTip", out text) && !string.IsNullOrWhiteSpace(text))
                 {
                     element.AddOrSetToolTip(text, (Style)Application.Current.FindResource("XToolTip"), SynchronizeOpacity);
                 }

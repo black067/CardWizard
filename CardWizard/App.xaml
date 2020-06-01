@@ -65,11 +65,6 @@
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Background" Value="#43a9c7"/>
             <Setter Property="Cursor" Value="Hand"></Setter>
-            <Setter Property="ToolTip">
-                <Setter.Value>
-                    <ToolTip Style="{DynamicResource XToolTip}"/>
-                </Setter.Value>
-            </Setter>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
@@ -123,7 +118,7 @@
                                      MaxLines="{TemplateBinding MaxLines}" FontSize="{TemplateBinding FontSize}"
                                      Text="{Binding Path=Text, RelativeSource={RelativeSource TemplatedParent}}" AcceptsReturn="{TemplateBinding AcceptsReturn}"
                                      VerticalScrollBarVisibility="{TemplateBinding VerticalScrollBarVisibility}" TextWrapping="Wrap"/>
-                            <Button x:Name="button_confirm" Width="16" Height="16" Margin="{DynamicResource DefaultMargin}" Style="{DynamicResource XButtonStyle}" Tag="Card.Button.AddItem" FontSize="12" Grid.Row="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" VerticalAlignment="Bottom" HorizontalAlignment="Right" Visibility="Hidden">✔</Button>
+                            <Button x:Name="button_confirm" Width="16" Height="16" Margin="{DynamicResource DefaultMargin}" Style="{DynamicResource XButtonStyle}" FontSize="12" Grid.Row="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" VerticalAlignment="Bottom" HorizontalAlignment="Right" Visibility="Hidden">✔</Button>
                         </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsKeyboardFocusWithin" Value="True">
