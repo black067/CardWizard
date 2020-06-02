@@ -195,8 +195,8 @@
             <Setter Property="Background" Value="White"></Setter>
             <Setter Property="EnableRowVirtualization" Value="False"></Setter>
             <Setter Property="GridLinesVisibility" Value="None"></Setter>
-            <Setter Property="CanUserAddRows" Value="False"></Setter>
             <!--禁止在尾行手动添加数据-->
+            <Setter Property="CanUserAddRows" Value="False"></Setter>
             <Setter Property="AutoGenerateColumns" Value="False"></Setter>
             <Setter Property="IsEnabled" Value="True"></Setter>
         </Style>

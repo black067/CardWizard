@@ -1,62 +1,175 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Runtime.CompilerServices;
+using System.Reflection;
 
 namespace CallOfCthulhu
 {
     /// <summary>
     /// 技能
     /// </summary>
-    public class Skill
+    public class Skill : INotifyPropertyChanged
     {
-        /// <summary>
-        /// 自选任意技能
-        /// </summary>
-        public const string CUSTOM = "{Custom}";
-
-        /// <summary>
-        /// 自选专业技能
-        /// </summary>
-        public const string CUSTOM_PRO = "{Custom.Professional}";
-
-        /// <summary>
-        /// 自选社交技能
-        /// </summary>
-        public const string CUSTOM_SOCIAL = "{Custom.Social}";
-
-        /// <summary>
-        /// 自选艺术与手艺技能
-        /// </summary>
-        public const string CUSTOM_ARTISTIC = "{Custom.Artistic}";
+        private string name;
+        private string category;
+        private string description;
+        private bool growable = true;
+        private int baseValue;
+        private int growthPoints;
+        private int occupationPoints;
+        private int personalPoints;
+        private int trainPoints;
+        private bool grown;
 
         /// <summary>
         /// 名称
         /// </summary>
         [Description("名称")]
-        public string Name { get; set; }
+        public string Name
+        {
+            get => name;
+            set
+            {
+                name = value;
+                OnPropertyChanged();
+            }
+        }
 
         /// <summary>
         /// 技能类别
         /// </summary>
-        public string Category { get; set; }
+        [Description("技能类别")]
+        public string Category
+        {
+            get => category;
+            set
+            {
+                category = value;
+                OnPropertyChanged();
+            }
+        }
 
         /// <summary>
         /// 技能描述
         /// </summary>
-        public string Description { get; set; }
-
-        /// <summary>
-        /// 技能基础值
-        /// </summary>
-        public int BaseValue { get; set; }
+        [Description("技能描述")]
+        public string Description
+        {
+            get => description;
+            set
+            {
+                description = value;
+                OnPropertyChanged();
+            }
+        }
 
         /// <summary>
         /// 能否获得幕间提升
         /// </summary>
-        public bool Growable { get; set; } = true;
+        [Description("能否获得幕间提升")]
+        public bool Growable
+        {
+            get => growable;
+            set
+            {
+                growable = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// 技能是否已提升完成
+        /// </summary>
+        [Description("技能是否已提升完成")]
+        public bool Grown
+        {
+            get => grown;
+            set
+            {
+                grown = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// 技能基础值
+        /// </summary>
+        [Description("技能基础值")]
+        public int BaseValue
+        {
+            get => baseValue;
+            set
+            {
+                baseValue = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// 幕间成长点数
+        /// </summary>
+        [Description("幕间成长点数")]
+        public int GrowthPoints
+        {
+            get => growthPoints;
+            set
+            {
+                growthPoints = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// 职业点数
+        /// </summary>
+        [Description("职业点数")]
+        public int OccupationPoints
+        {
+            get => occupationPoints;
+            set
+            {
+                occupationPoints = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// 兴趣点数
+        /// </summary>
+        [Description("兴趣点数")]
+        public int PersonalPoints
+        {
+            get => personalPoints;
+            set
+            {
+                personalPoints = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// 训练提升点数
+        /// </summary>
+        [Description("训练提升点数")]
+        public int TrainPoints
+        {
+            get => trainPoints;
+            set
+            {
+                trainPoints = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// 属性发生改变时触发的事件
+        /// </summary>
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private void OnPropertyChanged([CallerMemberName] string propertyName = "") => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
         /// <summary>
         /// 将文本转化为 Skill
@@ -101,8 +214,13 @@ namespace CallOfCthulhu
 
         public override string ToString()
         {
-            var builder = new StringBuilder($"{Name} {BaseValue}% # ");
-
+            var builder = new StringBuilder($"{Name} {BaseValue}% # {{");
+            var props = typeof(Skill).GetProperties();
+            foreach (var item in props)
+            {
+                builder.Append($"{item.Name}: {item.GetValue(this)}, ");
+            }
+            builder.Append("}");
             return builder.ToString();
         }
     }

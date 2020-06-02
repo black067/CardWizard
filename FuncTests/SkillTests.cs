@@ -26,5 +26,22 @@ namespace CallOfCthulhu.Tests
                 Assert.IsTrue(context.ContainsKey(item), $"找不到键: {item}");
             }
         }
+
+        [TestMethod]
+        public void ToStringTest()
+        {
+            var skill = new Skill()
+            {
+                Name = "Cthulhu Mythos",
+                Description = "克苏鲁神话",
+                BaseValue = 0,
+                Growable = false,
+                Category = "Mythos",
+            };
+
+            var text = skill.ToString();
+
+            var skill_after = Skill.Parse(text, out var contextDict, YamlKit.Parse<ContextDict>);
+        }
     }
 }

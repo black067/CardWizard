@@ -9,17 +9,53 @@
     <UserControl.Resources>
     </UserControl.Resources>
     <Grid>
-        <DataGrid Style="{DynamicResource DataGridStyle}">
+        <DataGrid x:Name="MainGrid" Style="{DynamicResource DataGridStyle}" 
+                  IsReadOnly="True">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="武器" Width="160"/>
-                <DataGridTextColumn Header="常规" Width="48"/>
-                <DataGridTextColumn Header="困难" Width="48"/>
-                <DataGridTextColumn Header="极难" Width="48"/>
-                <DataGridTextColumn Header="伤害" Width="80"/>
-                <DataGridTextColumn Header="射程" Width="80"/>
-                <DataGridTextColumn Header="次数" Width="80"/>
-                <DataGridTextColumn Header="装弹量" Width="80"/>
-                <DataGridTextColumn Header="故障值" Width="80"/>
+                <DataGridTextColumn Width="160">
+                    <DataGridTextColumn.Header>
+                        <Label Content="武器" Tag="Weapon"/>
+                    </DataGridTextColumn.Header></DataGridTextColumn>
+                <DataGridTextColumn Width="48">
+                    <DataGridTextColumn.Header>
+                    <Label Content="常规" Tag="Weapon.Normal"/>
+                    </DataGridTextColumn.Header>
+                </DataGridTextColumn>
+                <DataGridTextColumn Width="48">
+                    <DataGridTextColumn.Header>
+                        <Label Content="困难" Tag="Weapon.Hard"/>
+                    </DataGridTextColumn.Header>
+                </DataGridTextColumn>
+                <DataGridTextColumn Width="48">
+                    <DataGridTextColumn.Header>
+                        <Label Content="极难" Tag="Weapon.ExtremeHard"/>
+                    </DataGridTextColumn.Header>
+                </DataGridTextColumn>
+                <DataGridTextColumn Width="80">
+                    <DataGridTextColumn.Header>
+                        <Label Content="伤害" Tag="Weapon.Damage"/>
+                    </DataGridTextColumn.Header>
+                </DataGridTextColumn>
+                <DataGridTextColumn Width="80">
+                    <DataGridTextColumn.Header>
+                        <Label Content="射程" Tag="Weapon.Range"/>
+                    </DataGridTextColumn.Header>
+                </DataGridTextColumn>
+                <DataGridTextColumn Width="80">
+                    <DataGridTextColumn.Header>
+                        <Label Content="次数" Tag="Weapon.AttacksPerRound"/>
+                    </DataGridTextColumn.Header>
+                </DataGridTextColumn>
+                <DataGridTextColumn  Width="80">
+                    <DataGridTextColumn.Header>
+                        <Label Content="装弹量" Tag="Weapon.Bullets"/>
+                    </DataGridTextColumn.Header>
+                </DataGridTextColumn>
+                <DataGridTextColumn Width="80">
+                    <DataGridTextColumn.Header>
+                        <Label Content="故障值" Tag="Weapon.Resistance"/>
+                    </DataGridTextColumn.Header>
+                </DataGridTextColumn>
             </DataGrid.Columns>
         </DataGrid>
     </Grid>

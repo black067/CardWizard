@@ -27,6 +27,7 @@ namespace CallOfCthulhu
         private ContextDict backstory = new ContextDict(15);
         private List<string> skills;
         private List<string> gearAndPossessions;
+        private string damageBonus;
 
         /// <summary>
         /// 名称
@@ -38,7 +39,7 @@ namespace CallOfCthulhu
             set
             {
                 name = value;
-                UpdateData();
+                OnPropertyChanged();
             }
         }
 
@@ -52,7 +53,7 @@ namespace CallOfCthulhu
             set
             {
                 age = value;
-                UpdateData();
+                OnPropertyChanged();
             }
         }
 
@@ -66,7 +67,7 @@ namespace CallOfCthulhu
             set
             {
                 era = value;
-                UpdateData();
+                OnPropertyChanged();
             }
         }
 
@@ -80,7 +81,7 @@ namespace CallOfCthulhu
             set
             {
                 gender = value;
-                UpdateData();
+                OnPropertyChanged();
             }
         }
 
@@ -94,7 +95,7 @@ namespace CallOfCthulhu
             set
             {
                 education = value;
-                UpdateData();
+                OnPropertyChanged();
             }
         }
 
@@ -108,7 +109,7 @@ namespace CallOfCthulhu
             set
             {
                 occupation = value;
-                UpdateData();
+                OnPropertyChanged();
             }
         }
 
@@ -122,7 +123,7 @@ namespace CallOfCthulhu
             set
             {
                 address = value;
-                UpdateData();
+                OnPropertyChanged();
             }
         }
 
@@ -136,7 +137,7 @@ namespace CallOfCthulhu
             set
             {
                 homeland = value;
-                UpdateData();
+                OnPropertyChanged();
             }
         }
 
@@ -148,14 +149,14 @@ namespace CallOfCthulhu
         {
             get
             {
-                if (backstory == null) backstory = new ContextDict(10);
+                if (backstory == null) backstory = new ContextDict(15);
                 return backstory;
             }
 
             set
             {
                 backstory = value;
-                UpdateData();
+                OnPropertyChanged();
             }
         }
 
@@ -174,7 +175,7 @@ namespace CallOfCthulhu
             set
             {
                 gearAndPossessions = value;
-                UpdateData();
+                OnPropertyChanged();
             }
         }
 
@@ -193,7 +194,7 @@ namespace CallOfCthulhu
             set
             {
                 skills = value;
-                UpdateData();
+                OnPropertyChanged();
             }
         }
 
@@ -207,19 +208,19 @@ namespace CallOfCthulhu
         /// 更新角色信息
         /// </summary>
         /// <param name="name"></param>
-        protected void UpdateData([CallerMemberName] string name = "") => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        protected void OnPropertyChanged([CallerMemberName] string name = "") => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 
         #region 角色属性值与其成长值的获取与赋值
 
         /// <summary>
-        /// 取得角色特点的基础值
+        /// 取得角色属性的基础值
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
         public int GetInitial(string key) => Initials.TryGetValue(key, out int value) ? value : 0;
 
         /// <summary>
-        /// 设置特点的基础值
+        /// 设置属性的基础值
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
@@ -236,7 +237,7 @@ namespace CallOfCthulhu
         }
 
         /// <summary>
-        /// 取得特点的成长值
+        /// 取得属性的成长值
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
@@ -247,7 +248,7 @@ namespace CallOfCthulhu
         }
 
         /// <summary>
-        /// 设置特点的成长值
+        /// 设置属性的成长值
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
@@ -265,7 +266,7 @@ namespace CallOfCthulhu
         }
 
         /// <summary>
-        /// 取得特点的衰老惩罚值
+        /// 取得角色属性的调整值
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
@@ -276,7 +277,7 @@ namespace CallOfCthulhu
         }
 
         /// <summary>
-        /// 设置特点的衰老惩罚值
+        /// 设置角色属性的调整值
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
@@ -295,14 +296,14 @@ namespace CallOfCthulhu
         }
 
         /// <summary>
-        /// 取得特点的最终值, 包括基础与成长
+        /// 取得属性的最终值, 包括基础与成长
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
         public int GetTotal(string key) => GetInitial(key) + GetGrowth(key) + GetAdjustment(key);
 
         /// <summary>
-        /// 设置特点的值
+        /// 设置属性的值
         /// </summary>
         /// <param name="key"></param>
         /// <param name="base"></param>
@@ -333,6 +334,20 @@ namespace CallOfCthulhu
         /// </summary>
         [Description("角色属性调整值")]
         public Dictionary<string, int> Adjustments { get; set; }
+
+        /// <summary>
+        /// 伤害加值公式
+        /// </summary>
+        [Description("伤害加值公式")]
+        public string DamageBonus
+        {
+            get => damageBonus;
+            set
+            {
+                damageBonus = value;
+                OnPropertyChanged();
+            }
+        }
 
         /// <summary>
         /// 获取数据的总值

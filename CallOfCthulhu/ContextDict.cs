@@ -157,13 +157,13 @@ namespace CallOfCthulhu
                 var name = kvp.Key.Name;
                 if (!values.TryGetValue(name, out var value)) continue;
                 var itemtype = kvp.Key is FieldInfo ? (kvp.Key as FieldInfo).FieldType : (kvp.Key as PropertyInfo).PropertyType;
-                var valuetype = value.GetType();
-                if (valuetype.IsSubclassOf(itemtype))
+                try
                 {
-                    kvp.Value.Invoke(target, value);
+                    kvp.Value.Invoke(target, Convert.ChangeType(value, itemtype));
                 }
-                else
+                catch
                 {
+                var valuetype = value.GetType();
                     errors.AppendLine($"设置字段 {kvp.Key.Name} 的值时, 需要类型为 {itemtype.FullName} 的值, 但给的值类型为 {valuetype.FullName}");
                 }
             }

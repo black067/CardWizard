@@ -150,8 +150,8 @@ namespace CardWizard.Data
                         "心理学",
                         "科学(生物学)", 
                         "科学(药学)", 
-                        Skill.CUSTOM_PRO, 
-                        Skill.CUSTOM_PRO
+                        "自选专业技能", 
+                        "自选专业技能", 
                     },
                     CreditRatingRange = "30 ~ 80",
                     PointFormula = "EDU * 4",
@@ -169,11 +169,19 @@ namespace CardWizard.Data
                         "聆听", 
                         "心理学", 
                         "侦察", 
-                        Skill.CUSTOM_SOCIAL, 
-                        Skill.CUSTOM
+                        "自选社交技能",
+                        "自选任意技能",
                     },
                     CreditRatingRange = "20 ~ 50",
                     PointFormula = "EDU * 2 + math.max(DEX, STR) * 2",
+                },
+                new Weapon()
+                {
+                    Name = "徒手格斗",
+                    Hitrate = "25",
+                    Damage = "1D3 + DB",
+                    BaseRange = "",
+                    AttacksPerRound = "1"
                 },
                 new Skill()
                 {

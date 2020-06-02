@@ -103,6 +103,7 @@ namespace CardWizard.Data
             new Characteristic() { Name = "MP", Formula = "POW / 5", Derived = true},
             new Characteristic() { Name = "HP", Formula = "(SIZ + CON) / 5", Derived = true},
             new Characteristic() { Name = "DODGE", Formula = "DEX / 2", Derived = true},
+            new Characteristic() { Name = "Build", Formula="0", Derived = true, },
         };
 
         [YamlIgnore]

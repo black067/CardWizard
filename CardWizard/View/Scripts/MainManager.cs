@@ -446,6 +446,8 @@
                 InfoUpdating += c => AvatarUpdate(c, image);
                 image.MouseDown += DoImportAvatar;
             });
+            // 武器面板初始化
+            page.WeaponBox.InitializeBox(DataBus.Weapons.Values);
         }
 
         /// <summary>
@@ -710,7 +712,11 @@
             if (c == null) return;
             var scrtipt = string.Format("return DamageBonus({0}, {1})", c.GetTotal("STR"), c.GetTotal("SIZ"));
             var results = LuaHub.DoString(scrtipt);
-            Window.MainPage.SetDamageBonus(results[0], Convert.ToInt32(results[1]));
+            string damageBonus = results[0] as string;
+            int build = Convert.ToInt32(results[1]);
+            Window.MainPage.SetDamageBonus(damageBonus, build);
+            c.DamageBonus = damageBonus;
+            c.SetAdjustment("Build", build);
         }
 
         /// <summary>
