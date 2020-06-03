@@ -179,10 +179,10 @@ namespace CardWizard.View
         /// </summary>
         /// <param name="root"></param>
         /// <returns></returns>
-        public static IEnumerable<Visual> GetChildren(this Visual root)
+        public static IEnumerable<DependencyObject> GetChildren(this DependencyObject root)
         {
-            if (root == null) return new List<Visual>();
-            var result = new List<Visual> { root };
+            if (root == null) return new List<DependencyObject>();
+            var result = new List<DependencyObject> { root };
             switch (root)
             {
                 case Panel panel:
@@ -198,6 +198,11 @@ namespace CardWizard.View
                     }
                     break;
                 case ItemsControl itemsControl:
+                    if (itemsControl is DataGrid dataGrid)
+                    {
+                        result.AddRange(dataGrid.Columns);
+                        break;
+                    }
                     var items = from object i in itemsControl.Items where i is Visual select i as Visual;
                     foreach (Visual item in items)
                     {

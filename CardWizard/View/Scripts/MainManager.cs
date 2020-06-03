@@ -581,7 +581,7 @@
 
             // 创建历史记录, 避免重复操作元素
             if (histories == null) { histories = new HashSet<Visual>(); }
-            if (histories.Contains(container)) { return; }
+            if (histories.Contains(container) || translator == null) { return; }
             else
             {
                 translate(container, translator);
@@ -589,13 +589,21 @@
             }
             // 查询所有的子控件
             var subElements = container.GetChildren();
-            var elements = from e in subElements where e is FrameworkElement select e as FrameworkElement;
             // 遍历子控件, 尝试对其本地化
-            foreach (var element in elements)
+            foreach (var subElement in subElements)
             {
-                if (histories.Contains(element)) continue;
-                translate(element, translator);
-                histories.Add(element);
+                if (histories.Contains(subElement)) continue;
+                if (subElements is FrameworkElement element)
+                {
+                    translate(element, translator);
+                    histories.Add(element);
+                }
+                else if (subElement is DataGridColumn dataGridColumn)
+                {
+                    var pathHeader = dataGridColumn.Header as string;
+                    if (string.IsNullOrEmpty(pathHeader) || !translator.TryTranslate($"{container.Name}.{pathHeader}", out var text)) continue;
+                    dataGridColumn.Header = text;
+                }
             }
         }
 
