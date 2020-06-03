@@ -71,10 +71,22 @@ namespace CallOfCthulhu
         public string Description { get; set; }
 
         /// <summary>
-        /// 基本命中率公式
+        /// 常规命中率公式
         /// </summary>
-        [Description("基本命中率公式")]
-        public string Hitrate { get; set; }
+        [Description("常规命中率公式")]
+        public string HitrateNormal { get; set; }
+
+        /// <summary>
+        /// 困难命中率公式
+        /// </summary>
+        [Description("困难命中率公式")]
+        public string HitrateHard { get => $"({ HitrateNormal ?? "0"}) / 2"; }
+
+        /// <summary>
+        /// 极难命中率公式
+        /// </summary>
+        [Description("极难命中率公式")]
+        public string HitrateExtreme { get => $"({ HitrateNormal ?? "0"}) / 5"; }
 
         /// <summary>
         /// 伤害公式

@@ -5,58 +5,21 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CardWizard.View"
              mc:Ignorable="d" 
-             d:DesignHeight="320">
+             d:DesignHeight="172" d:DesignWidth="692">
     <UserControl.Resources>
+        <local:FormulaCalculator x:Key="Calculator"/>
     </UserControl.Resources>
-    <Grid>
-        <DataGrid x:Name="MainGrid" Style="{DynamicResource DataGridStyle}" 
-                  IsReadOnly="True">
-            <DataGrid.Columns>
-                <DataGridTextColumn Width="160">
-                    <DataGridTextColumn.Header>
-                        <Label Content="武器" Tag="Weapon"/>
-                    </DataGridTextColumn.Header></DataGridTextColumn>
-                <DataGridTextColumn Width="48">
-                    <DataGridTextColumn.Header>
-                    <Label Content="常规" Tag="Weapon.Normal"/>
-                    </DataGridTextColumn.Header>
-                </DataGridTextColumn>
-                <DataGridTextColumn Width="48">
-                    <DataGridTextColumn.Header>
-                        <Label Content="困难" Tag="Weapon.Hard"/>
-                    </DataGridTextColumn.Header>
-                </DataGridTextColumn>
-                <DataGridTextColumn Width="48">
-                    <DataGridTextColumn.Header>
-                        <Label Content="极难" Tag="Weapon.ExtremeHard"/>
-                    </DataGridTextColumn.Header>
-                </DataGridTextColumn>
-                <DataGridTextColumn Width="80">
-                    <DataGridTextColumn.Header>
-                        <Label Content="伤害" Tag="Weapon.Damage"/>
-                    </DataGridTextColumn.Header>
-                </DataGridTextColumn>
-                <DataGridTextColumn Width="80">
-                    <DataGridTextColumn.Header>
-                        <Label Content="射程" Tag="Weapon.Range"/>
-                    </DataGridTextColumn.Header>
-                </DataGridTextColumn>
-                <DataGridTextColumn Width="80">
-                    <DataGridTextColumn.Header>
-                        <Label Content="次数" Tag="Weapon.AttacksPerRound"/>
-                    </DataGridTextColumn.Header>
-                </DataGridTextColumn>
-                <DataGridTextColumn  Width="80">
-                    <DataGridTextColumn.Header>
-                        <Label Content="装弹量" Tag="Weapon.Bullets"/>
-                    </DataGridTextColumn.Header>
-                </DataGridTextColumn>
-                <DataGridTextColumn Width="80">
-                    <DataGridTextColumn.Header>
-                        <Label Content="故障值" Tag="Weapon.Resistance"/>
-                    </DataGridTextColumn.Header>
-                </DataGridTextColumn>
-            </DataGrid.Columns>
-        </DataGrid>
-    </Grid>
+    <DataGrid x:Name="MainGrid" Style="{DynamicResource DataGridStyle}">
+        <DataGrid.Columns>
+            <DataGridTextColumn Width="160" Header="武器" Binding="{Binding Name, Mode=OneWay}" />
+            <DataGridTextColumn Width="48" Header="常规" Binding="{Binding HitrateNormal, Mode=OneWay, Converter={StaticResource Calculator}}" />
+            <DataGridTextColumn Width="48" Header="困难" Binding="{Binding HitrateHard, Mode=OneWay, Converter={StaticResource Calculator}}" />
+            <DataGridTextColumn Width="48" Header="极难" Binding="{Binding HitrateExtreme, Mode=OneWay, Converter={StaticResource Calculator}}" />
+            <DataGridTextColumn Width="80" Header="伤害" Binding="{Binding Damage, Mode=OneWay}" />
+            <DataGridTextColumn Width="80" Header="射程" Binding="{Binding BaseRange, Mode=OneWay}" />
+            <DataGridTextColumn Width="68" Header="每轮次数" Binding="{Binding AttacksPerRound, Mode=OneWay}" />
+            <DataGridTextColumn Width="68" Header="装弹量" Binding="{Binding Bullets}" />
+            <DataGridTextColumn Width="80" Header="故障值" Binding="{Binding Resistance}" />
+        </DataGrid.Columns>
+    </DataGrid>
 </UserControl>

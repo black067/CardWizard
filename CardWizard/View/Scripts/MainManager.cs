@@ -447,7 +447,7 @@
                 image.MouseDown += DoImportAvatar;
             });
             // 武器面板初始化
-            page.WeaponBox.InitializeBox(DataBus.Weapons.Values);
+            page.WeaponBox.InitializeBox(this, DataBus.Weapons.Values);
         }
 
         /// <summary>
@@ -789,6 +789,7 @@
 
         /// <summary>
         /// 根据公式与角色属性值的数组计算属性值
+        /// <para>参见: <see cref="CalculateCharacteristic"/></para>
         /// </summary>
         /// <param name="traits"></param>
         /// <param name="formula"></param>

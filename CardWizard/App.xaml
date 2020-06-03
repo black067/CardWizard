@@ -25,7 +25,7 @@
         <Style x:Key="XToolTip" TargetType="ToolTip">
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="Background" Value="WhiteSmoke"/>
-            <Setter Property="Opacity" Value="0.75"/>
+            <Setter Property="Opacity" Value="0.87"/>
         </Style>
         <!-- 定义Label 的样式-->
         <Style x:Key="XLabel" TargetType="Label">
@@ -192,7 +192,8 @@
             <Setter Property="ColumnHeaderStyle" Value="{DynamicResource ColumnHeaderStyle}"></Setter>
             <Setter Property="CellStyle" Value="{DynamicResource CellStyle}"></Setter>
             <Setter Property="RowStyle" Value="{DynamicResource RowStyle}"></Setter>
-            <Setter Property="Background" Value="White"></Setter>
+            <Setter Property="Background" Value="Transparent"></Setter>
+            <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="EnableRowVirtualization" Value="False"></Setter>
             <Setter Property="GridLinesVisibility" Value="None"></Setter>
             <!--禁止在尾行手动添加数据-->
@@ -202,14 +203,20 @@
         </Style>
         <!--表头的样式-->
         <Style x:Key="ColumnHeaderStyle" TargetType="DataGridColumnHeader">
-            <Setter Property="Height" Value="35"></Setter>
-            <Setter Property="Background" Value="#F2F2F2"></Setter>
-            <Setter Property="BorderThickness" Value="1"></Setter>
-            <Setter Property="BorderBrush" Value="#CBCBCB"></Setter>
+            <Setter Property="Height" Value="20"/>
+            <Setter Property="Background" Value="{StaticResource MenuBackground}"/>
+            <Setter Property="Foreground" Value="{StaticResource ButtonForeground}"/>
+            <Setter Property="BorderThickness" Value="1,0,0,0"/>
+            <Setter Property="BorderBrush" Value="#FF364483"/>
+            <!--垂直居中-->
             <Setter Property="VerticalContentAlignment" Value="Center"></Setter>
             <!--水平居中-->
             <Setter Property="HorizontalContentAlignment" Value="Center"></Setter>
-            <!--垂直居中-->
+            <Style.Triggers>
+                <Trigger Property="DisplayIndex" Value="0">
+                    <Setter Property="BorderThickness" Value="0"/>
+                </Trigger>
+            </Style.Triggers>
         </Style>
         <!--表行的样式-->
         <Style x:Key="RowStyle" TargetType="DataGridRow">
@@ -218,29 +225,32 @@
                 <Trigger Property="IsMouseOver" Value="true">
                     <Setter Property="Background" Value="#F2F2F2"/>
                 </Trigger>
-                <Trigger Property="IsSelected" Value="True">
-                    <Setter Property="Background"  Value="#CBCBCB" />
-                </Trigger>
             </Style.Triggers>
         </Style>
         <!--单元格的样式-->
         <Style x:Key="CellStyle" TargetType="DataGridCell">
-            <Setter Property="Height" Value="35"></Setter>
+            <Setter Property="Height" Value="32"></Setter>
             <Setter Property="FontSize" Value="13"></Setter>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="DataGridCell">
-                        <Border x:Name="Bg" Background="Transparent" BorderThickness="1" UseLayoutRounding="True" BorderBrush="#FFCBCBCB">
+                        <Border x:Name="border" Background="Transparent" BorderThickness="1" UseLayoutRounding="True" BorderBrush="#55CBCBCB">
                             <ContentPresenter HorizontalAlignment="Center"  VerticalAlignment="Center" />
                         </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="SteelBlue"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
                     </ControlTemplate>
-
                 </Setter.Value>
             </Setter>
             <Style.Triggers>
                 <Trigger Property="IsSelected" Value="True">
-                    <Setter Property="Background"  Value="#CBCBCB" />
-                    <Setter Property="Foreground" Value="#000000" />
+                    <Setter Property="Foreground" Value="#FF0034A4" />
+                </Trigger>
+                <Trigger Property="IsReadOnly" Value="False">
+                    <Setter Property="FontStyle" Value="Italic"/>
                 </Trigger>
             </Style.Triggers>
         </Style>

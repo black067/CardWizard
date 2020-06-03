@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
+using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -23,37 +25,48 @@ namespace CardWizard.View
         public WeaponBox()
         {
             InitializeComponent();
-            RowTemplate = new Dictionary<string, object>();
-            foreach (var item in MainGrid.Columns)
-            {
-                if (item.Header is FrameworkElement e && e.Tag is string key)
-                    RowTemplate.Add(key, string.Empty);
-            }
         }
 
-        private Dictionary<string, object> RowTemplate = new Dictionary<string, object>();
+        public List<Weapon> Weapons { get; set; }
 
-        public void InitializeBox(IEnumerable<Weapon> weapons)
+        public void InitializeBox(MainManager manager, IEnumerable<Weapon> weapons)
         {
-            var source = new List<Dictionary<string, object>>();
-            foreach (var item in weapons)
+            if (manager == null || weapons == null || !weapons.Any()) return;
+            Weapons = weapons.ToList();
+            MainGrid.ItemsSource = Weapons;
+            Character getter() => manager.Current;
+            foreach (var item in FormulaCalculator.FormulaCalculators)
             {
-                var dict = new Dictionary<string, object>(RowTemplate);
-                dict["Weapon"] = item.Name;
-                dict["Weapon.Normal"] = item.Hitrate;
-                dict["Weapon.Hard"] = "";
-                dict["Weapon.ExtremeHard"] = "";
-                dict["Weapon.Weapon"] = item.Damage;
-                dict["Weapon.Range"] = item.BaseRange;
-                dict["Weapon.AttacksPerRound"] = item.AttacksPerRound;
-                dict["Weapon.Bullets"] = item.Bullets;
-                dict["Weapon.Resistance"] = item.Resistance;
-                source.Add(dict);
+                item.Calculator = manager.CalcCharacteristic;
+                item.CharacterGetter = getter;
             }
-
-            MainGrid.ItemsSource = source;
         }
     }
 
+    /// <summary>
+    /// 转换器: 将公式转换为值
+    /// </summary>
+    public class FormulaCalculator : IValueConverter
+    {
+        internal static List<FormulaCalculator> FormulaCalculators { get; set; } = new List<FormulaCalculator>();
 
+        public FormulaCalculator() { FormulaCalculators.Add(this); }
+
+        public CalculateCharacteristic Calculator { get; set; }
+
+        public Func<Character> CharacterGetter { get; set; }
+
+        public object Convert(object raw, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (raw == null || Calculator == null || CharacterGetter == null) return DependencyProperty.UnsetValue;
+
+            int value = Calculator(raw as string, CharacterGetter().GetCharacteristicTotal());
+            return value;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

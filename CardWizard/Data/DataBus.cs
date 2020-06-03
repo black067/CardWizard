@@ -178,7 +178,7 @@ namespace CardWizard.Data
                 new Weapon()
                 {
                     Name = "徒手格斗",
-                    Hitrate = "25",
+                    HitrateNormal = "25",
                     Damage = "1D3 + DB",
                     BaseRange = "",
                     AttacksPerRound = "1"

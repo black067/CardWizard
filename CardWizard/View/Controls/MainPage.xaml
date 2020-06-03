@@ -141,7 +141,9 @@
                            Style="{DynamicResource XLabel}" Margin="2,2,2,2" HorizontalAlignment="Left" VerticalAlignment="Center"/>
             <cview:CharacteristicBox x:Name="Box_Dodge" Tag="DODGE" Grid.Row="3" Grid.ColumnSpan="2" Margin="12,4,12,4"/>
         </Grid>
-        <cview:WeaponBox x:Name="WeaponBox" Grid.Row="5" Grid.ColumnSpan="2">
+        <Label Content="WEAPONS" Tag="Investigator.Weapons.Title" Height="32"
+               Grid.Row="5" Grid.ColumnSpan="2" Style="{DynamicResource XTitle}" VerticalAlignment="Top" Margin="2,4,2,2"/>
+        <cview:WeaponBox x:Name="WeaponBox" Grid.Row="5" Grid.ColumnSpan="2" Margin="2,38,2,2">
             
         </cview:WeaponBox>
         <!--页尾-->

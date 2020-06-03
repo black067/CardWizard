@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="DataSetMain" targetNamespace="http://tempuri.org/DataSetMain.xsd" xmlns:mstns="http://tempuri.org/DataSetMain.xsd" xmlns="http://tempuri.org/DataSetMain.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:msprop="urn:schemas-microsoft-com:xml-msprop" attributeFormDefault="qualified" elementFormDefault="qualified">
+  <xs:annotation>
+    <xs:appinfo source="urn:schemas-microsoft-com:xml-msdatasource">
+      <DataSource DefaultConnectionIndex="0" FunctionsComponentName="QueriesTableAdapter" Modifier="AutoLayout, AnsiClass, Class, Public" SchemaSerializationMode="IncludeSchema" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
+        <Connections />
+        <Tables />
+        <Sources />
+      </DataSource>
+    </xs:appinfo>
+  </xs:annotation>
+  <xs:element name="DataSetMain" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:EnableTableAdapterManager="true" msprop:Generator_DataSetName="DataSetMain" msprop:Generator_UserDSName="DataSetMain">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="WeaponsTable" msprop:Generator_TableClassName="WeaponsTableDataTable" msprop:Generator_TableVarName="tableWeaponsTable" msprop:Generator_TablePropName="WeaponsTable" msprop:Generator_RowDeletingName="WeaponsTableRowDeleting" msprop:Generator_RowChangingName="WeaponsTableRowChanging" msprop:Generator_RowEvHandlerName="WeaponsTableRowChangeEventHandler" msprop:Generator_RowDeletedName="WeaponsTableRowDeleted" msprop:Generator_UserTableName="WeaponsTable" msprop:Generator_RowChangedName="WeaponsTableRowChanged" msprop:Generator_RowEvArgName="WeaponsTableRowChangeEvent" msprop:Generator_RowClassName="WeaponsTableRow">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Name" msprop:Generator_ColumnVarNameInTable="columnName" msprop:Generator_ColumnPropNameInRow="Name" msprop:Generator_ColumnPropNameInTable="NameColumn" msprop:Generator_UserColumnName="Name" type="xs:string" />
+              <xs:element name="Description" msprop:Generator_ColumnVarNameInTable="columnDescription" msprop:Generator_ColumnPropNameInRow="Description" msprop:Generator_ColumnPropNameInTable="DescriptionColumn" msprop:Generator_UserColumnName="Description" type="xs:string" minOccurs="0" />
+              <xs:element name="Damage" msprop:Generator_ColumnVarNameInTable="columnDamage" msprop:Generator_ColumnPropNameInRow="Damage" msprop:Generator_ColumnPropNameInTable="DamageColumn" msprop:Generator_UserColumnName="Damage" type="xs:string" minOccurs="0" />
+              <xs:element name="HitrateNormal" msprop:Generator_ColumnVarNameInTable="columnHitrateNormal" msprop:Generator_ColumnPropNameInRow="HitrateNormal" msprop:Generator_ColumnPropNameInTable="HitrateNormalColumn" msprop:Generator_UserColumnName="HitrateNormal" type="xs:string" minOccurs="0" />
+              <xs:element name="HitrateHard" msprop:Generator_ColumnVarNameInTable="columnHitrateHard" msprop:Generator_ColumnPropNameInRow="HitrateHard" msprop:Generator_ColumnPropNameInTable="HitrateHardColumn" msprop:Generator_UserColumnName="HitrateHard" type="xs:string" minOccurs="0" />
+              <xs:element name="HitrateExtreme" msprop:Generator_ColumnVarNameInTable="columnHitrateExtreme" msprop:Generator_ColumnPropNameInRow="HitrateExtreme" msprop:Generator_ColumnPropNameInTable="HitrateExtremeColumn" msprop:Generator_UserColumnName="HitrateExtreme" type="xs:string" minOccurs="0" />
+              <xs:element name="Bullets" msprop:Generator_ColumnVarNameInTable="columnBullets" msprop:Generator_ColumnPropNameInRow="Bullets" msprop:Generator_ColumnPropNameInTable="BulletsColumn" msprop:Generator_UserColumnName="Bullets" type="xs:int" minOccurs="0" />
+              <xs:element name="AttacksPerRound" msprop:Generator_ColumnVarNameInTable="columnAttacksPerRound" msprop:Generator_ColumnPropNameInRow="AttacksPerRound" msprop:Generator_ColumnPropNameInTable="AttacksPerRoundColumn" msprop:Generator_UserColumnName="AttacksPerRound" type="xs:int" minOccurs="0" />
+              <xs:element name="Resistance" msprop:Generator_ColumnVarNameInTable="columnResistance" msprop:Generator_ColumnPropNameInRow="Resistance" msprop:Generator_ColumnPropNameInTable="ResistanceColumn" msprop:Generator_UserColumnName="Resistance" type="xs:string" minOccurs="0" />
+              <xs:element name="Price" msprop:Generator_ColumnVarNameInTable="columnPrice" msprop:Generator_ColumnPropNameInRow="Price" msprop:Generator_ColumnPropNameInTable="PriceColumn" msprop:Generator_UserColumnName="Price" type="xs:string" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="SkillsTable" msprop:Generator_TableClassName="SkillsTableDataTable" msprop:Generator_TableVarName="tableSkillsTable" msprop:Generator_TablePropName="SkillsTable" msprop:Generator_RowDeletingName="SkillsTableRowDeleting" msprop:Generator_RowChangingName="SkillsTableRowChanging" msprop:Generator_RowEvHandlerName="SkillsTableRowChangeEventHandler" msprop:Generator_RowDeletedName="SkillsTableRowDeleted" msprop:Generator_UserTableName="SkillsTable" msprop:Generator_RowChangedName="SkillsTableRowChanged" msprop:Generator_RowEvArgName="SkillsTableRowChangeEvent" msprop:Generator_RowClassName="SkillsTableRow">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Name" msprop:Generator_ColumnVarNameInTable="columnName" msprop:Generator_ColumnPropNameInRow="Name" msprop:Generator_ColumnPropNameInTable="NameColumn" msprop:Generator_UserColumnName="Name" type="xs:string" />
+              <xs:element name="Description" msprop:Generator_ColumnVarNameInTable="columnDescription" msprop:Generator_ColumnPropNameInRow="Description" msprop:Generator_ColumnPropNameInTable="DescriptionColumn" msprop:Generator_UserColumnName="Description" type="xs:string" minOccurs="0" />
+              <xs:element name="ValueInitial" msprop:Generator_ColumnVarNameInTable="columnValueInitial" msprop:Generator_ColumnPropNameInRow="ValueInitial" msprop:Generator_ColumnPropNameInTable="ValueInitialColumn" msprop:Generator_UserColumnName="ValueInitial" type="xs:string" minOccurs="0" />
+              <xs:element name="Growable" msprop:Generator_ColumnVarNameInTable="columnGrowable" msprop:Generator_ColumnPropNameInRow="Growable" msprop:Generator_ColumnPropNameInTable="GrowableColumn" msprop:Generator_UserColumnName="Growable" type="xs:string" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="OccupationsTable" msprop:Generator_TableClassName="OccupationsTableDataTable" msprop:Generator_TableVarName="tableOccupationsTable" msprop:Generator_TablePropName="OccupationsTable" msprop:Generator_RowDeletingName="OccupationsTableRowDeleting" msprop:Generator_RowChangingName="OccupationsTableRowChanging" msprop:Generator_RowEvHandlerName="OccupationsTableRowChangeEventHandler" msprop:Generator_RowDeletedName="OccupationsTableRowDeleted" msprop:Generator_UserTableName="OccupationsTable" msprop:Generator_RowChangedName="OccupationsTableRowChanged" msprop:Generator_RowEvArgName="OccupationsTableRowChangeEvent" msprop:Generator_RowClassName="OccupationsTableRow">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Name" msprop:Generator_ColumnVarNameInTable="columnName" msprop:Generator_ColumnPropNameInRow="Name" msprop:Generator_ColumnPropNameInTable="NameColumn" msprop:Generator_UserColumnName="Name" type="xs:string" />
+              <xs:element name="Description" msprop:Generator_ColumnVarNameInTable="columnDescription" msprop:Generator_ColumnPropNameInRow="Description" msprop:Generator_ColumnPropNameInTable="DescriptionColumn" msprop:Generator_UserColumnName="Description" type="xs:string" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+    <xs:unique name="Constraint1" msdata:PrimaryKey="true">
+      <xs:selector xpath=".//mstns:WeaponsTable" />
+      <xs:field xpath="mstns:Name" />
+    </xs:unique>
+    <xs:unique name="SkillsTable_Constraint1" msdata:ConstraintName="Constraint1" msdata:PrimaryKey="true">
+      <xs:selector xpath=".//mstns:SkillsTable" />
+      <xs:field xpath="mstns:Name" />
+    </xs:unique>
+    <xs:unique name="OccupationsTable_Constraint1" msdata:ConstraintName="Constraint1" msdata:PrimaryKey="true">
+      <xs:selector xpath=".//mstns:OccupationsTable" />
+      <xs:field xpath="mstns:Name" />
+    </xs:unique>
+  </xs:element>
+</xs:schema>
