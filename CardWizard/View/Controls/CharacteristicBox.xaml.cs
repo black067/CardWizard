@@ -236,7 +236,7 @@ namespace CardWizard.View
             var c = CharacterGetter();
             if (c == null) return;
             //if (c.GetGrowth(Key) == 0) c.SetGrowth(Key, 1);
-            var skillname = c.Skills.FirstOrDefault(s => s.EqualsIgnoreCase(Key));
+            var skillname = c.Skills.FirstOrDefault(s => s.Name.EqualsIgnoreCase(Key));
         }
 
         private void GrowthMark_Unchecked(object sender, RoutedEventArgs e)

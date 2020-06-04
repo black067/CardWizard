@@ -59,7 +59,7 @@ namespace CardWizard
         /// <summary>
         /// 新建
         /// </summary>
-        public static RoutedCommand CommandCreate = new RoutedCommand("Create", typeof(Window));
+        public static RoutedCommand CommandCreate { get; set; } = new RoutedCommand("Create", typeof(Window));
         /// <summary>
         /// 指令: 新建 触发时执行的动作
         /// </summary>
@@ -72,7 +72,7 @@ namespace CardWizard
         /// <summary>
         /// 保存
         /// </summary>
-        public static RoutedCommand CommandSave = new RoutedCommand("Save", typeof(Window));
+        public static RoutedCommand CommandSave { get; set; } = new RoutedCommand("Save", typeof(Window));
         /// <summary>
         /// 指令: 保存 触发时执行的动作
         /// </summary>
@@ -85,7 +85,7 @@ namespace CardWizard
         /// <summary>
         /// 生成图像文档
         /// </summary>
-        public static RoutedCommand CommandCapture = new RoutedCommand("Capture", typeof(Window));
+        public static RoutedCommand CommandCapture { get; set; } = new RoutedCommand("Capture", typeof(Window));
         /// <summary>
         /// 指令: 生成图像文档 触发时执行的动作
         /// </summary>
@@ -98,7 +98,7 @@ namespace CardWizard
         /// <summary>
         /// 切换提示浮窗的显示与关闭
         /// </summary>
-        public static RoutedCommand CommandSwitchToolTip = new RoutedCommand("SwitchToolTip", typeof(Window));
+        public static RoutedCommand CommandSwitchToolTip { get; set; } = new RoutedCommand("SwitchToolTip", typeof(Window));
         /// <summary>
         /// 指令: 切换提示浮窗的显示与关闭 触发时执行的动作
         /// </summary>
@@ -111,7 +111,7 @@ namespace CardWizard
         /// <summary>
         /// 按下 Enter
         /// </summary>
-        public static RoutedCommand CommandConfirm = new RoutedCommand("Confirm", typeof(Window));
+        public static RoutedCommand CommandConfirm { get; set; } = new RoutedCommand("Confirm", typeof(Window));
         /// <summary>
         /// 指令: 按下 Enter 触发时执行的动作
         /// </summary>

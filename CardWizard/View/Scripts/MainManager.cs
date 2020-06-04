@@ -44,6 +44,8 @@
         /// </summary>
         public BackstoryPage IBackstoryPage { get => Window.BackstoryPage; }
 
+        public List<UIElement> HideOnCapturing { get; set; } = new List<UIElement>();
+
         /// <summary>
         /// 配置表
         /// </summary>
@@ -268,8 +270,8 @@
         {
             Keyboard.ClearFocus();
 
-            string dest;
-            if (!CharacterFiles.TryGetValue(Current, out dest))
+            ;
+            if (!CharacterFiles.TryGetValue(Current, out string dest))
             {
                 dest = Path.Combine(Paths.PathSave, Current.Name + Config.FileExtensionForCard);
                 if (File.Exists(dest))
@@ -292,7 +294,7 @@
                     }
                 }
             }
-            var source = YamlKit.SaveFile(dest, Current);
+            YamlKit.SaveFile(dest, Current);
             var message = Translator.Translate("Message.Character.Saved", "Saved at {0}");
             Messenger.EnqueueFormat(message, dest.Replace("\\", "/"));
             CharacterFiles[Current] = dest;
@@ -306,9 +308,9 @@
         private void DoCapturePicture(object sender, RoutedEventArgs e)
         {
             if (Window.TabItem_Front.IsSelected)
-                IMainPage.CapturePng(Config, Current.Name + ".Main");
+                IMainPage.CapturePng(Config, Current.Name + ".Main", HideOnCapturing);
             else
-                IBackstoryPage.CapturePng(Config, Current.Name + ".Back");
+                IBackstoryPage.CapturePng(Config, Current.Name + ".Back", HideOnCapturing);
         }
 
         /// <summary>
@@ -484,6 +486,9 @@
                     Current.GearAndPossessions.RemoveAt(index);
                 }
             };
+            // 打印时隐藏新道具的输入框与按钮
+            HideOnCapturing.Add(page.Text_NewItem);
+            HideOnCapturing.Add(page.Button_NewIitem);
         }
         #endregion
 
@@ -578,32 +583,32 @@
                     element.ToolTip = null;
                 }
             }
-
+            if (translator == null) throw new ArgumentNullException(nameof(translator));
             // 创建历史记录, 避免重复操作元素
             if (histories == null) { histories = new HashSet<Visual>(); }
-            if (histories.Contains(container) || translator == null) { return; }
+            if (histories.Contains(container)) { return; }
             else
             {
                 translate(container, translator);
                 histories.Add(container);
             }
             // 查询所有的子控件
-            var subElements = container.GetChildren();
+            var items = container.GetChildren();
             // 遍历子控件, 尝试对其本地化
-            foreach (var subElement in subElements)
+            foreach (var subItem in items)
             {
-                if (histories.Contains(subElement)) continue;
-                if (subElements is FrameworkElement element)
+                if (histories.Contains(subItem)) continue;
+                if (subItem is FrameworkElement element)
                 {
                     translate(element, translator);
                     histories.Add(element);
                 }
-                else if (subElement is DataGridColumn dataGridColumn)
-                {
-                    var pathHeader = dataGridColumn.Header as string;
-                    if (string.IsNullOrEmpty(pathHeader) || !translator.TryTranslate($"{container.Name}.{pathHeader}", out var text)) continue;
-                    dataGridColumn.Header = text;
-                }
+                //else if (subElement is DataGridColumn dataGridColumn)
+                //{
+                //    var pathHeader = dataGridColumn.Header as string;
+                //    if (string.IsNullOrEmpty(pathHeader) || !translator.TryTranslate($"{container.Name}.{pathHeader}", out var text)) continue;
+                //    dataGridColumn.Header = text;
+                //}
             }
         }
 

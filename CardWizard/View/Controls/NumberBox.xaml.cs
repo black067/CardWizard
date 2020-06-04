@@ -24,9 +24,9 @@ namespace CardWizard.View
         /// <summary>
         /// 值的属性引用
         /// </summary>
-        public static DependencyProperty NumberProperty = DependencyProperty.RegisterAttached(nameof(Number),
-                                                                                              typeof(DATATYPE),
-                                                                                              typeof(NumberBox));
+        public static DependencyProperty NumberProperty { get; set; } = DependencyProperty.RegisterAttached(nameof(Number),
+                                                                                                            typeof(DATATYPE),
+                                                                                                            typeof(NumberBox));
 
         /// <summary>
         /// 设置值

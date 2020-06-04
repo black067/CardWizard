@@ -64,7 +64,7 @@
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Background" Value="#43a9c7"/>
-            <Setter Property="Cursor" Value="Hand"></Setter>
+            <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
@@ -122,7 +122,7 @@
                         </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsKeyboardFocusWithin" Value="True">
-                                <Setter TargetName="button_confirm" Property="Visibility" Value="Visible"></Setter>
+                                <Setter TargetName="button_confirm" Property="Visibility" Value="Visible"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -189,52 +189,46 @@
         </Style>
         <!--数据表的样式-->
         <Style x:Key="DataGridStyle" TargetType="DataGrid">
-            <Setter Property="ColumnHeaderStyle" Value="{DynamicResource ColumnHeaderStyle}"></Setter>
-            <Setter Property="CellStyle" Value="{DynamicResource CellStyle}"></Setter>
-            <Setter Property="RowStyle" Value="{DynamicResource RowStyle}"></Setter>
-            <Setter Property="Background" Value="Transparent"></Setter>
+            <Setter Property="ColumnHeaderStyle" Value="{DynamicResource ColumnHeaderStyle}"/>
+            <Setter Property="CellStyle" Value="{DynamicResource CellStyle}"/>
+            <Setter Property="RowStyle" Value="{DynamicResource RowStyle}"/>
+            <Setter Property="Background" Value="Transparent"/>
             <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="EnableRowVirtualization" Value="False"></Setter>
-            <Setter Property="GridLinesVisibility" Value="None"></Setter>
+            <!--<Setter Property="EnableRowVirtualization" Value="False"/>-->
+            <Setter Property="GridLinesVisibility" Value="None"/>
             <!--禁止在尾行手动添加数据-->
-            <Setter Property="CanUserAddRows" Value="False"></Setter>
-            <Setter Property="AutoGenerateColumns" Value="False"></Setter>
-            <Setter Property="IsEnabled" Value="True"></Setter>
+            <Setter Property="CanUserAddRows" Value="False"/>
+            <Setter Property="AutoGenerateColumns" Value="False"/>
+            <Setter Property="IsEnabled" Value="True"/>
         </Style>
-        <!--表头的样式-->
+        <!--数据表每列标题的样式-->
         <Style x:Key="ColumnHeaderStyle" TargetType="DataGridColumnHeader">
             <Setter Property="Height" Value="20"/>
             <Setter Property="Background" Value="{StaticResource MenuBackground}"/>
             <Setter Property="Foreground" Value="{StaticResource ButtonForeground}"/>
-            <Setter Property="BorderThickness" Value="1,0,0,0"/>
+            <Setter Property="BorderThickness" Value="1,0,1,0"/>
             <Setter Property="BorderBrush" Value="#FF364483"/>
             <!--垂直居中-->
-            <Setter Property="VerticalContentAlignment" Value="Center"></Setter>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
             <!--水平居中-->
-            <Setter Property="HorizontalContentAlignment" Value="Center"></Setter>
-            <Style.Triggers>
-                <Trigger Property="DisplayIndex" Value="0">
-                    <Setter Property="BorderThickness" Value="0"/>
-                </Trigger>
-            </Style.Triggers>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
         </Style>
-        <!--表行的样式-->
+        <!--数据表行的样式-->
         <Style x:Key="RowStyle" TargetType="DataGridRow">
-            <Setter Property="Cursor" Value="Hand"></Setter>
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="true">
                     <Setter Property="Background" Value="#F2F2F2"/>
                 </Trigger>
             </Style.Triggers>
         </Style>
-        <!--单元格的样式-->
+        <!--数据表单元格的样式-->
         <Style x:Key="CellStyle" TargetType="DataGridCell">
-            <Setter Property="Height" Value="32"></Setter>
-            <Setter Property="FontSize" Value="13"></Setter>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="FontSize" Value="13"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="DataGridCell">
-                        <Border x:Name="border" Background="Transparent" BorderThickness="1" UseLayoutRounding="True" BorderBrush="#55CBCBCB">
+                        <Border x:Name="border" Background="Transparent" UseLayoutRounding="True" BorderThickness="1,1,1,1" BorderBrush="#C9C9C9" Opacity="0.6">
                             <ContentPresenter HorizontalAlignment="Center"  VerticalAlignment="Center" />
                         </Border>
                         <ControlTemplate.Triggers>
@@ -251,6 +245,7 @@
                 </Trigger>
                 <Trigger Property="IsReadOnly" Value="False">
                     <Setter Property="FontStyle" Value="Italic"/>
+                    <Setter Property="Cursor" Value="IBeam"/>
                 </Trigger>
             </Style.Triggers>
         </Style>

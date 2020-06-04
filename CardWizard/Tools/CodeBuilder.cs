@@ -24,10 +24,10 @@ namespace CardWizard.Tools
         const string SummaryFormat = "<summary>\r\n {0}\r\n </summary>";
 
         static readonly Type[] TypeRefWhitenames = new Type[]
-        { 
-            typeof(string), typeof(char), 
-            typeof(byte), typeof(int), typeof(double), 
-            typeof(bool), typeof(float), typeof(long), typeof(short), 
+        {
+            typeof(string), typeof(char),
+            typeof(byte), typeof(int), typeof(double),
+            typeof(bool), typeof(float), typeof(long), typeof(short),
             typeof(ulong), typeof(uint), typeof(ushort), typeof(decimal),
         };
 
@@ -116,7 +116,7 @@ namespace CardWizard.Tools
             @class.Comments.Add(new CodeCommentStatement(Format($"{Comment} - 生成的代码"), true));
             // 添加到命名空间
             @namespace.Types.Add(@class);
-            
+
             // new() 方法
             var constructorEmpty = new CodeConstructor() { Attributes = MemberAttributes.Public, };
             @class.Members.Add(constructorEmpty);
@@ -163,7 +163,7 @@ namespace CardWizard.Tools
                 new CodeTypeReference(typeof(Dictionary<string, object>)), constructor_arg_name));
             @class.Members.Add(constructor);
             // 生成属性与字段
-            CodeMemberField field; CodeMemberProperty prop; string name, origin; Type typeRef;
+            CodeMemberField field; CodeMemberProperty prop; string name; Type typeRef;
             // 过滤重复的
             var membersDistinct = (from m in members group m by m.Name into defgroup select defgroup.First());
 
@@ -314,6 +314,7 @@ namespace CardWizard.Tools
         /// <returns></returns>
         public static Type ResolveType(string typeName)
         {
+            if (string.IsNullOrWhiteSpace(typeName)) typeName = "object";
             var lowerName = typeName.ToLower();
             switch (lowerName)
             {
@@ -410,7 +411,7 @@ namespace CardWizard.Tools
 
         public MemberDefinition(FieldInfo info, object target = null)
         {
-            if (info == null) throw new NullReferenceException("field info is null");
+            if (info == null) throw new ArgumentNullException(nameof(info));
             Name = info.Name;
             TypeRef = info.FieldType;
             if (target != null)
@@ -426,7 +427,7 @@ namespace CardWizard.Tools
 
         public MemberDefinition(PropertyInfo info, object target = null)
         {
-            if (info == null) throw new NullReferenceException("property info is null");
+            if (info == null) throw new ArgumentNullException(nameof(info));
             Name = info.Name;
             TypeRef = info.PropertyType;
             if (target != null)

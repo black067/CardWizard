@@ -168,12 +168,7 @@ namespace CardWizard.Tools
 
         public CommentGatheringTypeInspector(ITypeInspector innerTypeDescriptor)
         {
-            if (innerTypeDescriptor == null)
-            {
-                throw new ArgumentNullException("innerTypeDescriptor");
-            }
-
-            this.innerTypeDescriptor = innerTypeDescriptor;
+            this.innerTypeDescriptor = innerTypeDescriptor ?? throw new ArgumentNullException(nameof(innerTypeDescriptor));
         }
 
         public override IEnumerable<IPropertyDescriptor> GetProperties(Type type, object container)
@@ -263,8 +258,7 @@ namespace CardWizard.Tools
 
         public override bool EnterMapping(IPropertyDescriptor key, IObjectDescriptor value, IEmitter context)
         {
-            var commentsDescriptor = value as CommentsObjectDescriptor;
-            if (commentsDescriptor != null && commentsDescriptor.Comment != null)
+            if (value is CommentsObjectDescriptor commentsDescriptor && commentsDescriptor.Comment != null && context != default)
             {
                 context.Emit(new Comment(commentsDescriptor.Comment, false));
             }

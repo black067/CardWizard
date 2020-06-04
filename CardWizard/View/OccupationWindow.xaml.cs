@@ -114,6 +114,7 @@ namespace CardWizard.View
         /// <returns></returns>
         public static IEnumerable<TextElement> ConvertOccupation(Occupation item, int titleFontSize = 14)
         {
+            if (item == null) return Array.Empty<TextElement>();
             var titleStyle = $"# {{ FontSize: {titleFontSize}, FontWeight: Bold }}";
             var context = @$"
 {item.Name} {titleStyle}

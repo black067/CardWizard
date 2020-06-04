@@ -73,7 +73,7 @@ namespace CardWizard.View
         /// <param name="manager"></param>
         public GenerationWindow(MainManager manager, CalculateCharacteristic traitRoller)
         {
-            if (manager == null) throw new NullReferenceException("manager is null");
+            if (manager == null) throw new ArgumentNullException(nameof(manager));
             InitializeComponent();
             Width = MinWidth;
             Height = MinHeight;
@@ -128,7 +128,7 @@ namespace CardWizard.View
         /// <param name="bonus"></param>
         public static void GetAgeBonus(ScriptHub hub, int age, out string comment, out string rule, out List<(string key, string formula)> bonus)
         {
-            if (hub == null) throw new NullReferenceException("hub is null");
+            if (hub == null) throw new ArgumentNullException(nameof(hub));
             bonus = new List<(string, string)>();
             var ageBonus = hub.Get<LuaFunction>("AgeBonus");
             var text = ageBonus.Call(age).FirstOrDefault().ToString();
@@ -184,15 +184,15 @@ namespace CardWizard.View
                         box.Focusable = true;
                     }
                 }
-                foreach (var t in bonus)
+                foreach (var (key, formula) in bonus)
                 {
-                    Bonus.Add(t.key, t.formula);
-                    if (CustomRowView.Children.TryGetValue(t.key, out var box))
+                    Bonus.Add(key, formula);
+                    if (CustomRowView.Children.TryGetValue(key, out var box))
                     {
-                        if (int.TryParse(t.formula, out int v))
+                        if (int.TryParse(formula, out int v))
                         {
-                            box.Text = t.formula;
-                            CustomRowView.Values[t.key] = v;
+                            box.Text = formula;
+                            CustomRowView.Values[key] = v;
                             // 可见不可编辑
                             box.Visibility = Visibility.Visible;
                             box.IsEnabled = false;
@@ -242,6 +242,7 @@ namespace CardWizard.View
         /// <param name="calculator"></param>
         public void ApplyAgeBonus(Character character)
         {
+            if (character == null) return; 
             character.Age = Age;
             foreach (var kvp in Bonus)
             {

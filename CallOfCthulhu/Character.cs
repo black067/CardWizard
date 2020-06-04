@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -24,10 +25,11 @@ namespace CallOfCthulhu
         private string occupation;
         private string address;
         private string homeland;
-        private ContextDict backstory = new ContextDict(15);
-        private List<string> skills;
-        private List<string> gearAndPossessions;
         private string damageBonus;
+        private List<string> gearAndPossessions;
+        private ObservableCollection<Skill> skills;
+        private ObservableCollection<Weapon> weapons;
+        private ContextDict backstory;
 
         /// <summary>
         /// 名称
@@ -183,17 +185,36 @@ namespace CallOfCthulhu
         /// 技能列表
         /// </summary>
         [Description("技能列表")]
-        public List<string> Skills
+        public ObservableCollection<Skill> Skills
         {
             get
             {
-                if (skills == null) skills = new List<string>();
+                if (skills == null) skills = new ObservableCollection<Skill>();
                 return skills;
             }
 
             set
             {
                 skills = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// 武器列表
+        /// </summary>
+        [Description("武器列表")]
+        public ObservableCollection<Weapon> Weapons
+        {
+            get
+            {
+                if (weapons == null) weapons = new ObservableCollection<Weapon>();
+                return weapons;
+            }
+
+            set
+            {
+                weapons = value;
                 OnPropertyChanged();
             }
         }

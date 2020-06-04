@@ -24,7 +24,7 @@ namespace CardWizard.View
         public override ValidationResult Validate(object value, CultureInfo cultureInfo)
         {
             int v = 0;
-
+            if (value == null) return new ValidationResult(false, $"value is null");
             try
             {
                 if (((string)value).Length > 0)

@@ -167,7 +167,6 @@ namespace CardWizard.Data
         /// <summary>
         /// 对数据进行处理: 把文本中的关键字替换为实际值
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1304:指定 CultureInfo", Justification = "<挂起>")]
         public Config Process()
         {
             var typeofStr = typeof(string);

@@ -43,9 +43,8 @@ namespace CardWizard.View
         public void InitializeSkills(MainManager manager, IEnumerable<Skill> skills)
         {
             Container.ClearAllChildren();
-            if (manager == null) throw new NullReferenceException("manager is null");
             if (skills == null || !skills.Any()) return;
-            Manager = manager;
+            Manager = manager ?? throw new ArgumentNullException(nameof(manager));
             SkillNames = (from s in skills select s.Name).ToList();
             foreach (var item in skills)
             {

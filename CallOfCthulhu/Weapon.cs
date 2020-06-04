@@ -1,14 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace CallOfCthulhu
 {
     /// <summary>
     /// 武器的数据结构
     /// </summary>
-    public class Weapon
+    public class Weapon : INotifyPropertyChanged
     {
+        private string name;
+        private WEAPONTYPE weaponType;
+        private string description;
+        private string hitrateNormal;
+        private string damage;
+        private string baseRange;
+        private string attacksPerRound;
+        private int bullets;
+        private int resistance;
+
         /// <summary>
         /// 枚举: 武器类型
         /// </summary>
@@ -56,25 +67,57 @@ namespace CallOfCthulhu
         /// 武器名称
         /// </summary>
         [Description("武器名称")]
-        public string Name { get; set; }
+        public string Name
+        {
+            get => name;
+            set
+            {
+                name = value;
+                OnPropertyChanged();
+            }
+        }
 
         /// <summary>
         /// 武器类型
         /// </summary>
         [Description("武器类型")]
-        public WEAPONTYPE WeaponType { get; set; }
+        public WEAPONTYPE WeaponType
+        {
+            get => weaponType;
+            set
+            {
+                weaponType = value;
+                OnPropertyChanged();
+            }
+        }
 
         /// <summary>
         /// 武器描述
         /// </summary>
         [Description("武器描述")]
-        public string Description { get; set; }
+        public string Description
+        {
+            get => description;
+            set
+            {
+                description = value;
+                OnPropertyChanged();
+            }
+        }
 
         /// <summary>
         /// 常规命中率公式
         /// </summary>
         [Description("常规命中率公式")]
-        public string HitrateNormal { get; set; }
+        public string HitrateNormal
+        {
+            get => hitrateNormal;
+            set
+            {
+                hitrateNormal = value;
+                OnPropertyChanged();
+            }
+        }
 
         /// <summary>
         /// 困难命中率公式
@@ -92,31 +135,71 @@ namespace CallOfCthulhu
         /// 伤害公式
         /// </summary>
         [Description("伤害公式")]
-        public string Damage { get; set; }
+        public string Damage
+        {
+            get => damage;
+            set
+            {
+                damage = value;
+                OnPropertyChanged();
+            }
+        }
 
         /// <summary>
         /// 基础射程
         /// </summary>
         [Description("基础射程")]
-        public string BaseRange { get; set; }
+        public string BaseRange
+        {
+            get => baseRange;
+            set
+            {
+                baseRange = value;
+                OnPropertyChanged();
+            }
+        }
 
         /// <summary>
         /// 每轮攻击次数
         /// </summary>
         [Description("每轮攻击次数")]
-        public string AttacksPerRound { get; set; }
+        public string AttacksPerRound
+        {
+            get => attacksPerRound;
+            set
+            {
+                attacksPerRound = value;
+                OnPropertyChanged();
+            }
+        }
 
         /// <summary>
         /// 装弹数
         /// </summary>
         [Description("装弹数")]
-        public int Bullets { get; set; }
+        public int Bullets
+        {
+            get => bullets;
+            set
+            {
+                bullets = value;
+                OnPropertyChanged();
+            }
+        }
 
         /// <summary>
         /// 耐久度
         /// </summary>
         [Description("耐久度")]
-        public int Resistance { get; set; }
+        public int Resistance
+        {
+            get => resistance;
+            set
+            {
+                resistance = value;
+                OnPropertyChanged();
+            }
+        }
 
         /// <summary>
         /// 在各个年代的价格
@@ -124,23 +207,8 @@ namespace CallOfCthulhu
         [Description("在各个年代的价格")]
         public float[] Prices { get; set; }
 
-        /// <summary>
-        /// 用字符串设置武器类型 <see cref="WeaponType"/> 的值
-        /// </summary>
-        /// <param name="value"></param>
-        public void SetType(string value)
-        {
-            WeaponType = Enum.TryParse<WEAPONTYPE>(value, out var t) ? t : WEAPONTYPE.Misc;
-        }
+        public event PropertyChangedEventHandler PropertyChanged;
 
-        /// <summary>
-        /// 用 <see cref="int"/> 设置武器类型 <see cref="WeaponType"/> 的值
-        /// </summary>
-        /// <param name="value"></param>
-        public void SetType(int value)
-        {
-            if (value >= 0 && value < Enum.GetValues(typeof(WEAPONTYPE)).Length)
-                WeaponType = (WEAPONTYPE)value;
-        }
+        private void OnPropertyChanged([CallerMemberName] string propertyName = "") => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

@@ -163,7 +163,7 @@ namespace CallOfCthulhu
                 }
                 catch
                 {
-                var valuetype = value.GetType();
+                    var valuetype = value.GetType();
                     errors.AppendLine($"设置字段 {kvp.Key.Name} 的值时, 需要类型为 {itemtype.FullName} 的值, 但给的值类型为 {valuetype.FullName}");
                 }
             }

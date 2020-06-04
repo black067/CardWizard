@@ -35,7 +35,8 @@ namespace CardWizard.View
         /// <returns></returns>
         public static CommandBinding AddCommandsBindings(this UIElement element, RoutedCommand command, ExecutedRoutedEventHandler handler, InputGesture gesture = null)
         {
-            if (element == null) throw new Exception("elememt is null");
+            if (element == null) throw new ArgumentNullException(nameof(element));
+            if (command == null) throw new ArgumentNullException(nameof(command));
             var binding = new CommandBinding(command, handler);
             element.CommandBindings.Add(binding);
             if (gesture != null)
@@ -111,6 +112,8 @@ namespace CardWizard.View
         /// <param name="handler"></param>
         public static void AddOrSetToolTip(this FrameworkElement element, string text, Style style = null, RoutedEventHandler handler = null)
         {
+            if (element == null) throw new ArgumentNullException(nameof(element));
+
             if (element.ToolTip is ToolTip toolTip)
             {
                 toolTip.Content = text;
@@ -138,6 +141,8 @@ namespace CardWizard.View
         /// <returns></returns>
         public static T AddItem<T>(FrameworkElement parent, string name, Style style = null) where T : UIElement, new()
         {
+            if (parent == null) throw new ArgumentNullException(nameof(parent));
+            if (name == null) throw new ArgumentNullException(nameof(name));
             name = name.Replace('.', '_');
             var item = new T();
             if (item is FrameworkElement fe)
@@ -179,10 +184,10 @@ namespace CardWizard.View
         /// </summary>
         /// <param name="root"></param>
         /// <returns></returns>
-        public static IEnumerable<DependencyObject> GetChildren(this DependencyObject root)
+        public static IEnumerable<Visual> GetChildren(this Visual root)
         {
-            if (root == null) return new List<DependencyObject>();
-            var result = new List<DependencyObject> { root };
+            if (root == null) return new List<Visual>();
+            var result = new List<Visual> { root };
             switch (root)
             {
                 case Panel panel:
@@ -200,8 +205,8 @@ namespace CardWizard.View
                 case ItemsControl itemsControl:
                     if (itemsControl is DataGrid dataGrid)
                     {
-                        result.AddRange(dataGrid.Columns);
-                        break;
+                        //result.AddRange(dataGrid.Items);
+                        //break;
                     }
                     var items = from object i in itemsControl.Items where i is Visual select i as Visual;
                     foreach (Visual item in items)
@@ -221,23 +226,24 @@ namespace CardWizard.View
         /// <summary>
         /// 移除并取消注册所有子控件
         /// </summary>
-        /// <param name="panel"></param>
-        public static void ClearAllChildren(this Panel panel)
+        /// <param name="parent"></param>
+        public static void ClearAllChildren(this Panel parent)
         {
-            for (int i = panel.Children.Count - 1; i >= 0; i--)
+            if (parent == null) throw new ArgumentNullException(nameof(parent));
+            for (int i = parent.Children.Count - 1; i >= 0; i--)
             {
-                var o = panel.Children[i];
+                var o = parent.Children[i];
                 if (o is FrameworkElement element)
                 {
                     if (!string.IsNullOrEmpty(element.Name))
                     {
-                        var item = panel.FindName(element.Name);
+                        var item = parent.FindName(element.Name);
                         if (item == element)
                         {
-                            panel.UnregisterName(element.Name);
+                            parent.UnregisterName(element.Name);
                         }
                     }
-                    panel.Children.Remove(element);
+                    parent.Children.Remove(element);
                 }
             }
         }
@@ -248,30 +254,30 @@ namespace CardWizard.View
         /// <para><paramref name="loopLimit"/> : 表示最大循环次数(实际循环次数必定小于这个值)</para>
         /// <para><paramref name="reverse"/> : 是否逆序循环</para>
         /// </summary>
-        /// <param name="panel"></param>
+        /// <param name="parent"></param>
         /// <param name="dosth"></param>
         /// <param name="loopLimit"></param>
         /// <param name="reverse"></param>
         /// <returns></returns>
-        public static T ForeachChild<T>(this T panel, Func<UIElement, int, bool> dosth,
+        public static T ForeachChild<T>(this T parent, Func<UIElement, int, bool> dosth,
                                         int loopLimit = int.MaxValue, bool reverse = false) where T : Panel
         {
-            if (panel == null) throw new NullReferenceException("panel is null");
+            if (parent == null) throw new ArgumentNullException(nameof(parent));
             if (reverse)
             {
-                for (int i = Math.Min(panel.Children.Count, loopLimit) - 1; i >= 0; i--)
+                for (int i = Math.Min(parent.Children.Count, loopLimit) - 1; i >= 0; i--)
                 {
-                    var @continue = dosth.Invoke(panel.Children[i], i);
+                    var @continue = dosth.Invoke(parent.Children[i], i);
                     if (!@continue) break;
                 }
-                return panel;
+                return parent;
             }
-            for (int i = 0, len = Math.Min(panel.Children.Count, loopLimit); i < len; i++)
+            for (int i = 0, len = Math.Min(parent.Children.Count, loopLimit); i < len; i++)
             {
-                var @continue = dosth.Invoke(panel.Children[i], i);
+                var @continue = dosth.Invoke(parent.Children[i], i);
                 if (!@continue) break;
             }
-            return panel;
+            return parent;
         }
 
         /// <summary>
@@ -279,28 +285,28 @@ namespace CardWizard.View
         /// <para><paramref name="dosth"/> : 返回值表示是否继续循环</para>
         /// <para><paramref name="loopLimit"/> : 表示最大循环次数(实际循环次数必定小于等于这个值)</para>
         /// </summary>
-        /// <param name="panel"></param>
+        /// <param name="parent"></param>
         /// <param name="dosth"></param>
         /// <param name="loopLimit"></param>
         /// <param name="reverse"></param>
         /// <returns></returns>
-        public static T ForeachChild<T>(this T panel, Action<UIElement, int> dosth,
+        public static T ForeachChild<T>(this T parent, Action<UIElement, int> dosth,
                                         int loopLimit = int.MaxValue, bool reverse = false) where T : Panel
         {
-            if (panel == null) throw new NullReferenceException("panel is null");
+            if (parent == null) throw new ArgumentNullException(nameof(parent));
             if (reverse)
             {
-                for (int i = Math.Min(panel.Children.Count, loopLimit) - 1; i >= 0; i--)
+                for (int i = Math.Min(parent.Children.Count, loopLimit) - 1; i >= 0; i--)
                 {
-                    dosth.Invoke(panel.Children[i], i);
+                    dosth.Invoke(parent.Children[i], i);
                 }
-                return panel;
+                return parent;
             }
-            for (int i = 0, len = Math.Min(panel.Children.Count, loopLimit); i < len; i++)
+            for (int i = 0, len = Math.Min(parent.Children.Count, loopLimit); i < len; i++)
             {
-                dosth.Invoke(panel.Children[i], i);
+                dosth.Invoke(parent.Children[i], i);
             }
-            return panel;
+            return parent;
         }
 
         /// <summary>
@@ -310,6 +316,7 @@ namespace CardWizard.View
         /// <param name="element"></param>
         public static void OnClickSelectAll(UIElement element)
         {
+            if (element == null) throw new ArgumentNullException(nameof(element));
             element.PreviewMouseDown += Box_PreviewMouseDown;
             element.GotFocus += Box_GotFocus;
             element.LostFocus += Box_LostFocus;
@@ -441,7 +448,7 @@ namespace CardWizard.View
                 }
             }
             // 截屏的步骤如下
-            PngBitmapEncoder Process(Visual source)
+            PngBitmapEncoder Capture(Visual source)
             {
                 if (source is Control control)
                 {
@@ -477,7 +484,7 @@ namespace CardWizard.View
                 return UIExtension.SaveAsPng(source, fileWidth, fileHeight, destDpi, destDpi);
             };
             // 执行
-            var pngEncoder = Process(panel);
+            var pngEncoder = Capture(panel);
             // 保存到文件中
             var fileName = $"{fileNameWithoutExtension}{config.FileExtensionForCardPic}";
             var dest = Path.Combine(paths.PathSave, fileName);
@@ -499,7 +506,7 @@ namespace CardWizard.View
         /// <returns></returns>
         public static BitmapImage ToBitmapImage(this Image image)
         {
-            if (image == null) throw new NullReferenceException("image is null");
+            if (image == null) throw new ArgumentNullException(nameof(image));
             using var stream = new MemoryStream();
             image.Save(stream, ImageFormat.Png);
             var bitmapImage = new BitmapImage();
@@ -519,7 +526,7 @@ namespace CardWizard.View
         /// <returns></returns>
         public static Image ZoomIn(this Image bitmap, double width, double height)
         {
-            if (bitmap == null) throw new NullReferenceException("bitmap is null");
+            if (bitmap == null) throw new ArgumentNullException(nameof(bitmap));
             if (height <= 0)
             {
                 height = width / (1.0 * bitmap.Width / bitmap.Height);
@@ -538,7 +545,7 @@ namespace CardWizard.View
         /// <returns></returns>
         public static Icon ToIcon(this Bitmap bitmap)
         {
-            if (bitmap == null) throw new NullReferenceException("bitmap is null");
+            if (bitmap == null) throw new ArgumentNullException(nameof(bitmap));
             using MemoryStream bitmapStream = new MemoryStream();
             bitmap.Save(bitmapStream, ImageFormat.Png);
 

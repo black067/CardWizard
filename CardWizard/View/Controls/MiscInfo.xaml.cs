@@ -24,7 +24,7 @@ namespace CardWizard.View
     {
         private MainManager Manager { get; set; }
 
-        private string InvalidMark { get; set; }
+        private string InvalidMark { get; }
 
         private Label AgeBonusMark { get; set; }
 
@@ -43,8 +43,7 @@ namespace CardWizard.View
         /// <param name="manager"></param>
         public void InitializeControl(MainManager manager)
         {
-            if (manager == null) throw new NullReferenceException("manager is null");
-            Manager = manager;
+            Manager = manager ?? throw new ArgumentNullException(nameof(manager));
             var translator = Manager.Translator;
             // 角色名称的控制
             BindTextBox(Text_Name, nameof(Character.Name), Manager);

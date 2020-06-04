@@ -98,10 +98,11 @@
         <cview:SkillsViewer x:Name="SkillPanel" Grid.Row="4" Grid.ColumnSpan="3" />
         <!--伤害奖励与体格的显示-->
         <Border Grid.Row="5" Grid.Column="3" BorderThickness="1,10,1,1" Background="{DynamicResource MenuBackground}" Opacity="0.1" Margin="1,1,1,1"/>
-        <Grid Grid.Row="5" Grid.Column="2" Margin="0,2,0,2">
+        <Grid Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,2,0,2">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="9*"/>
-                <ColumnDefinition Width="9*"/>
+                <ColumnDefinition Width="696"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="{DynamicResource TitleRowHeight}"/>
@@ -109,50 +110,49 @@
                 <RowDefinition/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
+            <!--武器栏-->
+            <Label Content="WEAPONS" Tag="Investigator.Weapons.Title" Style="{DynamicResource XTitle}" VerticalAlignment="Stretch"/>
+            <cview:WeaponBox x:Name="WeaponBox" Grid.Row="1" Grid.RowSpan="3" Margin="2,0,2,2"/>
+            <!--标题: 格斗相关参数-->
             <Label Content="Combat" Tag="Investigator.Combat.Title"
-                           Grid.ColumnSpan="2" Grid.Column="0" Grid.Row="0" Style="{DynamicResource XTitle}"/>
+                           Grid.ColumnSpan="2" Grid.Column="1" Grid.Row="0" Style="{DynamicResource XTitle}"/>
             <!--伤害加深的标签-->
             <TextBlock x:Name="Label_DamageBonus" Tag="DamageBonus.Block"
-                               Grid.Row="1" 
+                               Grid.Row="1" Grid.Column="1"
                                Style="{DynamicResource GeneralTextBlock}" Height="45" Width="60" Foreground="{DynamicResource MenuBackground}" FontSize="10">
                             Damage<LineBreak/>
                             Bonus<LineBreak/>
                             <Run FontSize="15">伤害加深</Run></TextBlock>
             <Label x:Name="Value_DamageBonus" Content="10D6"
-                           Grid.Row="1" Grid.Column="1"
+                           Grid.Row="1" Grid.Column="2"
                            HorizontalContentAlignment="Left"
                            Style="{DynamicResource XLabel}" Margin="2,2,2,2" VerticalAlignment="Center" HorizontalAlignment="Left"/>
             <!--伤害加深掷骰按钮-->
             <Button x:Name="Button_Roll_DMGBonus" Content="🎲"
-                            Grid.Row="1" Grid.Column="1"
+                            Grid.Row="1" Grid.Column="2"
                             Tag="Card.Button.DMGBonus" Cursor="Hand"
                             HorizontalAlignment="Right" Margin="1,8,1,8" Width="30"
                             Background="{x:Null}" Foreground="{DynamicResource MenuBackground}" FontSize="16" BorderThickness="0,0,0,0"/>
             <!--体格的标签-->
             <TextBlock x:Name="Label_Build" Tag="Build.Block"
-                               Grid.Row="2"
+                               Grid.Row="2" Grid.Column="1"
                                Style="{DynamicResource GeneralTextBlock}" Height="32" Width="36" Foreground="{DynamicResource MenuBackground}">
                             Build<LineBreak/>
                             <Run FontSize="15">体格</Run>
             </TextBlock>
             <Label x:Name="Value_Build" Content="-2"
-                           Grid.Row="2" Grid.Column="1"
+                           Grid.Row="2" Grid.Column="2"
                            HorizontalContentAlignment="Left"
                            Style="{DynamicResource XLabel}" Margin="2,2,2,2" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-            <cview:CharacteristicBox x:Name="Box_Dodge" Tag="DODGE" Grid.Row="3" Grid.ColumnSpan="2" Margin="12,4,12,4"/>
+            <cview:CharacteristicBox x:Name="Box_Dodge" Tag="DODGE" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Margin="12,4,12,4"/>
         </Grid>
-        <Label Content="WEAPONS" Tag="Investigator.Weapons.Title" Height="32"
-               Grid.Row="5" Grid.ColumnSpan="2" Style="{DynamicResource XTitle}" VerticalAlignment="Top" Margin="2,4,2,2"/>
-        <cview:WeaponBox x:Name="WeaponBox" Grid.Row="5" Grid.ColumnSpan="2" Margin="2,38,2,2">
-            
-        </cview:WeaponBox>
         <!--页尾-->
         <Label Tag="Page.Main.Trail"
-                       Content="- Investigator -"
-                       Grid.Row="99" Grid.Column="0" Grid.ColumnSpan="{Binding ColumnDefinitions.Count, ElementName=MainGrid, Mode=OneWay}"
-                       Style="{DynamicResource XLabel}"
-                       Foreground="#FFACACAC"
-                       HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
-                       HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="{DynamicResource DefaultMargin}"/>
+               Content="- Investigator -"
+               Grid.Row="99" Grid.Column="0" Grid.ColumnSpan="{Binding ColumnDefinitions.Count, ElementName=MainGrid, Mode=OneWay}"
+               Style="{DynamicResource XLabel}"
+               Foreground="#FFACACAC"
+               HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+               HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="{DynamicResource DefaultMargin}"/>
     </Grid>
 </UserControl>
