@@ -26,7 +26,6 @@
     </UserControl.Resources>
     <Grid x:Name="MainGrid">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition x:Name="GrowthMarkColumn" Width="0.4*"/>
             <ColumnDefinition x:Name="LabelColumn" Width="1.4*"/>
             <ColumnDefinition x:Name="ValueColumn" Width="1.4*"/>
             <ColumnDefinition Width="0.6*"/>
@@ -35,19 +34,14 @@
             <RowDefinition/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <CheckBox x:Name="GrowthMark" Grid.RowSpan="2" 
-                  HorizontalAlignment="Center" VerticalContentAlignment="Center" 
-                  HorizontalContentAlignment="Center" VerticalAlignment="Center"
-                  Checked="GrowthMark_Checked" Unchecked="GrowthMark_Unchecked"/>
-        <TextBlock x:Name="Block_Key" x:FieldModifier="public" Style="{DynamicResource GeneralTextBlock}" 
-                   Grid.Column="1" Grid.RowSpan="2"  HorizontalAlignment="Center" VerticalAlignment="Center"
+        <TextBlock x:Name="Block_Key" x:FieldModifier="public" Style="{DynamicResource GeneralTextBlock}" Grid.RowSpan="2"  HorizontalAlignment="Center" VerticalAlignment="Center"
                    FontSize="10">
             <Run FontSize="8">PROP</Run><LineBreak/>
             <Run FontSize="12">属性</Run><LineBreak/>
             <Run FontSize="8">PROP</Run><LineBreak/>
             <Run FontSize="12">第二属性</Run>
         </TextBlock>
-        <Border x:Name="BorderForValue" Grid.Column="2" Grid.RowSpan="2" 
+        <Border x:Name="BorderForValue" Grid.Column="1" Grid.RowSpan="2" 
                 BorderThickness="2,2,1,2" 
                 Style="{DynamicResource XBorder}"/>
         <Border x:Name="BorderForHalf" Grid.Column="3" CornerRadius="0,10,0,0" 
@@ -61,19 +55,15 @@
                 BorderThickness="2,2,2,2" 
                 Style="{DynamicResource XBorder}"/>
         <Label x:Name="Label_Value" Content="99"
-               InputScope="Number" Grid.RowSpan="2" Grid.Column="2" 
+               InputScope="Number" Grid.RowSpan="2" Grid.Column="1" 
                FontSize="30" HorizontalContentAlignment="Center" 
                Style="{DynamicResource XLabel}" BorderBrush="{x:Null}" 
                Background="{x:Null}" Foreground="{Binding Foreground, ElementName=userControl}" 
                FontWeight="Bold" Margin="0,0,0,0"/>
-        <Label x:Name="Label_ValueHalf" Tag="Value.Half" Content="49"
-               InputScope="Number" Grid.Column="3" 
-               Style="{DynamicResource XLabel}" FontSize="14" Padding="0,0,0,0"/>
-        <Label x:Name="Label_ValueOneFifth" Tag="Value.OneFifth" Content="19"
-               InputScope="Number" Grid.Row="1" 
-               Grid.Column="3" Style="{DynamicResource XLabel}" FontSize="14" Padding="0,0,0,0"/>
+        <Label x:Name="Label_ValueHalf" Tag="Value.Half" Content="49" InputScope="Number" Grid.Column="3" Style="{DynamicResource XLabel}" FontSize="14" Padding="0,0,0,0"/>
+        <Label x:Name="Label_ValueOneFifth" Tag="Value.OneFifth" Content="19" InputScope="Number" Grid.Row="1" Grid.Column="3" Style="{DynamicResource XLabel}" FontSize="14" Padding="0,0,0,0"/>
         <Grid x:Name="EditGrid"
-              Grid.RowSpan="2" Grid.Column="2">
+              Grid.RowSpan="2" Grid.Column="1">
             <Grid.RowDefinitions>
                 <RowDefinition/>
                 <RowDefinition/>

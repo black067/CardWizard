@@ -123,9 +123,18 @@ namespace CardWizard.Data
         {
             switch (item)
             {
-                case Weapon w: Weapons[w.Name] = w; break;
-                case Skill s: Skills[s.Name] = s; break;
-                case Occupation o: Occupations[o.Name] = o; break;
+                case Weapon w:
+                    w.ID = w.ID > 0 ? w.ID : (Weapons.Count + 1);
+                    Weapons[w.Name] = w;
+                    break;
+                case Skill s:
+                    s.ID = s.ID > 0 ? s.ID : (Skills.Count + 1);
+                    Skills[s.Name] = s;
+                    break;
+                case Occupation o:
+                    o.ID = o.ID > 0 ? o.ID : (Occupations.Count + 1);
+                    Occupations[o.Name] = o; 
+                    break;
                 default:
                     break;
             }
@@ -148,10 +157,10 @@ namespace CardWizard.Data
                         "其它语言(拉丁文)",
                         "医学",
                         "心理学",
-                        "科学(生物学)", 
-                        "科学(药学)", 
-                        "自选专业技能", 
-                        "自选专业技能", 
+                        "科学(生物学)",
+                        "科学(药学)",
+                        "自选专业技能",
+                        "自选专业技能",
                     },
                     CreditRatingRange = "30 ~ 80",
                     PointFormula = "EDU * 4",
@@ -162,13 +171,13 @@ namespace CardWizard.Data
                     Description = "执行侦探破案工作的警察。",
                     Skills = new string[]
                     {
-                        "艺术与手艺(表演)", 
-                        "乔装", 
-                        "射击", 
-                        "法律", 
-                        "聆听", 
-                        "心理学", 
-                        "侦察", 
+                        "艺术与手艺(表演)",
+                        "乔装",
+                        "射击",
+                        "法律",
+                        "聆听",
+                        "心理学",
+                        "侦察",
                         "自选社交技能",
                         "自选任意技能",
                     },

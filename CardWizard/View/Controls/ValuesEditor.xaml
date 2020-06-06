@@ -1,0 +1,47 @@
+﻿<UserControl x:Name="userControl" x:Class="CardWizard.View.ValuesEditor"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:CardWizard.View"
+             xmlns:System="clr-namespace:System;assembly=System.Runtime"
+             mc:Ignorable="d" 
+             Width="98" 
+             FontSize="14" BorderBrush="{DynamicResource MenuBackground}" BorderThickness="1,1,1,1">
+    <UserControl.Resources>
+        <Style x:Key="XInput" TargetType="TextBox">
+            <Setter Property="Margin" Value="1"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{Binding Foreground, ElementName=userControl}"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="HorizontalContentAlignment" Value="Right"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="InputScope" Value="Number"/>
+            <Setter Property="MaxLines"  Value="1"/>
+        </Style>
+        <System:Double x:Key="ItemWidth">45</System:Double>
+    </UserControl.Resources>
+    <UserControl.Background>
+        <SolidColorBrush Color="White" Opacity="0.87"/>
+    </UserControl.Background>
+    <WrapPanel Name="wrapPanel" ItemHeight="24">
+        <Label Content="总计" Tag="OccupationPoints.Label" Style="{DynamicResource XLabel}" Target="{Binding ElementName=FieldA, Mode=OneWay}" Width="{DynamicResource ItemWidth}"/>
+        <Label x:Name="LabelSum" Content="999" Tag="OccupationPoints.Label" Style="{DynamicResource XLabel}" Target="{Binding ElementName=FieldA, Mode=OneWay}" Width="{DynamicResource ItemWidth}" Margin="0,2,0,2" FontStyle="Normal" HorizontalContentAlignment="Right" Padding="4,0,4,0" FontSize="16"/>
+
+        <Label x:Name="LabelA" Content="职业" Tag="OccupationPoints.Label" Style="{DynamicResource XLabel}" Target="{Binding ElementName=FieldA, Mode=OneWay}" Width="{DynamicResource ItemWidth}"/>
+        <TextBox x:Name="FieldA" Tag="0" Text="999" Style="{DynamicResource XInput}" Padding="4,0,4,0" HorizontalAlignment="Right" Width="{DynamicResource ItemWidth}"/>
+        <Label x:Name="LabelB" Content="兴趣" Tag="PersonalPoints.Label" Style="{DynamicResource XLabel}" Target="{Binding ElementName=FieldB, Mode=OneWay}" Width="{DynamicResource ItemWidth}"/>
+        <TextBox x:Name="FieldB" Tag="1" Text="999" Style="{DynamicResource XInput}" Padding="4,0,4,0" HorizontalAlignment="Right" Width="{DynamicResource ItemWidth}"/>
+        <Label x:Name="LabelC" Content="成长" Tag="GrowthPoints.Label" Style="{DynamicResource XLabel}" Target="{Binding ElementName=FieldC, Mode=OneWay}" Width="{DynamicResource ItemWidth}"/>
+        <TextBox x:Name="FieldC" Tag="2" Text="999" Style="{DynamicResource XInput}" Padding="4,0,4,0" HorizontalAlignment="Right" Width="{DynamicResource ItemWidth}"/>
+        <Grid Width="{Binding ActualWidth, ElementName=wrapPanel, Mode=OneWay}" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="24"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Button x:Name="ButtonCancel" Content="❌" Tag="" Style="{DynamicResource XButtonStyle}" Margin="1,1,0,1" Background="{DynamicResource CharacteristicBorderBrush}"/>
+            <Button x:Name="ButtonConfirm" Content="✔" Tag="" Style="{DynamicResource XButtonStyle}" Margin="1,1,1,1" Grid.Column="1"/>
+        </Grid>
+    </WrapPanel>
+</UserControl>

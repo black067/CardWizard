@@ -163,9 +163,9 @@ namespace CallOfCthulhu
             { "Custom.Professional", "自选专业技能" },
             { "Custom.Social", "自选社交型技能" },
             { "Custom.Artistic", "自选艺术与手艺" },
-            { "OccupationPoints.Label", "职"},
-            { "PersonalPoints.Label", "私"},
-            { "GrowthPoints.Label", "成"},
+            { "OccupationPoints.Label", "职业"},
+            { "PersonalPoints.Label", "兴趣"},
+            { "GrowthPoints.Label", "成长"},
             // 其它语句
             { "true", "是" },
             { "false", "否" },
@@ -219,6 +219,8 @@ namespace CallOfCthulhu
             { "Message.Character.SavedPic", "调查员的图像档案已保存至: {0}" },
             { "Message.Character.Switched", "已切换至调查员: {0}" },
             { "Message.Characteristic.Overflow", "属性: {0} 的值不能超过 {1}" },
+            { "Message.Skill.Overflow", "技能: {0} 的值不能超过 {1}" },
+            { "Message.Avatar.FileNotSupported", "不支持此文件格式: \"{0}\", 目前只支持 {1} 格式." },
             // 页首与页尾
             { "QuickReferenceRules", @"技能和属性检定 # { FontSize:16, FontWeight: Bold }
 成功等级 [ 大失败 : 00/96+ ] [ 失败 : 点数 > 技能 ]

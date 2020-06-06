@@ -14,7 +14,7 @@ namespace CardWizard.View
     {
         private readonly TextBox[] texts;
 
-        private Func<Character> CharacterGetter { get; set; }
+        private Func<Character> TargetGetter { get; set; }
 
         /// <summary>
         /// 与之绑定的属性名称
@@ -82,7 +82,7 @@ namespace CardWizard.View
         /// <summary>
         /// 结束输入时触发的事件
         /// </summary>
-        public event EndEditBoxEventHandler InputFieldEndEdit;
+        public event CharacteristicEndEditEventHandler InputFieldEndEdit;
 
         /// <summary>
         /// Constructor
@@ -90,10 +90,10 @@ namespace CardWizard.View
         public CharacteristicBox()
         {
             InitializeComponent();
-            texts = new TextBox[] { Text_Initial, Text_Adjustment, Text_Growth };
             MouseEnter += Box_ShowEditBoxes;
             MouseLeave += Box_HideEditBoxes;
             EditGrid.Visibility = Visibility.Hidden;
+            texts = new TextBox[] { Text_Initial, Text_Adjustment, Text_Growth };
             foreach (var box in texts)
             {
                 box.GotFocus += InputField_GotFocus;
@@ -101,7 +101,7 @@ namespace CardWizard.View
                 box.LostFocus += InputField_LostFocus;
                 box.LostKeyboardFocus += InputField_LostFocus;
             }
-            UpdateValueView();
+            UpdateValueLabels();
             IsReadOnly = false;
         }
 
@@ -115,17 +115,17 @@ namespace CardWizard.View
         {
             IsEditing = false;
             Box_HideEditBoxes(sender, null);
-            UpdateValueView();
+            UpdateValueLabels();
             if (sender is TextBox box && texts.Contains(box))
             {
-                var c = CharacterGetter();
+                var c = TargetGetter();
                 if (c == null) return;
                 if (box.Equals(Text_Initial))
-                    InputFieldEndEdit?.Invoke(CharacterGetter(), Characteristic.Segment.INITIAL, Key, ValueInitial);
+                    InputFieldEndEdit?.Invoke(TargetGetter(), Characteristic.Segment.INITIAL, Key, ValueInitial);
                 else if (box.Equals(Text_Adjustment))
-                    InputFieldEndEdit?.Invoke(CharacterGetter(), Characteristic.Segment.ADJUSTMENT, Key, ValueAdjustment);
+                    InputFieldEndEdit?.Invoke(TargetGetter(), Characteristic.Segment.ADJUSTMENT, Key, ValueAdjustment);
                 else
-                    InputFieldEndEdit?.Invoke(CharacterGetter(), Characteristic.Segment.GROWTH, Key, ValueGrowth);
+                    InputFieldEndEdit?.Invoke(TargetGetter(), Characteristic.Segment.GROWTH, Key, ValueGrowth);
             }
         }
 
@@ -149,7 +149,7 @@ namespace CardWizard.View
         /// 设置显示的值
         /// </summary>
         /// <param name="value"></param>
-        public void UpdateValueView()
+        private void UpdateValueLabels()
         {
             int value = ValueInitial + ValueAdjustment + ValueGrowth;
             if (value == 0)
@@ -166,85 +166,32 @@ namespace CardWizard.View
             }
         }
 
-        private void CharacteristicChanged(Character c, CharacteristicChangedEventArgs e)
-        {
-            if (!e.Key.EqualsIgnoreCase(Key)) { return; }
-            ValueInitial = c.GetInitial(Key);
-            ValueAdjustment = c.GetAdjustment(Key);
-            if (ValueAdjustment != 0) GrowthMark.IsChecked = true;
-            ValueGrowth = c.GetGrowth(Key);
-            UpdateValueView();
-        }
-
-        /// <summary>
-        /// 绑定到属性
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="targetGetter"></param>
-        public CharacteristicChangedEventHandler BindToCharacteristic(string key, Func<Character> getter, EndEditBoxEventHandler onEndEdit)
-        {
-            Key = key;
-            CharacterGetter = getter;
-            Block_Key.SetValue(TagProperty, $"{Key}.Block");
-            InputFieldEndEdit += onEndEdit;
-            GrowthMarkColumn.Width = new GridLength(0, GridUnitType.Star);
-            return CharacteristicChanged;
-        }
-
         /// <summary>
         /// 根据自身的 <see cref="CharacteristicBox.Tag"/>, 绑定到指定的属性
         /// </summary>
         /// <param name="onEndEdit"></param>
         /// <returns></returns>
-        public CharacteristicChangedEventHandler BindToCharacteristicByTag(Func<Character> getter, EndEditBoxEventHandler onEndEdit)
+        public void BindToCharacteristicByTag(Func<Character> getter, CharacteristicEndEditEventHandler onEndEdit)
         {
             var tag = Tag?.ToString();
-            return BindToCharacteristic(tag, getter, onEndEdit);
+            Key = tag;
+            TargetGetter = getter;
+            Block_Key.SetValue(TagProperty, $"{Key}.Block");
+            if (onEndEdit != null) InputFieldEndEdit += onEndEdit;
         }
 
-        /// <summary>
-        /// 与角色技能绑定
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="getter"></param>
-        /// <param name="onEndEdit"></param>
-        /// <returns></returns>
-        public CharacteristicChangedEventHandler BindToSkill(Skill skill, Func<Character> getter, EndEditBoxEventHandler onEndEdit)
+        public void OnCharacteristicChanged(Character c, CharacteristicChangedEventArgs e)
         {
-            CharacterGetter = getter;
-            Key = skill.Name;
-            SetValue(TagProperty, skill.Name);
-            Block_Key.TextAlignment = TextAlignment.Left;
-            InputFieldEndEdit += onEndEdit;
-            LabelColumn.Width = new GridLength(4, GridUnitType.Star);
-            ValueColumn.Width = new GridLength(1, GridUnitType.Star);
-            
-            Label_Value.FontSize = 22;
-            Label_ValueHalf.FontSize = 12;
-            Label_ValueOneFifth.FontSize = 12;
-
-            Label_Initial.Tag = "PersonalPoints.Label";
-            Label_Adjustment.Tag = "OccupationPoints.Label";
-            Label_Growth.Tag = "GrowthPoints.Label";
-            if (!skill.Growable) GrowthMark.Visibility = Visibility.Hidden;
-            return CharacteristicChanged;
+            if (!e.Key.EqualsIgnoreCase(Key)) { return; }
+            ValueInitial = c.GetInitial(Key);
+            ValueAdjustment = c.GetAdjustment(Key);
+            ValueGrowth = c.GetGrowth(Key);
+            UpdateValueLabels();
         }
 
-        private void GrowthMark_Checked(object sender, RoutedEventArgs e)
+        public void UpdateValueFields(Character c)
         {
-            if (CharacterGetter == null) return;
-            var c = CharacterGetter();
-            if (c == null) return;
-            //if (c.GetGrowth(Key) == 0) c.SetGrowth(Key, 1);
-            var skillname = c.Skills.FirstOrDefault(s => s.Name.EqualsIgnoreCase(Key));
-        }
-
-        private void GrowthMark_Unchecked(object sender, RoutedEventArgs e)
-        {
-            if (CharacterGetter == null) return;
-            var c = CharacterGetter();
-            if (c == null) return;
-            //c.SetGrowth(Key, 0);
+            OnCharacteristicChanged(c, new CharacteristicChangedEventArgs(Key));
         }
     }
 
@@ -254,5 +201,5 @@ namespace CardWizard.View
     /// <param name="segment"></param>
     /// <param name="traitName"></param>
     /// <param name="value"></param>
-    public delegate void EndEditBoxEventHandler(Character characterGetter, Characteristic.Segment segment, string traitName, int value);
+    public delegate void CharacteristicEndEditEventHandler(Character characterGetter, Characteristic.Segment segment, string traitName, int value);
 }

@@ -10,31 +10,60 @@ namespace CallOfCthulhu
     public class Occupation
     {
         /// <summary>
+        /// 编号
+        /// </summary>
+        public int ID
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// 职业名称
         /// </summary>
-        public string Name { get; set; }
+        public string Name
+        {
+            get;
+            set;
+        }
 
         /// <summary>
         /// 技能描述
         /// </summary>
-        public string Description { get; set; }
+        public string Description
+        {
+            get;
+            set;
+        }
 
         /// <summary>
         /// 职业技能
         /// </summary>
-        public string[] Skills { get; set; }
+        public string[] Skills
+        {
+            get;
+            set;
+        }
 
         /// <summary>
         /// 信用评级范围
         /// <para>形如: 30 ~ 80</para>
         /// </summary>
-        public string CreditRatingRange { get; set; }
+        public string CreditRatingRange
+        {
+            get;
+            set;
+        }
 
         /// <summary>
         /// 职业技能点计算公式
         /// <para>形如: <code>EDU * 2 + APP * 2</code></para>
         /// </summary>
-        public string PointFormula { get; set; }
+        public string PointFormula
+        {
+            get;
+            set;
+        }
 
         public override string ToString()
         {

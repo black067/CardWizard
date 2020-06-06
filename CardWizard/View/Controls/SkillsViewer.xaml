@@ -52,9 +52,11 @@
         <WrapPanel x:Name="Container" 
                    Orientation="Vertical" 
                    Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="99" Margin="2,2,2,2"
-                   ItemWidth="226" ItemHeight="48">
-            <local:CharacteristicBox>
-            </local:CharacteristicBox>
+                   ItemWidth="226" ItemHeight="27">
+            <local:SkillBox FontSize="10"/>
         </WrapPanel>
+        <Popup x:Name="PopupValueEditor" Placement="MousePoint" StaysOpen="False" AllowsTransparency="True">
+            <local:ValuesEditor x:Name="SkillValuesEditor"/>
+        </Popup>
     </Grid>
 </UserControl>

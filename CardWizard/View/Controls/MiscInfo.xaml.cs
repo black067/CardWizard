@@ -115,7 +115,10 @@ namespace CardWizard.View
                     tiptext = Translator.MapKeywords(tiptext, Manager.Translator.ToKeywordsMap());
                     tip.Content = tiptext;
                 }
-                Manager.Current.Skills = occupation.Skills.ToList();
+                foreach(var sk in Manager.Current.Skills)
+                {
+                    sk.OccupationPoints = 0;
+                }
             }
         }
 

@@ -201,6 +201,46 @@ namespace CallOfCthulhu
         }
 
         /// <summary>
+        /// 根据ID查找技能
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public bool TryGetSkill(int id, out Skill skill)
+        {
+            skill = Skills.FirstOrDefault(s => s.ID == id);
+            return skill != default;
+        }
+
+        public void SetSkill(Skill template, Skill.Segment segment, int value)
+        {
+            SkillChangedEventArgs args;
+            if (!TryGetSkill(template.ID, out Skill skill))
+            { 
+                skill = template.Clone() as Skill;
+                Skills.Add(skill);
+            }
+            args = new SkillChangedEventArgs(template.ID)
+            {
+                Segment = segment,
+                OldValue = skill.GetPoints(segment),
+                NewValue = value,
+            };
+            switch (segment)
+            {
+                case Skill.Segment.OCCUPATION:
+                    skill.OccupationPoints = value;
+                    break;
+                case Skill.Segment.PERSONAL:
+                    skill.PersonalPoints = value;
+                    break;
+                case Skill.Segment.GROWTH:
+                    skill.GrowthPoints = value;
+                    break;
+            }
+            OnSkillChanged(args);
+        }
+
+        /// <summary>
         /// 武器列表
         /// </summary>
         [Description("武器列表")]
@@ -249,11 +289,11 @@ namespace CallOfCthulhu
         {
             var original = Initials.ContainsKey(key) ? Initials[key] : 0;
             Initials[key] = value;
-            UpdateCharacteristic(new CharacteristicChangedEventArgs(key)
+            OnCharacteristicChanged(new CharacteristicChangedEventArgs(key)
             {
                 Segment = Characteristic.Segment.INITIAL,
                 NewValue = value,
-                OriginValue = original,
+                OldValue = original,
             });
         }
 
@@ -278,11 +318,11 @@ namespace CallOfCthulhu
             if (Growths == null) Growths = new Dictionary<string, int>();
             int original = Growths.ContainsKey(key) ? Growths[key] : 0;
             Growths[key] = value;
-            UpdateCharacteristic(new CharacteristicChangedEventArgs(key)
+            OnCharacteristicChanged(new CharacteristicChangedEventArgs(key)
             {
                 Segment = Characteristic.Segment.GROWTH,
                 NewValue = value,
-                OriginValue = original,
+                OldValue = original,
             });
         }
 
@@ -308,11 +348,11 @@ namespace CallOfCthulhu
             if (Adjustments == null) Adjustments = new Dictionary<string, int>();
             int original = Adjustments.ContainsKey(key) ? Adjustments[key] : 0;
             Adjustments[key] = value;
-            UpdateCharacteristic(new CharacteristicChangedEventArgs(key)
+            OnCharacteristicChanged(new CharacteristicChangedEventArgs(key)
             {
                 Segment = Characteristic.Segment.ADJUSTMENT,
                 NewValue = value,
-                OriginValue = original,
+                OldValue = original,
             });
         }
 
@@ -387,7 +427,18 @@ namespace CallOfCthulhu
         /// 更新特点数值
         /// </summary>
         /// <param name="e"></param>
-        protected void UpdateCharacteristic(CharacteristicChangedEventArgs e) => CharacteristicChanged?.Invoke(this, e);
+        protected void OnCharacteristicChanged(CharacteristicChangedEventArgs e) => CharacteristicChanged?.Invoke(this, e);
+
+        /// <summary>
+        /// 角色的技能数值发生改变时, 触发的事件
+        /// </summary>
+        public event SkillChangedEventHandler SkillChanged;
+
+        /// <summary>
+        /// 更新技能数值
+        /// </summary>
+        /// <param name="e"></param>
+        protected void OnSkillChanged(SkillChangedEventArgs e) => SkillChanged?.Invoke(this, e);
 
         /// <summary>
         /// 清空所有对角色数值/属性改变的监听
@@ -396,6 +447,7 @@ namespace CallOfCthulhu
         public void ClearObservers()
         {
             CharacteristicChanged = null;
+            SkillChanged = null;
             PropertyChanged = null;
             Backstory.ClearObservers();
         }

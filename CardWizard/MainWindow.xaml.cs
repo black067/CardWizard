@@ -26,6 +26,8 @@ namespace CardWizard
             CommandSave.InputGestures.Add(new KeyGesture(Key.S, ModifierKeys.Control));
             CommandCapture.InputGestures.Add(new KeyGesture(Key.S, ModifierKeys.Control | ModifierKeys.Shift));
             CommandConfirm.InputGestures.Add(new KeyGesture(Key.Enter));
+            MouseDown += MainWindow_MouseDown;
+
             var fileConfig = AppResources.FileConfig;
             // 如果项目路径下存在文件"DEBUG", 就执行以下操作
             if (File.Exists("DEBUG"))
@@ -44,6 +46,12 @@ namespace CardWizard
             // UI 逻辑处理
             _ = new MainManager(this, config);
         }
+
+        private void MainWindow_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            //if (Keyboard.FocusedElement is TextBox)
+        }
+
         /// <summary>
         /// 将目录添加到环境变量中
         /// </summary>
@@ -121,6 +129,4 @@ namespace CardWizard
             CommandConfirmGestured?.Invoke(sender, e);
         }
     }
-
-
 }

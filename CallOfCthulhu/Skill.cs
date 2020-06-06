@@ -11,8 +11,29 @@ namespace CallOfCthulhu
     /// <summary>
     /// 技能
     /// </summary>
-    public class Skill : INotifyPropertyChanged
+    public class Skill : INotifyPropertyChanged, ICloneable
     {
+        /// <summary>
+        /// 技能点数的类型
+        /// </summary>
+        public enum Segment
+        {
+
+            /// <summary>
+            /// 职业点数
+            /// </summary>
+            OCCUPATION,
+            /// <summary>
+            /// 个人兴趣点数
+            /// </summary>
+            PERSONAL,
+            /// <summary>
+            /// 成长点数
+            /// </summary>
+            GROWTH,
+        }
+
+        private int id;
         private string name;
         private string category;
         private string description;
@@ -21,8 +42,23 @@ namespace CallOfCthulhu
         private int growthPoints;
         private int occupationPoints;
         private int personalPoints;
-        private int trainPoints;
         private bool grown;
+        private int upper;
+        private int lower;
+
+        /// <summary>
+        /// 编号
+        /// </summary>
+        [Description("编号")]
+        public int ID
+        {
+            get => id;
+            set
+            {
+                id = value;
+                OnPropertyChanged();
+            }
+        }
 
         /// <summary>
         /// 名称
@@ -81,18 +117,33 @@ namespace CallOfCthulhu
         }
 
         /// <summary>
-        /// 技能是否已提升完成
+        /// 上限
         /// </summary>
-        [Description("技能是否已提升完成")]
-        public bool Grown
+        [Description("点数上限")]
+        public int Upper
         {
-            get => grown;
+            get => upper;
             set
             {
-                grown = value;
+                upper = value;
                 OnPropertyChanged();
             }
         }
+
+        /// <summary>
+        /// 点数下限
+        /// </summary>
+        [Description("点数下限")]
+        public int Lower
+        {
+            get => lower;
+            set
+            {
+                lower = value;
+                OnPropertyChanged();
+            }
+        }
+
 
         /// <summary>
         /// 技能基础值
@@ -104,20 +155,6 @@ namespace CallOfCthulhu
             set
             {
                 baseValue = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>
-        /// 幕间成长点数
-        /// </summary>
-        [Description("幕间成长点数")]
-        public int GrowthPoints
-        {
-            get => growthPoints;
-            set
-            {
-                growthPoints = value;
                 OnPropertyChanged();
             }
         }
@@ -151,16 +188,68 @@ namespace CallOfCthulhu
         }
 
         /// <summary>
-        /// 训练提升点数
+        /// 成长点数
         /// </summary>
-        [Description("训练提升点数")]
-        public int TrainPoints
+        [Description("成长点数")]
+        public int GrowthPoints
         {
-            get => trainPoints;
+            get => growthPoints;
             set
             {
-                trainPoints = value;
+                growthPoints = value;
                 OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// 技能是否已经过幕间成长
+        /// </summary>
+        [Description("技能是否已经过幕间成长")]
+        public bool Grown
+        {
+            get => grown;
+            set
+            {
+                grown = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// 查询指定类型的值
+        /// </summary>
+        /// <param name="segment"></param>
+        /// <returns></returns>
+        public int GetPoints(Segment segment)
+        {
+            return segment switch
+            {
+                Segment.OCCUPATION => OccupationPoints,
+                Segment.PERSONAL => PersonalPoints,
+                _ => growthPoints,
+            };
+        }
+
+        /// <summary>
+        /// 设置指定类型的值
+        /// </summary>
+        /// <param name="segment"></param>
+        /// <param name="value"></param>
+        public void SetPoints(Segment segment, int value)
+        {
+            switch (segment)
+            {
+                case Segment.OCCUPATION:
+                    OccupationPoints = value;
+                    break;
+                case Segment.PERSONAL:
+                    PersonalPoints = value;
+                    break;
+                case Segment.GROWTH:
+                    GrowthPoints = value;
+                    break;
+                default:
+                    break;
             }
         }
 
@@ -222,6 +311,27 @@ namespace CallOfCthulhu
             }
             builder.Append("}");
             return builder.ToString();
+        }
+
+        /// <summary>
+        /// 取得一份拷贝
+        /// </summary>
+        /// <returns></returns>
+        public object Clone()
+        {
+            return new Skill
+            {
+                ID = id,
+                Name = name,
+                Category = category,
+                Description = description,
+                Growable = growable,
+                Grown = grown,
+                BaseValue = baseValue,
+                GrowthPoints = growthPoints,
+                OccupationPoints = occupationPoints,
+                PersonalPoints = personalPoints,
+            };
         }
     }
 }

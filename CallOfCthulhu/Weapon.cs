@@ -10,16 +10,6 @@ namespace CallOfCthulhu
     /// </summary>
     public class Weapon : INotifyPropertyChanged
     {
-        private string name;
-        private WEAPONTYPE weaponType;
-        private string description;
-        private string hitrateNormal;
-        private string damage;
-        private string baseRange;
-        private string attacksPerRound;
-        private int bullets;
-        private int resistance;
-
         /// <summary>
         /// 枚举: 武器类型
         /// </summary>
@@ -61,6 +51,31 @@ namespace CallOfCthulhu
             /// 其它
             /// </summary>
             Misc,
+        }
+
+        private int id;
+        private string name;
+        private WEAPONTYPE weaponType;
+        private string description;
+        private string hitrateNormal;
+        private string damage;
+        private string baseRange;
+        private string attacksPerRound;
+        private int bullets;
+        private int resistance;
+
+        /// <summary>
+        /// 编号
+        /// </summary>
+        [Description("编号")]
+        public int ID
+        {
+            get => id;
+            set
+            {
+                id = value;
+                OnPropertyChanged();
+            }
         }
 
         /// <summary>

@@ -22,7 +22,7 @@ namespace CallOfCthulhu
         /// <summary>
         /// 原来的值
         /// </summary>
-        public int OriginValue { get; set; }
+        public int OldValue { get; set; }
 
         /// <summary>
         /// 新的值

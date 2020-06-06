@@ -89,7 +89,7 @@
         <Image x:Name="Image_Avatar" Tag="Card.Image.Avatar"
                        Grid.Column="2"  Grid.Row="2" VerticalAlignment="Center" Cursor="Hand" 
                        Source="/Resources/Image.Avatar.Empty.png"
-                       HorizontalAlignment="Center" Margin="4,2,2,2">
+                       HorizontalAlignment="Center" Margin="4,2,2,2" AllowDrop="True">
             <Image.Effect>
                 <DropShadowEffect BlurRadius="3" Opacity="0.885" ShadowDepth="2"/>
             </Image.Effect>

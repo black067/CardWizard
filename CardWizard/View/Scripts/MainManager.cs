@@ -104,9 +104,9 @@
         /// <summary>
         /// 用于绑定到角色: 角色的背景信息被改变时, 触发的事件
         /// </summary>
-        /// <param name="c"></param>
-        /// <param name="e"></param>
-        private void OnPropertyChanged(object c, PropertyChangedEventArgs e) => PropertyChanged?.Invoke(c, e);
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        private void OnPropertyChanged(object sender, PropertyChangedEventArgs args) => PropertyChanged?.Invoke(sender, args);
 
         /// <summary>
         /// 角色的属性值被改变时, 触发的事件
@@ -116,9 +116,21 @@
         /// <summary>
         /// 用于绑定到角色: 角色的属性值被改变时, 触发的事件
         /// </summary>
-        /// <param name="c"></param>
-        /// <param name="e"></param>
-        private void OnCharacteristicChanged(Character c, CharacteristicChangedEventArgs e) => CharacteristicChanged?.Invoke(c, e);
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        private void OnCharacteristicChanged(Character sender, CharacteristicChangedEventArgs args) => CharacteristicChanged?.Invoke(sender, args);
+
+        /// <summary>
+        /// 当前角色技能数值变动时出发的事件
+        /// </summary>
+        public event SkillChangedEventHandler SkillChanged;
+
+        /// <summary>
+        /// 当前角色技能数值变动时触发的事件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        private void OnSkillChanged(Character sender, SkillChangedEventArgs args) => SkillChanged?.Invoke(sender, args);
 
         /// <summary>
         /// 已载入的所有角色
@@ -172,6 +184,7 @@
                     if (value != null)
                     {
                         value.CharacteristicChanged += OnCharacteristicChanged;
+                        value.SkillChanged += OnSkillChanged;
                         value.PropertyChanged += OnPropertyChanged;
                     }
                 }
@@ -241,6 +254,7 @@
             //Window.Button_Debug.Click += DoDebug;
             Window.CommandCaptureGestured += DoCapturePicture;
             Window.CommandSwitchToolTipGestured += DoSwitchToolTip;
+            Window.CommandConfirmGestured += DoMoveFocus;
             // ToolTip 的显示
             ToolTipOpacity = Config.ToolTipAvailable ? Config.ToolTipOpacity : 0;
             Window.MenuItemSwitchToolTip.IsChecked = Config.ToolTipAvailable;
@@ -260,7 +274,25 @@
             GC.Collect();
         }
 
+
         #region Button Click Handler
+
+        /// <summary>
+        /// 按下回车时
+        /// <para>如果当前的键盘焦点是 <see cref="TextBox"/> 且 <see cref="TextBox.MaxLines"/> 为 1, 则将焦点移向下一个元素</para>
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void DoMoveFocus(object sender, RoutedEventArgs e)
+        {
+            var element = Keyboard.FocusedElement;
+            if (element == null) return;
+            if (element is TextBox textBox && textBox.MaxLines < 2)
+            {
+                Window.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
+            }
+        }
+
         /// <summary>
         /// 保存按钮点击时触发的事件
         /// </summary>
@@ -371,20 +403,42 @@
             openFiledialog.ShowDialog(Window);
             var result = openFiledialog.FileName;
             if (string.IsNullOrWhiteSpace(result) || !File.Exists(result)) return;
+            ImportAvatar(result);
+        }
 
-            var ext = new FileInfo(result).Extension;
+        private void OnAvatarImageDrop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                var file = ((System.Array)e.Data.GetData(DataFormats.FileDrop)).GetValue(0).ToString();
+                if (file.EndsWith(".png"))
+                {
+                    ImportAvatar(file);
+                }
+                else
+                {
+                    var fmt = Translator.Translate("Message.Avatar.FileNotSupported", "不支持此文件格式: {0}, 目前只支持 {1} 图片.");
+                    Messenger.EnqueueFormat(fmt, Path.GetExtension(file), "png");
+                }
+            }
+            var data = e.Data;
+        }
+
+        private void ImportAvatar(string source)
+        {
+            var ext = new FileInfo(source).Extension;
             var dest = $"./Save/{Current.Name}{ext}";
             // 如果文件已经存在, 要弹出确认窗口
             if (File.Exists(dest))
             {
                 var message = Translator.Translate("Dialog.Overwrite.Confirmation", "是否确定用\n{0}\n覆盖现有文件?");
-                message = string.Format(message, result);
+                message = string.Format(message, source);
                 var confirmDialog = new DialogWindow(message);
                 confirmDialog.ShowDialog(Window);
                 if (!(bool)confirmDialog.DialogResult)
                     return;
             }
-            File.Copy(result, dest, true);
+            File.Copy(source, dest, true);
             AvatarUpdate(Current, IMainPage.Image_Avatar);
         }
 
@@ -425,15 +479,16 @@
             traitBoxes.Add(page.Box_Dodge);
             foreach (var box in traitBoxes)
             {
-                var iChanged = box.BindToCharacteristicByTag(charactergetter, OnCharacteristicEdited);
-                CharacteristicChanged += iChanged;
-                InfoUpdated += GetHandlerForCharacteristicBox(iChanged, box.Key);
+                box.BindToCharacteristicByTag(charactergetter, OnCharacteristicEdited);
+                CharacteristicChanged += box.OnCharacteristicChanged;
+                InfoUpdated += box.UpdateValueFields;
             }
             // 角色伤害奖励的控制
             InfoUpdated += UpdateDamageBonus;
-            page.SkillPanel.InitializeSkills(this, DataBus.Skills.Values);
             // 监控角色的属性变化
             CharacteristicChanged += MainManager_CharacteristicChanged;
+            // 初始化技能的显示
+            page.SkillPanel.InitializeSkills(this, DataBus.Skills.Values);
             // 绑定事件: 点击骰一次按钮时触发
             page.Button_Roll_DMGBonus.Click += (o, e) =>
             {
@@ -447,6 +502,7 @@
             {
                 InfoUpdating += c => AvatarUpdate(c, image);
                 image.MouseDown += DoImportAvatar;
+                image.Drop += OnAvatarImageDrop;
             });
             // 武器面板初始化
             page.WeaponBox.InitializeBox(this, DataBus.Weapons.Values);
@@ -603,12 +659,6 @@
                     translate(element, translator);
                     histories.Add(element);
                 }
-                //else if (subElement is DataGridColumn dataGridColumn)
-                //{
-                //    var pathHeader = dataGridColumn.Header as string;
-                //    if (string.IsNullOrEmpty(pathHeader) || !translator.TryTranslate($"{container.Name}.{pathHeader}", out var text)) continue;
-                //    dataGridColumn.Header = text;
-                //}
             }
         }
 
@@ -655,6 +705,7 @@
 
         /// <summary>
         /// 角色属性数值变动时触发的事件
+        /// <para>基础属性变更时要连同派生属性一起变更</para>
         /// </summary>
         /// <param name="character"></param>
         /// <param name="args"></param>
@@ -717,6 +768,43 @@
         }
 
         /// <summary>
+        /// 属性编辑框结束编辑时触发的事件: 用新的值设置角色的属性值
+        /// </summary>
+        /// <param name="segment"></param>
+        /// <param name="traitName"></param>
+        /// <param name="value"></param>
+        internal void OnSkillBoxEdited(Skill source, Character character, Skill.Segment segment, int value)
+        {
+            character.SetSkill(source, segment, value);
+            int i = 0, a = 0, g = 0;
+            if (character.TryGetSkill(source.ID, out var skill))
+            {
+                i = skill.OccupationPoints;
+                a = skill.PersonalPoints;
+                g = skill.GrowthPoints;
+            }
+            
+            var after = segment switch
+            {
+                Skill.Segment.OCCUPATION => (value + a + g),
+                Skill.Segment.PERSONAL => (value + i + g),
+                Skill.Segment.GROWTH => (value + i + a),
+                _ => 0,
+            };
+            // 判断总值是否超过范围
+            if (DataBus.Skills.TryGetValue(source.Name, out var model))
+            {
+                if (model.Upper > 0 && after > model.Upper)
+                {
+                    value = model.Upper - (after - value);
+                    var message = Translator.Translate("Message.Skill.Overflow", "{0} 的值不能超过 {1}");
+                    Messenger.EnqueueFormat(message, model.Name, model.Upper);
+                }
+            }
+            character.SetSkill(source, segment, value);
+        }
+
+        /// <summary>
         /// 刷新角色的基础属性统计标签
         /// </summary>
         /// <param name="c"></param>
@@ -730,22 +818,6 @@
             Window.MainPage.SetDamageBonus(damageBonus, build);
             c.DamageBonus = damageBonus;
             c.SetAdjustment("Build", build);
-        }
-
-        /// <summary>
-        /// 生成一个事件: 在角色页面更新时, 调用 <paramref name="handler"/>
-        /// <para>配合 <see cref="InfoUpdated"/>, <see cref="InfoUpdating"/> 使用</para>
-        /// </summary>
-        /// <param name="handler"></param>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        internal static Action<Character> GetHandlerForCharacteristicBox(CharacteristicChangedEventHandler handler, string key)
-        {
-            void updated(Character c)
-            {
-                handler.Invoke(c, new CharacteristicChangedEventArgs(key));
-            }
-            return updated;
         }
 
         /// <summary>

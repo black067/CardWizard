@@ -31,9 +31,7 @@ namespace CardWizard.View
         /// </summary>
         MainManager Manager { get; set; }
 
-        private List<string> SkillNames { get; set; }
-
-        private bool SkillFilter(string key) => SkillNames?.Contains(key) ?? false;
+        private List<SkillBox> SkillBoxes { get; set; }
 
         /// <summary>
         /// 初始化技能面板
@@ -45,22 +43,63 @@ namespace CardWizard.View
             Container.ClearAllChildren();
             if (skills == null || !skills.Any()) return;
             Manager = manager ?? throw new ArgumentNullException(nameof(manager));
-            SkillNames = (from s in skills select s.Name).ToList();
+            SkillBoxes = new List<SkillBox>();
             foreach (var item in skills)
             {
-                var box = AddBox(Container, ConvertSkill(item));
-                var iChanged = box.BindToSkill(item, () => Manager.Current, Manager.OnCharacteristicEdited);
-                Manager.CharacteristicChanged += iChanged;
-                Manager.InfoUpdated += MainManager.GetHandlerForCharacteristicBox(iChanged, box.Key);
+                var box = AddBox(Container);
+                SkillBoxes.Add(box);
+                box.BindToSkill(item, () => Manager.Current);
+                Manager.SkillChanged += box.OnSkillChanged;
+                Manager.InfoUpdated += box.UpdateValueFields;
+                box.Label_Value.MouseDown += (o, e) =>
+                {
+                    PopupValueEditor.IsOpen = false;
+                    PopupValueEditor.IsOpen = true;
+                    var sender = box;
+                    sender.Highlight(true);
+                    sender.Editing = true;
+                    SkillValuesEditor.InitFields(sender.ValueOccupation, sender.ValuePersonal, sender.ValueGrowth);
+                    SkillValuesEditor.ConfirmCallback += (values) =>
+                    {
+                        for (int i = 0; i < 3; i++)
+                        {
+                            if (SkillValuesEditor.IsEdited(i, values[i]))
+                                sender.TargetGetter().SetSkill(sender.Source, (Skill.Segment)i, values[i]);
+                        }
+                    };
+                    Keyboard.Focus(SkillValuesEditor.FieldA);
+                };
             }
-            Manager.InfoUpdated += UpdatePointsView;
+            // 编辑窗口打开的行为
+            PopupValueEditor.Opened += (o, e) =>
+            {
+                SkillBoxes.ForEach(s => { s.Editing = false; s.Highlight(false); });
+            };
+            // 编辑窗口关闭时的行为
+            PopupValueEditor.Closed += (o, e) =>
+            {
+                SkillBoxes.ForEach(s => { s.Editing = false; s.Highlight(false); });
+            };
+            // 取消编辑时必须执行的动作
+            SkillValuesEditor.CancelCallbackStatic += () =>
+            {
+                PopupValueEditor.IsOpen = false;
+            };
+            // 按下确认按钮时的行为
+            SkillValuesEditor.ButtonConfirm.Click += (o, e) =>
+            {
+                PopupValueEditor.IsOpen = false;
+                SkillValuesEditor.Confirm();
+            };
+            // 资料更新时, 要刷新技能点的显示
+            Manager.InfoUpdated += UpdatePointsSummary;
             Manager.CharacteristicChanged += (o, e) =>
             {
-                UpdatePointsView(o);
+                UpdatePointsSummary(o);
             };
             Manager.PropertyChanged += (o, e) =>
             {
-                if (e.PropertyName == nameof(Character.Occupation)) UpdatePointsView(o as Character);
+                if (e.PropertyName == nameof(Character.Occupation)) UpdatePointsSummary(o as Character);
             };
         }
 
@@ -68,7 +107,7 @@ namespace CardWizard.View
         /// 刷新剩余点数的显示
         /// </summary>
         /// <param name="c"></param>
-        private void UpdatePointsView(Character c)
+        private void UpdatePointsSummary(Character c)
         {
             int personalPoints = 0, ppConsumed = 0, ppSum = 0, occupationPoints = 0, opConsumed = 0, opSum = 0;
             if (c.Occupation != null && Manager.DataBus.TryGetOccupation(c.Occupation, out var occupation))
@@ -77,39 +116,28 @@ namespace CardWizard.View
                 occupationPoints = Manager.CalcCharacteristic(formula, c.GetCharacteristicTotal(k => formula.Contains(k)));
                 Label_OccupationPoints.AddOrSetToolTip(occupation.PointFormula, (Style)App.Current.FindResource("XToolTip"));
             }
-            opConsumed = (from kvp in c.Initials where SkillFilter(kvp.Key) select kvp.Value).Sum();
+            opConsumed = (from s in c.Skills select s.OccupationPoints).Sum();
             opSum = occupationPoints - opConsumed;
             Label_OccupationPoints.Content = opSum;
             if (opSum < 0) Label_OccupationPoints.DataContext = "invalid";
             else Label_OccupationPoints.DataContext = string.Empty;
 
-
             var pformula = "INT * 2";
             personalPoints = Manager.CalcCharacteristic(pformula, c.GetCharacteristicTotal(k => k == "INT"));
-            ppConsumed = (from kvp in c.Adjustments where SkillFilter(kvp.Key) select kvp.Value).Sum();
+            ppConsumed = (from s in c.Skills select s.PersonalPoints).Sum();
             ppSum = personalPoints - ppConsumed;
             Label_PersonalPoints.Content = ppSum;
             if (ppSum < 0) Label_PersonalPoints.DataContext = "invalid";
             else Label_PersonalPoints.DataContext = string.Empty;
         }
 
-        private static IEnumerable<TextElement> ConvertSkill(Skill item)
+        private static SkillBox AddBox(Panel panel)
         {
-            var style = $"# {{ FontSize: 12, FontStyle: Italic }}";
-            var context = $"{item.Name}({item.BaseValue:00}%) {style}";
-            var inlines = UIExtension.ResolveTextElements(context.Trim());
-            return inlines;
-        }
-
-        private static CharacteristicBox AddBox(Panel panel, IEnumerable<TextElement> inlines)
-        {
-            var box = new CharacteristicBox();
+            var box = new SkillBox();
             box.BeginInit();
             box.Name = $"Box_{panel.Children.Count}";
             box.Margin = new Thickness(1, 2, 1, 2);
-            box.Block_Key.Inlines.Clear();
-            box.Block_Key.Inlines.AddRange(inlines);
-            box.Block_Key.TextAlignment = TextAlignment.Left;
+            box.FontSize = 10;
             box.EndInit();
             panel.RegisterName(box.Name, box);
             panel.Children.Add(box);
