@@ -31,28 +31,22 @@ namespace CardWizard.View
 
         private void Button_Cancel_Click(object sender, RoutedEventArgs e)
         {
-            Result = false;
+            DialogResult = false;
             Close();
         }
 
         private void Button_Confirm_Click(object sender, RoutedEventArgs e)
         {
-            Result = true;
+            DialogResult = true;
             Close();
         }
-
-        /// <summary>
-        /// 窗口的结果
-        /// </summary>
-        public bool Result;
 
         /// <summary>
         /// 作为 Dialog 窗口显示
         /// </summary>
         /// <param name="owner"></param>
-        /// <param name="startupLocation"></param>
         /// <returns></returns>
-        public bool? ShowDialog(Window owner, WindowStartupLocation startupLocation = WindowStartupLocation.CenterOwner)
+        public bool? ShowDialog(Window owner)
         {
             Owner = owner;
             return ShowDialog();

@@ -179,6 +179,8 @@
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="Width" Value="144"/>
             <Setter Property="Height" Value="54"/>
+            <Setter Property="LabelWidth" Value="64"/>
+            <Setter Property="ValueFontSize" Value="28"/>
         </Style>
         <!--合法性检查标签的样式-->
         <Style x:Key="ValidityCheck" TargetType="Label">

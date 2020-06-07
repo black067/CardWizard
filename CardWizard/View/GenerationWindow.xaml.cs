@@ -1,27 +1,17 @@
-﻿using System;
-using System.Linq;
+﻿using CallOfCthulhu;
+using CardWizard.Tools;
+using System;
 using System.Collections;
-using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows;
-using System.Reflection;
-using Microsoft.CSharp;
-using System.CodeDom;
-using System.CodeDom.Compiler;
-using CardWizard.Data;
-using CardWizard.Tools;
 using System.Windows.Controls;
-using System.Windows.Media;
-using System.Windows.Documents;
-using CallOfCthulhu;
 using System.Windows.Data;
 using System.Windows.Input;
 using XLua;
-using XLua.LuaDLL;
-using System.Text.RegularExpressions;
 
 namespace CardWizard.View
 {
@@ -242,7 +232,7 @@ namespace CardWizard.View
         /// <param name="calculator"></param>
         public void ApplyAgeBonus(Character character)
         {
-            if (character == null) return; 
+            if (character == null) return;
             character.Age = Age;
             foreach (var kvp in Bonus)
             {

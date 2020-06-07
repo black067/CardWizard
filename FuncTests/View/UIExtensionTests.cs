@@ -1,12 +1,9 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using CardWizard.View;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using CardWizard.Tools;
+using System.Linq;
 using System.Windows.Documents;
 using System.Windows.Media;
-using System.Linq;
 
 namespace CardWizard.View.Tests
 {
@@ -52,9 +49,9 @@ Second line # { FontSize: 8, Background: Transparent }";
             // FUNCTION END
             var conditions = new Dictionary<string, Func<bool>>()
             {
-                { $"0: {nameof(TextElement.FontSize)} convert fail", 
+                { $"0: {nameof(TextElement.FontSize)} convert fail",
                     () => runs[0].FontSize.Equals(12.0) },
-                { $"1: {nameof(TextElement.Background)} convert fail", 
+                { $"1: {nameof(TextElement.Background)} convert fail",
                     () => runs[1].Background is SolidColorBrush colorBrush },
             };
             foreach (var (msg, condition) in conditions)

@@ -1,8 +1,4 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using CallOfCthulhu;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CallOfCthulhu.Tests
 {
@@ -24,7 +20,7 @@ namespace CallOfCthulhu.Tests
                 PointFormula = "EDU * 2 + math.max(DEX, STR) * 2",
             };
             var text = occu.ToString();
-            
+
         }
     }
 }

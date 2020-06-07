@@ -4,16 +4,16 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CardWizard.View"
-        mc:Ignorable="d"
-        Title="DialogWindow" ShowInTaskbar="False" ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
+        mc:Ignorable="d" 
+        Title="DialogWindow" ShowInTaskbar="False" WindowStartupLocation="CenterOwner" SizeToContent="WidthAndHeight">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition MinHeight="100"/>
+            <RowDefinition/>
             <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="64"/>
-            <ColumnDefinition MinWidth="200"/>
+            <ColumnDefinition/>
             <ColumnDefinition Width="64"/>
         </Grid.ColumnDefinitions>
 

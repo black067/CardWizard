@@ -1,10 +1,8 @@
-﻿using System;
-using System.IO;
+﻿using ICSharpCode.SharpZipLib.Zip;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ICSharpCode.SharpZipLib.Zip;
 using System.Threading;
 
 namespace CardWizard.Tools
@@ -116,7 +114,7 @@ namespace CardWizard.Tools
             }
             return localGetAllFiles(path, 0, recursiveLimit, Array.Empty<FileInfo>().ToList());
         }
-        
+
 
         /// <summary>
         /// 压缩文件时的缓冲区大小

@@ -215,7 +215,7 @@ namespace CallOfCthulhu
         {
             SkillChangedEventArgs args;
             if (!TryGetSkill(template.ID, out Skill skill))
-            { 
+            {
                 skill = template.Clone() as Skill;
                 Skills.Add(skill);
             }
@@ -354,6 +354,30 @@ namespace CallOfCthulhu
                 NewValue = value,
                 OldValue = original,
             });
+        }
+
+        /// <summary>
+        /// 设置角色属性的值
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="segment"></param>
+        /// <param name="value"></param>
+        public void SetCharacteristic(string key, Characteristic.Segment segment, int value)
+        {
+            switch (segment)
+            {
+                case Characteristic.Segment.INITIAL:
+                    SetInitial(key, value);
+                    break;
+                case Characteristic.Segment.ADJUSTMENT:
+                    SetAdjustment(key, value);
+                    break;
+                case Characteristic.Segment.GROWTH:
+                    SetGrowth(key, value);
+                    break;
+                default:
+                    break;
+            }
         }
 
         /// <summary>

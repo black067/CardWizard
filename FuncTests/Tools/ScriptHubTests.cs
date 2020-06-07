@@ -1,13 +1,10 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using CardWizard.Tools;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using CallOfCthulhu;
 using CardWizard.Data;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Collections;
 using System.IO;
 using System.Linq;
-using CallOfCthulhu;
-using System.Collections;
 using XLua;
 
 namespace CardWizard.Tools.Tests

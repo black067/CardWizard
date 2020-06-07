@@ -110,8 +110,22 @@ namespace CardWizard.View
         /// <param name="text"></param>
         /// <param name="style"></param>
         /// <param name="handler"></param>
-        public static void AddOrSetToolTip(this FrameworkElement element, string text, Style style = null, RoutedEventHandler handler = null)
+        public static ToolTip AddOrSetToolTip(this FrameworkElement element, string text, Style style = null, RoutedEventHandler handler = null)
         {
+            static void OnOpended(object o, RoutedEventArgs e)
+            {
+                var tip = o as ToolTip;
+                if (tip.Content is string str)
+                {
+                    if (string.IsNullOrWhiteSpace(str))
+                        tip.Opacity = 0;
+                    else
+                    {
+                        var setters = (from Setter setter in tip.Style.Setters where setter.Property.Name == nameof(tip.Opacity) select setter.Value).FirstOrDefault() ?? 0.87;
+                        tip.Opacity = (double)Convert.ChangeType(setters, typeof(double));
+                    }
+                }
+            };
             if (element == null) throw new ArgumentNullException(nameof(element));
 
             if (element.ToolTip is ToolTip toolTip)
@@ -125,10 +139,12 @@ namespace CardWizard.View
                 element.RegisterName($"ToolTip_{toolTip.GetHashCode()}", toolTip);
                 element.ToolTip = toolTip;
             }
+            toolTip.Opened += OnOpended;
             if (handler != null)
                 toolTip.Opened += handler;
             if (style != null)
                 toolTip.Style = style;
+            return toolTip;
         }
 
         /// <summary>
@@ -213,6 +229,9 @@ namespace CardWizard.View
                     {
                         result.AddRange(GetChildren(item));
                     }
+                    break;
+                case Popup popup:
+                    result.AddRange(GetChildren(popup.Child));
                     break;
                 case Decorator decorator:
                     result.AddRange(GetChildren(decorator.Child));

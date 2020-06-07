@@ -140,10 +140,7 @@ namespace CallOfCthulhu
             { "Build.Block.ToolTip", "{Build}则会用在战技和追逐中，用它来进行比较和计算。" },
             // 闪避
             { "DODGE", "闪避" },
-            { "DODGE.ToolTip", @"允许调查员本能地闪避攻击，投掷过来的投射物以及诸如此类的。
-一名角色可以尝试在一场战斗轮中使用任何次数的闪避（但是对抗一次特定的攻击只能一次；见章节6：战斗）。
-闪避可以通过经验来提升，就像其他的技能一样。如果一次攻击可以被看见，一名角色可以尝试闪避开它。
-想要闪避子弹是不可能的，因为运动中的它们是不可能被看见的；一名角色所能做到的最好的是做逃避的行动来造成自己更难被命中——“寻找掩体（Diving for cover）”" },
+            { "DODGE.ToolTip", @"允许调查员本能地闪避攻击，投掷过来的投射物以及诸如此类的。" },
             { "DODGE.Block", "DODGE # FontSize: 10\n 闪避 # FontSize: 14" },
             // 背景故事相关
             { "Backstory.PersonalDescription", "个人描述" },
@@ -204,6 +201,9 @@ namespace CallOfCthulhu
             { "Card.Button.DMGBonus.ToolTip", "掷一次伤害加值" },
             { "Card.NewItem.Placeholder", "添加新物品?"},
             { "Card.Button.AddItem", "➕"},
+            { "ValuesEditor.MoreInfo", "总计💡"},
+            { "ValuesEditor.ToolTip.BaseAndRange", "基础值: {0}, 合理范围: {1} ~ {2}" },
+            { "ValuesEditor.ToolTip.BaseOnly", "基础值: {0}" },
             // 其它窗口
             { "GenerationWindow.Title", "生成了以下属性" },
             { "GenerationWindow.Message", $"选择一组数据作为调查员的基础属性\n* 请确认调查员年龄, 并按照年龄调整属性点\n* {{LUCK}} 将在确认后自动骰出" },

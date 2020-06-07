@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Reflection;
-using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 
 namespace CardWizard.Tools
 {

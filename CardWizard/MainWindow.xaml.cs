@@ -1,16 +1,12 @@
-﻿using CardWizard.View;
+﻿using CardWizard.Data;
+using CardWizard.Tools;
+using CardWizard.View;
 using System;
-using System.Reflection;
+using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
-using System.IO;
-using CardWizard.Tools;
-using CardWizard.Data;
-using CardWizard.Properties;
 using AppResources = CardWizard.Properties.Resources;
-using System.Runtime.InteropServices;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace CardWizard
 {

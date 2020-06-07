@@ -34,7 +34,7 @@ namespace XLua
         private FieldInfo LuaBase_luaEnv = typeof(LuaBase).GetField("luaEnv", BindingFlags.NonPublic | BindingFlags.Instance);
         private MethodInfo DelegateBridgeBase_errorFuncRef_getter = typeof(LuaBase).GetProperty("_errorFuncRef", BindingFlags.NonPublic | BindingFlags.Instance).GetGetMethod(true);
         private MethodInfo LuaAPI_load_error_func = typeof(LuaAPI).GetMethod("load_error_func");
-        private MethodInfo LuaBase_translator_getter  = typeof(LuaBase).GetProperty("_translator", BindingFlags.NonPublic | BindingFlags.Instance).GetGetMethod(true);
+        private MethodInfo LuaBase_translator_getter = typeof(LuaBase).GetProperty("_translator", BindingFlags.NonPublic | BindingFlags.Instance).GetGetMethod(true);
         private FieldInfo LuaBase_luaReference = typeof(LuaBase).GetField("luaReference", BindingFlags.NonPublic | BindingFlags.Instance);
         private MethodInfo LuaAPI_lua_getref = typeof(LuaAPI).GetMethod("lua_getref");
         private MethodInfo Type_GetTypeFromHandle = typeof(Type).GetMethod("GetTypeFromHandle", new Type[] { typeof(RuntimeTypeHandle) });
@@ -49,7 +49,7 @@ namespace XLua
         private MethodInfo ObjectTranslator_Update = typeof(ObjectTranslator).GetMethod("Update");
         private MethodInfo LuaAPI_lua_pushvalue = typeof(LuaAPI).GetMethod("lua_pushvalue");
         private MethodInfo LuaAPI_lua_remove = typeof(LuaAPI).GetMethod("lua_remove");
-        private MethodInfo LuaAPI_lua_pushstring = typeof(LuaAPI).GetMethod("lua_pushstring", new Type[] { typeof(RealStatePtr), typeof(string)});
+        private MethodInfo LuaAPI_lua_pushstring = typeof(LuaAPI).GetMethod("lua_pushstring", new Type[] { typeof(RealStatePtr), typeof(string) });
         private MethodInfo LuaAPI_lua_gettop = typeof(LuaAPI).GetMethod("lua_gettop");
         private MethodInfo LuaAPI_xlua_pgettable = typeof(LuaAPI).GetMethod("xlua_pgettable");
         private MethodInfo LuaAPI_xlua_psettable = typeof(LuaAPI).GetMethod("xlua_psettable");
@@ -235,7 +235,7 @@ namespace XLua
 
                 emitMethodImpl(to_be_impl, method_builder.GetILGenerator(), false);
 
-                foreach(var dt in group)
+                foreach (var dt in group)
                 {
                     Label end_of_if = get_deleate_by_type_il.DefineLabel();
                     get_deleate_by_type_il.Emit(OpCodes.Ldarg_1);
@@ -291,7 +291,7 @@ namespace XLua
             }
 
             MethodInfo caster;
-            
+
             if (fixCaster.TryGetValue(type, out caster))
             {
                 il.Emit(OpCodes.Call, caster);
@@ -303,7 +303,7 @@ namespace XLua
                 {
                     il.Emit(OpCodes.Conv_U1);
                 }
-                else if(type == typeof(char))
+                else if (type == typeof(char))
                 {
                     il.Emit(OpCodes.Conv_U2);
                 }
@@ -395,9 +395,9 @@ namespace XLua
                 throw new InvalidCastException("This type must add to CSharpCallLua: " + to_be_impl.GetFriendlyName());
             }
 
-            TypeBuilder impl_type_builder = CodeEmitModule.DefineType("XLuaGenInterfaceImpl" + (genID++), TypeAttributes.Public | TypeAttributes.Class, typeof(LuaBase), new Type[] { to_be_impl});
+            TypeBuilder impl_type_builder = CodeEmitModule.DefineType("XLuaGenInterfaceImpl" + (genID++), TypeAttributes.Public | TypeAttributes.Class, typeof(LuaBase), new Type[] { to_be_impl });
 
-            foreach(var member in (new Type[] { to_be_impl }.Concat(to_be_impl.GetInterfaces()).SelectMany(i=> i.GetMembers())))
+            foreach (var member in (new Type[] { to_be_impl }.Concat(to_be_impl.GetInterfaces()).SelectMany(i => i.GetMembers())))
             {
                 if (member.MemberType == MemberTypes.Method)
                 {
@@ -421,7 +421,7 @@ namespace XLua
                     {
                         if (property.CanRead)
                         {
-                            var getter_buildler = defineImplementMethod(impl_type_builder, property.GetGetMethod(), 
+                            var getter_buildler = defineImplementMethod(impl_type_builder, property.GetGetMethod(),
                                 MethodAttributes.Virtual | MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.HideBySig);
                             emitMethodImpl(property.GetGetMethod(), getter_buildler.GetILGenerator(), true);
                             prop_builder.SetGetMethod(getter_buildler);
@@ -437,7 +437,7 @@ namespace XLua
                     }
                     if (property.CanRead)
                     {
-                        MethodBuilder getter_buildler = impl_type_builder.DefineMethod("get_" + property.Name, 
+                        MethodBuilder getter_buildler = impl_type_builder.DefineMethod("get_" + property.Name,
                             MethodAttributes.Virtual | MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.HideBySig,
                             property.PropertyType, Type.EmptyTypes);
 
@@ -502,8 +502,8 @@ namespace XLua
                     }
                     if (property.CanWrite)
                     {
-                        MethodBuilder setter_builder = impl_type_builder.DefineMethod("set_" + property.Name, 
-                            MethodAttributes.Virtual | MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.HideBySig, 
+                        MethodBuilder setter_builder = impl_type_builder.DefineMethod("set_" + property.Name,
+                            MethodAttributes.Virtual | MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.HideBySig,
                             null, new Type[] { property.PropertyType });
 
                         ILGenerator il = setter_builder.GetILGenerator();
@@ -565,9 +565,9 @@ namespace XLua
 
                     }
                 }
-                else if(member.MemberType == MemberTypes.Event)
+                else if (member.MemberType == MemberTypes.Event)
                 {
-                    
+
                     EventInfo event_info = member as EventInfo;
                     EventBuilder event_builder = impl_type_builder.DefineEvent(event_info.Name, event_info.Attributes, event_info.EventHandlerType);
                     if (event_info.GetAddMethod() != null)
@@ -586,7 +586,7 @@ namespace XLua
                     }
                 }
             }
-            
+
 
             // Constructor
             var ctor_param_types = new Type[] { typeof(int), typeof(LuaEnv) };
@@ -604,7 +604,7 @@ namespace XLua
 
         private void emitEmptyMethod(ILGenerator il, Type returnType)
         {
-            if(returnType != typeof(void))
+            if (returnType != typeof(void))
             {
                 if (returnType.IsValueType)
                 {
@@ -649,7 +649,7 @@ namespace XLua
             {
                 il.Emit(OpCodes.Ldnull);
             }
-            else if(type.IsPrimitive || type.IsEnum())
+            else if (type.IsPrimitive || type.IsEnum())
             {
                 if (type.IsEnum())
                 {
@@ -670,7 +670,7 @@ namespace XLua
                 {
                     il.Emit(OpCodes.Ldc_I4, (int)Convert.ToUInt32(obj));
                 }
-                else if(typeof(byte) == type || typeof(sbyte) == type || typeof(short) == type ||
+                else if (typeof(byte) == type || typeof(sbyte) == type || typeof(short) == type ||
                     typeof(ushort) == type || typeof(int) == type || typeof(char) == type)
                 {
                     il.Emit(OpCodes.Ldc_I4, Convert.ToInt32(obj));
@@ -717,7 +717,7 @@ namespace XLua
                 il.Emit(OpCodes.Ldc_I4, (buffer[3] >> 16) & 0xFF);
                 il.Emit(OpCodes.Newobj, decimalConstructor);
             }
-            else if (type.IsValueType) 
+            else if (type.IsValueType)
             {
                 il.Emit(OpCodes.Ldloca, localIndex);
                 il.Emit(OpCodes.Initobj, type);
@@ -1138,7 +1138,7 @@ namespace XLua
             {
                 var type = Type.GetType(info[0], true);
                 var members = type.GetMember(info[1], BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance | BindingFlags.DeclaredOnly);
-                foreach(var member in members)
+                foreach (var member in members)
                 {
                     if (member.MemberType == MemberTypes.Method)
                     {
@@ -1169,7 +1169,8 @@ namespace XLua
                         BlackList.Add(member);
                     }
                 }
-            } catch { }
+            }
+            catch { }
         }
 
         static void initBlackList()
@@ -1277,7 +1278,7 @@ namespace XLua
             il.Emit(OpCodes.Ldc_I4_M1);
             il.Emit(OpCodes.Call, Utils_BeginObjectRegister);
 
-            foreach(var field in instanceFields)
+            foreach (var field in instanceFields)
             {
                 emitRegisterFunc(il, emitFieldWrap(wrapTypeBuilder, field, true), Utils.GETTER_IDX, field.Name);
                 emitRegisterFunc(il, emitFieldWrap(wrapTypeBuilder, field, false), Utils.SETTER_IDX, field.Name);
@@ -1286,7 +1287,7 @@ namespace XLua
             List<MethodBase> itemGetter = new List<MethodBase>();
             List<MethodBase> itemSetter = new List<MethodBase>();
 
-            foreach(var prop in instanceProperties)
+            foreach (var prop in instanceProperties)
             {
                 var getter = prop.GetGetMethod();
                 if (getter != null && getter.IsPublic)
@@ -1583,7 +1584,7 @@ namespace XLua
         int firstDefaultValue(MethodBase method)
         {
             var parameters = method.GetParameters();
-            for(int i = 0; i < parameters.Length; i++)
+            for (int i = 0; i < parameters.Length; i++)
             {
                 if (parameters[i].IsOptional) return i;
             }
@@ -1594,9 +1595,9 @@ namespace XLua
         {
             string wrapName = (methodsToCall.Count > 0 ? methodsToCall[0].Name : "Constructor");
             var methodBuilder = typeBuilder.DefineMethod(wrapName + (genID++), MethodAttributes.Static, typeof(int), parameterTypeOfWrap);
-            methodBuilder.DefineParameter(1,  ParameterAttributes.None, "L");
+            methodBuilder.DefineParameter(1, ParameterAttributes.None, "L");
 
-            bool needCheckParameterType = (methodsToCall.Count > 1)  || isIndexer;
+            bool needCheckParameterType = (methodsToCall.Count > 1) || isIndexer;
 
             if (methodsToCall.Count == 0 || methodsToCall[0].IsConstructor)
             {
@@ -1683,7 +1684,7 @@ namespace XLua
                         il.Emit(OpCodes.Ldc_I4, maxInParamCount + (isStatic ? 0 : 1));
                         il.Emit(OpCodes.Bgt, endOfBlock);
                     }
-                    
+
                     if (!isStatic && !method.IsConstructor)
                     {
                         checkType(il, method.DeclaringType, translator, 1, endOfBlock, false, false);
@@ -1701,7 +1702,7 @@ namespace XLua
                             {
                                 rawParamType = rawParamType.GetElementType();
                             }
-                            checkType(il, rawParamType, translator, argPos++, endOfBlock, 
+                            checkType(il, rawParamType, translator, argPos++, endOfBlock,
                                 hasParams && (j == paramInfos.Length - 1), paramInfo.IsOptional);
                         }
                     }
@@ -1728,7 +1729,7 @@ namespace XLua
                     {
                         argStoreStart = argStore.LocalIndex;
                     }
-                    
+
                 }
                 for (int j = 0; j < paramInfos.Length; j++)
                 {

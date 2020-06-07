@@ -1,12 +1,8 @@
-﻿using System;
-using System.IO;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using YamlDotNet.Serialization;
+﻿using CallOfCthulhu;
 using CardWizard.Tools;
-using CallOfCthulhu;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace CardWizard.Data
 {
@@ -133,7 +129,7 @@ namespace CardWizard.Data
                     break;
                 case Occupation o:
                     o.ID = o.ID > 0 ? o.ID : (Occupations.Count + 1);
-                    Occupations[o.Name] = o; 
+                    Occupations[o.Name] = o;
                     break;
                 default:
                     break;
@@ -196,33 +192,39 @@ namespace CardWizard.Data
                 {
                     Name = "Accounting",
                     BaseValue = 25,
+                    Upper = 100,
                 },
                 new Skill()
                 {
                     Name = "Anthropology",
                     BaseValue = 1,
+                    Upper = 100,
                 },
                 new Skill()
                 {
                     Name = "Appraise",
                     BaseValue = 5,
+                    Upper = 100,
                 },
                 new Skill()
                 {
                     Name = "Archaeology",
                     BaseValue = 1,
+                    Upper = 100,
                 },
                 new Skill()
                 {
                     Name = "Credit Rating",
                     BaseValue = 0,
                     Growable = false,
+                    Upper = 100,
                 },
                 new Skill()
                 {
                     Name = "Cthulhu Mythos",
                     BaseValue = 0,
                     Growable = false,
+                    Upper = 100,
                 },
             };
 

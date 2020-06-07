@@ -13,12 +13,10 @@ using LuaCSFunction = UniLua.CSharpFunctionDelegate;
 #else
 using LuaAPI = XLua.LuaDLL.Lua;
 using RealStatePtr = System.IntPtr;
-using LuaCSFunction = XLua.LuaDLL.lua_CSFunction;
 #endif
 
 using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 
 namespace XLua
 {
@@ -39,7 +37,7 @@ namespace XLua
 
         public bool TryGetDelegate(Type key, out Delegate value)
         {
-            if(key == firstKey)
+            if (key == firstKey)
             {
                 value = firstValue;
                 return true;

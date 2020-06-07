@@ -1,9 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using CallOfCthulhu;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using CardWizard.Tools;
+﻿using CardWizard.Tools;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace CallOfCthulhu.Tests
 {

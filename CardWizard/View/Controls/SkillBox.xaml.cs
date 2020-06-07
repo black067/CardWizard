@@ -1,18 +1,9 @@
 ﻿using CallOfCthulhu;
-using CardWizard.Tools;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace CardWizard.View
 {
@@ -31,28 +22,24 @@ namespace CardWizard.View
 
         private void SkillBox_MouseEnter(object sender, MouseEventArgs e)
         {
-            Highlight(true);
+            SetHighlight(true, Editing);
         }
 
         private void SkillBox_MouseLeave(object sender, MouseEventArgs e)
         {
-            Highlight(Editing || false);
+            SetHighlight(Editing || false, Editing);
         }
 
-        public void Highlight(bool active)
+        public void SetHighlight(bool higtlight, bool editing)
         {
-            Background = active ? (SolidColorBrush)FindResource("HoverdBrush") : null;
+            Editing = editing;
+            Background = higtlight ? (SolidColorBrush)FindResource("HoverdBrush") : null;
         }
 
         /// <summary>
         /// 是否处于编辑状态
         /// </summary>
         public bool Editing { get; set; }
-
-        /// <summary>
-        /// 绑定的主管理器
-        /// </summary>
-        private MainManager Manager { get; set; }
 
         /// <summary>
         /// 绑定的技能
@@ -138,7 +125,7 @@ namespace CardWizard.View
         /// <param name="args"></param>
         public void OnSkillChanged(Character sender, SkillChangedEventArgs args)
         {
-            if (!args.IsSameSkill(Source)) { return; }
+            if (args == null || !args.IsSameSkill(Source)) { return; }
             UpdateValueLabels();
         }
 

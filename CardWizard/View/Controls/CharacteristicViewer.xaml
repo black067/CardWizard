@@ -1,0 +1,48 @@
+﻿<UserControl x:Class="CardWizard.View.CharacteristicViewer"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:cview="clr-namespace:CardWizard.View" xmlns:System="clr-namespace:System;assembly=System.Runtime"
+             mc:Ignorable="d" 
+             d:DesignHeight="268" d:DesignWidth="580">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="3*" />
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+        <Grid.Resources>
+            <System:Double x:Key="CharacteristicBoxWidth">144</System:Double>
+        </Grid.Resources>
+        <WrapPanel Name="firstPanel" ItemHeight="66">
+            <!--属性数值格子-->
+            <cview:CharacteristicBox Tag="STR" Style="{StaticResource CharacteristicBoxStyle}" Foreground="{StaticResource MenuBackground}" Width="{StaticResource CharacteristicBoxWidth}"/>
+            <cview:CharacteristicBox Tag="DEX" Style="{StaticResource CharacteristicBoxStyle}" Foreground="{StaticResource MenuBackground}" Width="{StaticResource CharacteristicBoxWidth}"/>
+            <cview:CharacteristicBox Tag="INT" Style="{StaticResource CharacteristicBoxStyle}" Foreground="{StaticResource MenuBackground}" Width="{StaticResource CharacteristicBoxWidth}"/>
+            <cview:CharacteristicBox Tag="CON" Style="{StaticResource CharacteristicBoxStyle}" Foreground="{StaticResource MenuBackground}" Width="{StaticResource CharacteristicBoxWidth}"/>
+            <cview:CharacteristicBox Tag="APP" Style="{StaticResource CharacteristicBoxStyle}" Foreground="{StaticResource MenuBackground}" Width="{StaticResource CharacteristicBoxWidth}"/>
+            <cview:CharacteristicBox Tag="POW" Style="{StaticResource CharacteristicBoxStyle}" Foreground="{StaticResource MenuBackground}" Width="{StaticResource CharacteristicBoxWidth}"/>
+            <cview:CharacteristicBox Tag="SIZ" Style="{StaticResource CharacteristicBoxStyle}" Foreground="{StaticResource MenuBackground}" Width="{StaticResource CharacteristicBoxWidth}"/>
+            <cview:CharacteristicBox Tag="EDU" Style="{StaticResource CharacteristicBoxStyle}" Foreground="{StaticResource MenuBackground}" Width="{StaticResource CharacteristicBoxWidth}"/>
+            <cview:CharacteristicBox Tag="MOV" Style="{StaticResource CharacteristicBoxStyle}" Foreground="{StaticResource MenuBackground}" Width="{StaticResource CharacteristicBoxWidth}"/>
+        </WrapPanel>
+        <!--<Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Grid.RowSpan="4" Background="{DynamicResource MenuBackground}" Opacity="0.1" Margin="1,1,1,1"/>-->
+        <StackPanel Name="secondPanel" Orientation="Horizontal" Grid.Row="1" Grid.ColumnSpan="2">
+            <!--<cview:CharacteristicBox Tag="LUCK" Style="{StaticResource CharacteristicBoxStyle}" Foreground="{StaticResource MenuBackground}" Width="{StaticResource CharacteristicBoxWidth}"/>
+            <cview:CharacteristicBox Tag="SAN" Style="{StaticResource CharacteristicBoxStyle}" Foreground="{StaticResource MenuBackground}" Width="{StaticResource CharacteristicBoxWidth}"/>
+            <cview:CharacteristicBox Tag="MP" Style="{StaticResource CharacteristicBoxStyle}" Foreground="{StaticResource MenuBackground}" Width="{StaticResource CharacteristicBoxWidth}"/>
+            <cview:CharacteristicBox Tag="HP" Style="{StaticResource CharacteristicBoxStyle}" Foreground="{StaticResource MenuBackground}"/>-->
+            <cview:PointsBox/>
+            <cview:PointsBox/>
+            <cview:PointsBox/>
+            <cview:PointsBox/>
+        </StackPanel>
+        <Popup x:Name="XValueEditorPopup" Placement="MousePoint" StaysOpen="False" AllowsTransparency="True" PopupAnimation="Fade">
+            <cview:ValuesEditor x:Name="XValueEditor"/>
+        </Popup>
+    </Grid>
+</UserControl>

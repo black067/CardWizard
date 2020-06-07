@@ -13,11 +13,9 @@
     using System.ComponentModel;
     using System.IO;
     using System.Linq;
-    using System.Reflection.PortableExecutable;
     using System.Text.RegularExpressions;
     using System.Windows;
     using System.Windows.Controls;
-    using System.Windows.Controls.Primitives;
     using System.Windows.Data;
     using System.Windows.Input;
     using System.Windows.Media;
@@ -289,7 +287,7 @@
             if (element == null) return;
             if (element is TextBox textBox && textBox.MaxLines < 2)
             {
-                Window.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
+                //Window.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
             }
         }
 
@@ -408,9 +406,10 @@
 
         private void OnAvatarImageDrop(object sender, DragEventArgs e)
         {
-            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            var data = e.Data;
+            if (data.GetDataPresent(DataFormats.FileDrop))
             {
-                var file = ((System.Array)e.Data.GetData(DataFormats.FileDrop)).GetValue(0).ToString();
+                var file = ((System.Array)data.GetData(DataFormats.FileDrop)).GetValue(0).ToString();
                 if (file.EndsWith(".png"))
                 {
                     ImportAvatar(file);
@@ -421,13 +420,12 @@
                     Messenger.EnqueueFormat(fmt, Path.GetExtension(file), "png");
                 }
             }
-            var data = e.Data;
         }
 
         private void ImportAvatar(string source)
         {
             var ext = new FileInfo(source).Extension;
-            var dest = $"./Save/{Current.Name}{ext}";
+            var dest = $"{Paths.PathSave}/{Current.Name}{ext}";
             // 如果文件已经存在, 要弹出确认窗口
             if (File.Exists(dest))
             {
@@ -454,8 +452,9 @@
                 await b.StreamSource.DisposeAsync();
                 b.StreamSource.Close();
             }
+
             var path = $"{Paths.PathSave}/{c.Name}.png";
-            var rawImage = !File.Exists(path) ? Resources.Image_Avatar_Empty : System.Drawing.Image.FromFile(path);
+            using var rawImage = !File.Exists(path) ? Resources.Image_Avatar_Empty : System.Drawing.Image.FromFile(path);
             image.Source = rawImage.ToBitmapImage();
         }
         #endregion
@@ -472,14 +471,11 @@
             // 属性重生成按钮
             page.Button_Regenerate.Click += GetHandlerForReGenerateCharacteristics(() => Current);
             // 角色属性数值面板初始化
-            Character charactergetter() => Current;
-            var traitBoxes = (from UIElement c in page.CharacteristicsGrid.Children
-                              where c is CharacteristicBox
-                              select c as CharacteristicBox).ToList();
-            traitBoxes.Add(page.Box_Dodge);
-            foreach (var box in traitBoxes)
+            Character targetGetter() => Current;
+            page.CharacteristicBoxes.Boxes.Add(page.Box_Dodge);
+            foreach (var box in page.CharacteristicBoxes.Boxes)
             {
-                box.BindToCharacteristicByTag(charactergetter, OnCharacteristicEdited);
+                box.BindToCharacteristicByTag(targetGetter, page.CharacteristicBoxes.OpenEditor);
                 CharacteristicChanged += box.OnCharacteristicChanged;
                 InfoUpdated += box.UpdateValueFields;
             }
@@ -729,7 +725,7 @@
 
             foreach (var m in Config.DataModels)
             {
-                if (!m.Formula.Contains(key)) continue;
+                if (!m.Formula.Contains(key) || m.Name.EqualsIgnoreCase("MOV")) continue;
                 var value = CalcCharacteristic(m.Formula, source);
                 OnCharacteristicEdited(character, args.Segment, m.Name, value);
             }
@@ -743,14 +739,14 @@
         /// <param name="value"></param>
         internal void OnCharacteristicEdited(Character character, Characteristic.Segment segment, string traitName, int value)
         {
-            int i = Current.GetInitial(traitName),
-                a = Current.GetAdjustment(traitName),
-                g = Current.GetGrowth(traitName);
+            int i = character.GetInitial(traitName),
+                a = character.GetAdjustment(traitName),
+                g = character.GetGrowth(traitName);
             var (after, func) = segment switch
             {
-                Characteristic.Segment.INITIAL => (value + a + g, (Action<string, int>)Current.SetInitial),
-                Characteristic.Segment.ADJUSTMENT => (value + i + g, Current.SetAdjustment),
-                Characteristic.Segment.GROWTH => (value + i + a, Current.SetGrowth),
+                Characteristic.Segment.INITIAL => (value + a + g, (Action<string, int>)character.SetInitial),
+                Characteristic.Segment.ADJUSTMENT => (value + i + g, character.SetAdjustment),
+                Characteristic.Segment.GROWTH => (value + i + a, character.SetGrowth),
                 _ => (0, null),
             };
             // 判断总值是否超过范围
@@ -768,43 +764,6 @@
         }
 
         /// <summary>
-        /// 属性编辑框结束编辑时触发的事件: 用新的值设置角色的属性值
-        /// </summary>
-        /// <param name="segment"></param>
-        /// <param name="traitName"></param>
-        /// <param name="value"></param>
-        internal void OnSkillBoxEdited(Skill source, Character character, Skill.Segment segment, int value)
-        {
-            character.SetSkill(source, segment, value);
-            int i = 0, a = 0, g = 0;
-            if (character.TryGetSkill(source.ID, out var skill))
-            {
-                i = skill.OccupationPoints;
-                a = skill.PersonalPoints;
-                g = skill.GrowthPoints;
-            }
-            
-            var after = segment switch
-            {
-                Skill.Segment.OCCUPATION => (value + a + g),
-                Skill.Segment.PERSONAL => (value + i + g),
-                Skill.Segment.GROWTH => (value + i + a),
-                _ => 0,
-            };
-            // 判断总值是否超过范围
-            if (DataBus.Skills.TryGetValue(source.Name, out var model))
-            {
-                if (model.Upper > 0 && after > model.Upper)
-                {
-                    value = model.Upper - (after - value);
-                    var message = Translator.Translate("Message.Skill.Overflow", "{0} 的值不能超过 {1}");
-                    Messenger.EnqueueFormat(message, model.Name, model.Upper);
-                }
-            }
-            character.SetSkill(source, segment, value);
-        }
-
-        /// <summary>
         /// 刷新角色的基础属性统计标签
         /// </summary>
         /// <param name="c"></param>
@@ -815,7 +774,8 @@
             var results = LuaHub.DoString(scrtipt);
             string damageBonus = results[0] as string;
             int build = Convert.ToInt32(results[1]);
-            Window.MainPage.SetDamageBonus(damageBonus, build);
+            IMainPage.Value_DamageBonus.Content = damageBonus;
+            IMainPage.Value_Build.Content = build;
             c.DamageBonus = damageBonus;
             c.SetAdjustment("Build", build);
         }
@@ -879,7 +839,7 @@
         /// <param name="traits"></param>
         /// <param name="formula"></param>
         /// <returns></returns>
-        public int CalcCharacteristic(string formula, Dictionary<string, int> traitValues = null)
+        public int CalcCharacteristic(string formula, Dictionary<string, int> variables = null)
         {
             if (string.IsNullOrWhiteSpace(formula)) return 0;
             var segments = formula.Split(";");
@@ -891,8 +851,8 @@
                 var segmentsJ = m.Value.Split('D');
                 seg = seg.Replace(m.Value, $"{nameof(Roll)}({segmentsJ[0]}, {segmentsJ[1]})");
             }
-            traitValues ??= new Dictionary<string, int>();
-            return CalcForInt($"return {seg}", traitValues);
+            variables ??= new Dictionary<string, int>();
+            return CalcForInt($"return {seg}", variables);
         }
 
         /// <summary>

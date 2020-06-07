@@ -1,24 +1,40 @@
-﻿using System;
-using System.Linq;
+﻿using CallOfCthulhu;
+using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace CardWizard.View
 {
     /// <summary>
-    /// BatchInputsPopup.xaml 的交互逻辑
+    /// ValuesEditor.xaml 的交互逻辑
     /// </summary>
     public partial class ValuesEditor : UserControl
     {
+        private Popup editorPopup;
+
+        public Popup EditorPopup
+        {
+            get => editorPopup;
+            set
+            {
+                if (value != editorPopup)
+                {
+                    if (editorPopup != null)
+                    {
+                        editorPopup.Opened -= OnPopupOpened;
+                        editorPopup.Closed -= OnPopupClosed;
+                    }
+                    editorPopup = value ?? throw new ArgumentNullException(nameof(value));
+                    editorPopup.Opened += OnPopupOpened;
+                    editorPopup.Closed += OnPopupClosed;
+                }
+            }
+        }
+
         public ValuesEditor()
         {
             InitializeComponent();
@@ -28,62 +44,76 @@ namespace CardWizard.View
                 if (item is TextBox box)
                 {
                     boxes.Add(box);
+                    box.LostFocus += Box_LostFocus;
                 }
             }
-            boxes.Sort((left, right) => -int.Parse(left.Tag as string).CompareTo(int.Parse(right.Tag as string)));
+            boxes.Sort((left, right) => int.Parse(left.Tag as string).CompareTo(int.Parse(right.Tag as string)));
             FieldBoxes = boxes.ToArray();
-            OldValues = new int[FieldBoxes.Length];
+            OldValues = new int[FieldBoxes.Length + 1];
+            ButtonConfirm.Click += ButtonConfirm_Click;
+            ButtonCancel.Click += ButtonCancel_Click;
 
-
-            ButtonCancel.Click+= (o, e) =>
+            UIExtension.AddCommandsBindings(this, new RoutedCommand("enterpress", typeof(ValuesEditor)), (o, e) =>
+            {
+                Confirm();
+            }, new KeyGesture(Key.Enter));
+            UIExtension.AddCommandsBindings(this, new RoutedCommand("escapepress", typeof(ValuesEditor)), (o, e) =>
             {
                 Cancel();
-            };
-            MouseEnter += ValuesEditor_MouseEnter;
-            MouseLeave += ValuesEditor_MouseLeave;
+            }, new KeyGesture(Key.Escape));
         }
 
-        private void ValuesEditor_MouseLeave(object sender, MouseEventArgs e)
+        private void ButtonCancel_Click(object sender, RoutedEventArgs e)
         {
-            MouseIn = false;
+            Cancel();
+            if (EditorPopup != null) EditorPopup.IsOpen = false;
         }
 
-        private void ValuesEditor_MouseEnter(object sender, MouseEventArgs e)
+        private void ButtonConfirm_Click(object sender, RoutedEventArgs e)
         {
-            MouseIn = true;
+            Confirm();
         }
+
+        private void Box_LostFocus(object sender, RoutedEventArgs e)
+        {
+            var box = sender as TextBox;
+            LabelSum.Content = GetFields().Sum() + OldValues.Last();
+        }
+
+        public event EventHandler PopupOpened;
+
+        private void OnPopupOpened(object o, EventArgs e) => PopupOpened?.Invoke(o, e);
+
+        public event EventHandler PopupClosed;
+        private void OnPopupClosed(object o, EventArgs e) => PopupClosed?.Invoke(o, e);
 
         /// <summary>
-        /// 鼠标是否在控件内
-        /// </summary>
-        public bool MouseIn { get; set; }
-
-        /// <summary>
-        /// 确认时的回调
+        /// 确认时的回调, 执行完后会被清空
         /// </summary>
         public event Action<int[]> ConfirmCallback;
 
         /// <summary>
-        /// 取消时的回调
+        /// 每次取消时的回调, 执行完后会被清空
         /// </summary>
         public event Action CancelCallback;
 
+        /// <summary>
+        /// 取消时的回调, 不会被清空
+        /// </summary>
         public event Action CancelCallbackStatic;
 
         public void Confirm()
         {
             ConfirmCallback?.Invoke(GetFields());
-            ConfirmCallback = null;
+            if (EditorPopup != null) EditorPopup.IsOpen = false;
         }
 
         public void Cancel()
         {
             CancelCallbackStatic?.Invoke();
             CancelCallback?.Invoke();
-            CancelCallback = null;
-            ConfirmCallback = null;
+            if (EditorPopup != null) EditorPopup.IsOpen = false;
         }
-        
 
         private TextBox[] FieldBoxes { get; set; }
 
@@ -96,13 +126,48 @@ namespace CardWizard.View
         /// 初始化每个输入框
         /// </summary>
         /// <param name="values"></param>
-        public void InitFields(int baseValue, params int[] values)
+        public void Show(int baseValue, params int[] values)
         {
             for (int i = values.Length - 1; i >= 0; i--)
             {
                 if (i < 0 || i >= FieldBoxes.Length) continue;
                 FieldBoxes[i].Text = values[i].ToString();
                 OldValues[i] = values[i];
+            }
+            OldValues[OldValues.Length - 1] = baseValue;
+            LabelSum.Content = OldValues.Sum();
+            CancelCallback = null;
+            ConfirmCallback = null;
+            EditorPopup.IsOpen = false;
+            EditorPopup.IsOpen = true;
+        }
+
+        public void SetRangeTip(int basevalue, int lower, int upper, Translator translator)
+        {
+            string message;
+            if (upper != lower)
+            {
+                message = translator.Translate("ValuesEditor.ToolTip.BaseAndRange", "基础值: {0}, 合理范围: {1} ~ {2}");
+            }
+            else
+            {
+                message = translator.Translate("ValuesEditor.ToolTip.BaseOnly", "基础值: {0}");
+            }
+            message = string.Format(message, basevalue, lower, upper);
+            LabelMoreInfo.AddOrSetToolTip(message, (Style)App.Current.FindResource("XToolTip"));
+        }
+
+        /// <summary>
+        /// 设置每个输入框标签的 Tag
+        /// </summary>
+        /// <param name="tags"></param>
+        public void SetTags(params string[] tags)
+        {
+            var labels = new Label[] { LabelA, LabelB, LabelC };
+            for (int i = 0, length = labels.Length, max = tags.Length; i < length && i < max; i++)
+            {
+
+                labels[i].Tag = tags[i];
             }
         }
 
@@ -134,9 +199,9 @@ namespace CardWizard.View
         /// <summary>
         /// 判断指定的输入框是否被编辑
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="index"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public bool IsEdited(int id, int value) => id >= 0 && id < OldValues.Length && OldValues[id] != value;
+        public bool IsEdited(int index, int value) => index >= 0 && index < FieldBoxes.Length && OldValues[index] != value;
     }
 }

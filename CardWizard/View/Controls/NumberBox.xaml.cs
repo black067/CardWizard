@@ -1,15 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace CardWizard.View
 {
@@ -24,9 +15,7 @@ namespace CardWizard.View
         /// <summary>
         /// 值的属性引用
         /// </summary>
-        public static DependencyProperty NumberProperty { get; set; } = DependencyProperty.RegisterAttached(nameof(Number),
-                                                                                                            typeof(DATATYPE),
-                                                                                                            typeof(NumberBox));
+        public static DependencyProperty NumberProperty { get; set; } = DependencyProperty.RegisterAttached(nameof(Number), typeof(DATATYPE), typeof(NumberBox));
 
         /// <summary>
         /// 设置值
@@ -52,6 +41,16 @@ namespace CardWizard.View
         /// 数字值
         /// </summary>
         public DATATYPE Number { get => GetNumber(this); set => SetNumber(this, value); }
+
+        public static DependencyProperty TitleProperty { get; set; } = DependencyProperty.RegisterAttached(nameof(Title), typeof(string), typeof(NumberBox));
+
+        public static void SetTitle(UIElement element, string value)
+            => element?.SetValue(TitleProperty, value);
+
+        public static string GetTitle(UIElement element)
+             => element?.GetValue(TitleProperty)?.ToString();
+
+        public string Title { get => GetTitle(this); set => SetTitle(this, value); }
 
         public NumberBox()
         {

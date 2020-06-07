@@ -53,43 +53,12 @@
                         Foreground="{DynamicResource ButtonForeground}" Style="{DynamicResource XButtonStyle}"
                         FontSize="20" BorderThickness="0,0,0,0" Background="{x:Null}"/>
         <!--角色属性的显示-->
-        <WrapPanel x:Name="CharacteristicsGrid" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Grid.RowSpan="2" Margin="2,0,2,0" ItemHeight="66">
-            <WrapPanel.Resources>
-                <System:Double x:Key="CharacteristicBoxWidth">146</System:Double>
-            </WrapPanel.Resources>
-            <!--属性数值格子-->
-            <cview:CharacteristicBox Tag="STR" Style="{DynamicResource CharacteristicBoxStyle}" 
-                                     Foreground="{DynamicResource MenuBackground}" Width="{DynamicResource CharacteristicBoxWidth}"/>
-            <cview:CharacteristicBox Tag="DEX" Style="{DynamicResource CharacteristicBoxStyle}" 
-                                     Foreground="{DynamicResource MenuBackground}" Width="{DynamicResource CharacteristicBoxWidth}"/>
-            <cview:CharacteristicBox Tag="INT" Style="{DynamicResource CharacteristicBoxStyle}" 
-                                     Foreground="{DynamicResource MenuBackground}" Width="{DynamicResource CharacteristicBoxWidth}"/>
-            <cview:CharacteristicBox Tag="CON" Style="{DynamicResource CharacteristicBoxStyle}" 
-                                     Foreground="{DynamicResource MenuBackground}" Width="{DynamicResource CharacteristicBoxWidth}"/>
-            <cview:CharacteristicBox Tag="APP" Style="{DynamicResource CharacteristicBoxStyle}" 
-                                     Foreground="{DynamicResource MenuBackground}" Width="{DynamicResource CharacteristicBoxWidth}"/>
-            <cview:CharacteristicBox Tag="POW" Style="{DynamicResource CharacteristicBoxStyle}" 
-                                     Foreground="{DynamicResource MenuBackground}" Width="{DynamicResource CharacteristicBoxWidth}"/>
-            <cview:CharacteristicBox Tag="SIZ" Style="{DynamicResource CharacteristicBoxStyle}" 
-                                     Foreground="{DynamicResource MenuBackground}" Width="{DynamicResource CharacteristicBoxWidth}"/>
-            <cview:CharacteristicBox Tag="EDU" Style="{DynamicResource CharacteristicBoxStyle}" 
-                                     Foreground="{DynamicResource MenuBackground}" Width="{DynamicResource CharacteristicBoxWidth}"/>
-            <cview:CharacteristicBox Tag="MOV" Style="{DynamicResource CharacteristicBoxStyle}" 
-                                     Foreground="{DynamicResource MenuBackground}" Width="{DynamicResource CharacteristicBoxWidth}"/>
-            <cview:CharacteristicBox Tag="LUCK" Style="{DynamicResource CharacteristicBoxStyle}"
-                                     Foreground="{DynamicResource MenuBackground}" Width="{DynamicResource CharacteristicBoxWidth}"/>
-            <cview:CharacteristicBox Tag="SAN" Style="{DynamicResource CharacteristicBoxStyle}" 
-                                     Foreground="{DynamicResource MenuBackground}" Width="{DynamicResource CharacteristicBoxWidth}"/>
-            <cview:CharacteristicBox Tag="MP" Style="{DynamicResource CharacteristicBoxStyle}" 
-                                     Foreground="{DynamicResource MenuBackground}" Width="{DynamicResource CharacteristicBoxWidth}"/>
-            <cview:CharacteristicBox Tag="HP" Style="{DynamicResource CharacteristicBoxStyle}" 
-                                     Foreground="{DynamicResource MenuBackground}" Width="140"/>
-        </WrapPanel>
+        <cview:CharacteristicViewer x:Name="CharacteristicBoxes" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Grid.RowSpan="2"/>
         <!--角色照片的显示-->
         <Image x:Name="Image_Avatar" Tag="Card.Image.Avatar"
                        Grid.Column="2"  Grid.Row="2" VerticalAlignment="Center" Cursor="Hand" 
                        Source="/Resources/Image.Avatar.Empty.png"
-                       HorizontalAlignment="Center" Margin="4,2,2,2" AllowDrop="True">
+                       HorizontalAlignment="Center" Margin="4,2,4,2" AllowDrop="True">
             <Image.Effect>
                 <DropShadowEffect BlurRadius="3" Opacity="0.885" ShadowDepth="2"/>
             </Image.Effect>
@@ -97,7 +66,6 @@
         
         <cview:SkillsViewer x:Name="SkillPanel" Grid.Row="4" Grid.ColumnSpan="3" />
         <!--伤害奖励与体格的显示-->
-        <Border Grid.Row="5" Grid.Column="3" BorderThickness="1,10,1,1" Background="{DynamicResource MenuBackground}" Opacity="0.1" Margin="1,1,1,1"/>
         <Grid Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,2,0,2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="696"/>
@@ -116,35 +84,29 @@
             <!--标题: 格斗相关参数-->
             <Label Content="Combat" Tag="Investigator.Combat.Title"
                            Grid.ColumnSpan="2" Grid.Column="1" Grid.Row="0" Style="{DynamicResource XTitle}"/>
+
+            <Border Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Grid.RowSpan="4" BorderThickness="1,10,1,1" Background="{DynamicResource MenuBackground}" Opacity="0.1" Margin="1,1,1,1"/>
+            <Button x:Name="Button_Roll_DMGBonus" Content="🎲" Grid.Row="0" Grid.Column="2" Tag="Card.Button.DMGBonus" Cursor="Hand" HorizontalAlignment="Right" Background="{x:Null}" Foreground="{DynamicResource ButtonForeground}" BorderThickness="0,0,0,0" VerticalAlignment="Center" Margin="0,0,2,0" Padding="0,0,0,0" VerticalContentAlignment="Center" FontSize="18"/>
             <!--伤害加深的标签-->
             <TextBlock x:Name="Label_DamageBonus" Tag="DamageBonus.Block"
-                               Grid.Row="1" Grid.Column="1"
-                               Style="{DynamicResource GeneralTextBlock}" Height="45" Width="60" Foreground="{DynamicResource MenuBackground}" FontSize="10">
-                            Damage<LineBreak/>
-                            Bonus<LineBreak/>
-                            <Run FontSize="15">伤害加深</Run></TextBlock>
-            <Label x:Name="Value_DamageBonus" Content="10D6"
-                           Grid.Row="1" Grid.Column="2"
-                           HorizontalContentAlignment="Left"
-                           Style="{DynamicResource XLabel}" Margin="2,2,2,2" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                       Grid.Row="1" Grid.Column="1"
+                       Style="{DynamicResource GeneralTextBlock}" Height="45" Width="60" Foreground="{DynamicResource MenuBackground}" FontSize="10">
+                Damage<LineBreak/>
+                Bonus<LineBreak/>
+                <Run FontSize="15">伤害加深</Run></TextBlock>
             <!--伤害加深掷骰按钮-->
-            <Button x:Name="Button_Roll_DMGBonus" Content="🎲"
-                            Grid.Row="1" Grid.Column="2"
-                            Tag="Card.Button.DMGBonus" Cursor="Hand"
-                            HorizontalAlignment="Right" Margin="1,8,1,8" Width="30"
-                            Background="{x:Null}" Foreground="{DynamicResource MenuBackground}" FontSize="16" BorderThickness="0,0,0,0"/>
+            <Border Grid.Row="1" Grid.Column="2" BorderThickness="2,2,2,2" BorderBrush="{DynamicResource CharacteristicBorderBrush}" Margin="{DynamicResource DefaultMargin}" CornerRadius="20,20,20,20" >
+                <Label x:Name="Value_DamageBonus" Content="12D4" HorizontalContentAlignment="Center" Style="{DynamicResource XLabel}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" FontSize="22" Foreground="{DynamicResource CharacteristicBorderBrush}"/>
+            </Border>
             <!--体格的标签-->
-            <TextBlock x:Name="Label_Build" Tag="Build.Block"
-                               Grid.Row="2" Grid.Column="1"
-                               Style="{DynamicResource GeneralTextBlock}" Height="32" Width="36" Foreground="{DynamicResource MenuBackground}">
-                            Build<LineBreak/>
-                            <Run FontSize="15">体格</Run>
+            <Border Grid.Row="2" Grid.Column="2" BorderThickness="2,2,2,2" BorderBrush="{DynamicResource CharacteristicBorderBrush}" Margin="{DynamicResource DefaultMargin}" CornerRadius="20,20,20,20" >
+                <Label x:Name="Value_Build" Content="0" HorizontalContentAlignment="Center" Style="{DynamicResource XLabel}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" FontSize="22" Foreground="{DynamicResource CharacteristicBorderBrush}"/>
+            </Border>
+            <TextBlock x:Name="Label_Build" Tag="Build.Block" Grid.Row="2" Grid.Column="1" Style="{DynamicResource GeneralTextBlock}" Height="32" Width="36" Foreground="{DynamicResource MenuBackground}">
+                Build<LineBreak/>
+                <Run FontSize="15">体格</Run>
             </TextBlock>
-            <Label x:Name="Value_Build" Content="-2"
-                           Grid.Row="2" Grid.Column="2"
-                           HorizontalContentAlignment="Left"
-                           Style="{DynamicResource XLabel}" Margin="2,2,2,2" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-            <cview:CharacteristicBox x:Name="Box_Dodge" Tag="DODGE" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Margin="12,4,12,4"/>
+            <cview:CharacteristicBox x:Name="Box_Dodge" Tag="DODGE" DataContext="72" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Margin="{DynamicResource DefaultMargin}" LabelWidth="72" ValueFontSize="26"/>
         </Grid>
         <!--页尾-->
         <Label Tag="Page.Main.Trail"

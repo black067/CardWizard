@@ -1,18 +1,9 @@
 ﻿using CallOfCthulhu;
-using CardWizard.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace CardWizard.View
 {
@@ -31,8 +22,6 @@ namespace CardWizard.View
         /// </summary>
         MainManager Manager { get; set; }
 
-        private List<SkillBox> SkillBoxes { get; set; }
-
         /// <summary>
         /// 初始化技能面板
         /// </summary>
@@ -43,57 +32,48 @@ namespace CardWizard.View
             Container.ClearAllChildren();
             if (skills == null || !skills.Any()) return;
             Manager = manager ?? throw new ArgumentNullException(nameof(manager));
-            SkillBoxes = new List<SkillBox>();
+            // 给编辑窗口绑定 Popup
+            SkillValuesEditor.EditorPopup = EditorPopup;
+            // 缓存所有技能显示盒
+            var boxes = new List<SkillBox>();
+            void ResetHighlights(object sender, EventArgs e)
+            {
+                foreach (var s in boxes) { s.SetHighlight(false, false); }
+            }
+            // 编辑窗口打开的行为
+            SkillValuesEditor.PopupOpened += ResetHighlights;
+            // 编辑窗口关闭时的行为
+            SkillValuesEditor.PopupClosed += ResetHighlights;
             foreach (var item in skills)
             {
                 var box = AddBox(Container);
-                SkillBoxes.Add(box);
+                boxes.Add(box);
                 box.BindToSkill(item, () => Manager.Current);
                 Manager.SkillChanged += box.OnSkillChanged;
                 Manager.InfoUpdated += box.UpdateValueFields;
                 box.Label_Value.MouseDown += (o, e) =>
                 {
-                    PopupValueEditor.IsOpen = false;
-                    PopupValueEditor.IsOpen = true;
                     var sender = box;
-                    sender.Highlight(true);
-                    sender.Editing = true;
-                    SkillValuesEditor.InitFields(sender.ValueOccupation, sender.ValuePersonal, sender.ValueGrowth);
+                    var source = sender.Source;
+                    SkillValuesEditor.Show(source.BaseValue, sender.ValueOccupation, sender.ValuePersonal, sender.ValueGrowth);
+                    sender.SetHighlight(true, true);
+                    // 如果技能的总值有范围限制, 设置提示
+                    int basevalue = source.BaseValue, upper = source.Upper, lower = source.Lower;
+                    SkillValuesEditor.SetRangeTip(basevalue, lower, upper, Manager.Translator);
+                    // 点击确认后, 要保存填写的值
                     SkillValuesEditor.ConfirmCallback += (values) =>
                     {
                         for (int i = 0; i < 3; i++)
                         {
                             if (SkillValuesEditor.IsEdited(i, values[i]))
-                                sender.TargetGetter().SetSkill(sender.Source, (Skill.Segment)i, values[i]);
+                                sender.TargetGetter().SetSkill(source, (Skill.Segment)i, values[i]);
                         }
                     };
-                    Keyboard.Focus(SkillValuesEditor.FieldA);
                 };
             }
-            // 编辑窗口打开的行为
-            PopupValueEditor.Opened += (o, e) =>
-            {
-                SkillBoxes.ForEach(s => { s.Editing = false; s.Highlight(false); });
-            };
-            // 编辑窗口关闭时的行为
-            PopupValueEditor.Closed += (o, e) =>
-            {
-                SkillBoxes.ForEach(s => { s.Editing = false; s.Highlight(false); });
-            };
-            // 取消编辑时必须执行的动作
-            SkillValuesEditor.CancelCallbackStatic += () =>
-            {
-                PopupValueEditor.IsOpen = false;
-            };
-            // 按下确认按钮时的行为
-            SkillValuesEditor.ButtonConfirm.Click += (o, e) =>
-            {
-                PopupValueEditor.IsOpen = false;
-                SkillValuesEditor.Confirm();
-            };
             // 资料更新时, 要刷新技能点的显示
             Manager.InfoUpdated += UpdatePointsSummary;
-            Manager.CharacteristicChanged += (o, e) =>
+            Manager.SkillChanged += (o, e) =>
             {
                 UpdatePointsSummary(o);
             };
@@ -101,6 +81,7 @@ namespace CardWizard.View
             {
                 if (e.PropertyName == nameof(Character.Occupation)) UpdatePointsSummary(o as Character);
             };
+            return;
         }
 
         /// <summary>

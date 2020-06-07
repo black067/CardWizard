@@ -1,9 +1,9 @@
 ﻿using CallOfCthulhu;
 using CardWizard.Tools;
 using System;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace CardWizard.View
 {
@@ -12,14 +12,24 @@ namespace CardWizard.View
     /// </summary>
     public partial class CharacteristicBox : UserControl
     {
-        private readonly TextBox[] texts;
+        #region Dependency
+        public static readonly DependencyProperty LabelWidthProperty = DependencyProperty.RegisterAttached(nameof(LabelWidth), typeof(GridLength), typeof(CharacteristicBox));
 
-        private Func<Character> TargetGetter { get; set; }
+        public static readonly DependencyProperty ValueFontSizeProperty = DependencyProperty.RegisterAttached(nameof(ValueFontSize), typeof(double), typeof(CharacteristicBox));
 
+        public GridLength LabelWidth { get; set; }
+
+        public double ValueFontSize { get; set; }
+        #endregion
         /// <summary>
         /// 与之绑定的属性名称
         /// </summary>
         public string Key { get; set; }
+
+        /// <summary>
+        /// Getter: 取得当前编辑的角色
+        /// </summary>
+        public Func<Character> TargetGetter { get; set; }
 
         /// <summary>
         /// 属性初始值
@@ -28,12 +38,8 @@ namespace CardWizard.View
         {
             get
             {
-                var text = Text_Initial.Text?.ToString();
-                return int.TryParse(text, out int value) ? value : 0;
-            }
-            set
-            {
-                Text_Initial.Text = value.ToString();
+                if (string.IsNullOrWhiteSpace(Key)) return 0;
+                return TargetGetter?.Invoke()?.GetInitial(Key) ?? 0;
             }
         }
 
@@ -44,12 +50,8 @@ namespace CardWizard.View
         {
             get
             {
-                var text = Text_Adjustment.Text?.ToString();
-                return int.TryParse(text, out int value) ? value : 0;
-            }
-            set
-            {
-                Text_Adjustment.Text = value.ToString();
+                if (string.IsNullOrWhiteSpace(Key)) return 0;
+                return TargetGetter?.Invoke()?.GetAdjustment(Key) ?? 0;
             }
         }
 
@@ -60,12 +62,8 @@ namespace CardWizard.View
         {
             get
             {
-                var text = Text_Growth.Text?.ToString();
-                return int.TryParse(text, out int value) ? value : 0;
-            }
-            set
-            {
-                Text_Growth.Text = value.ToString();
+                if (string.IsNullOrWhiteSpace(Key)) return 0;
+                return TargetGetter?.Invoke()?.GetGrowth(Key) ?? 0;
             }
         }
 
@@ -75,74 +73,12 @@ namespace CardWizard.View
         private bool IsEditing { get; set; }
 
         /// <summary>
-        /// 用户是否可以编辑
-        /// </summary>
-        public bool IsReadOnly { get; set; }
-
-        /// <summary>
-        /// 结束输入时触发的事件
-        /// </summary>
-        public event CharacteristicEndEditEventHandler InputFieldEndEdit;
-
-        /// <summary>
         /// Constructor
         /// </summary>
         public CharacteristicBox()
         {
             InitializeComponent();
-            MouseEnter += Box_ShowEditBoxes;
-            MouseLeave += Box_HideEditBoxes;
-            EditGrid.Visibility = Visibility.Hidden;
-            texts = new TextBox[] { Text_Initial, Text_Adjustment, Text_Growth };
-            foreach (var box in texts)
-            {
-                box.GotFocus += InputField_GotFocus;
-                box.GotKeyboardFocus += InputField_GotFocus;
-                box.LostFocus += InputField_LostFocus;
-                box.LostKeyboardFocus += InputField_LostFocus;
-            }
             UpdateValueLabels();
-            IsReadOnly = false;
-        }
-
-        private void InputField_GotFocus(object sender, RoutedEventArgs _)
-        {
-            IsEditing = true;
-            Box_ShowEditBoxes(sender, null);
-        }
-
-        private void InputField_LostFocus(object sender, RoutedEventArgs _)
-        {
-            IsEditing = false;
-            Box_HideEditBoxes(sender, null);
-            UpdateValueLabels();
-            if (sender is TextBox box && texts.Contains(box))
-            {
-                var c = TargetGetter();
-                if (c == null) return;
-                if (box.Equals(Text_Initial))
-                    InputFieldEndEdit?.Invoke(TargetGetter(), Characteristic.Segment.INITIAL, Key, ValueInitial);
-                else if (box.Equals(Text_Adjustment))
-                    InputFieldEndEdit?.Invoke(TargetGetter(), Characteristic.Segment.ADJUSTMENT, Key, ValueAdjustment);
-                else
-                    InputFieldEndEdit?.Invoke(TargetGetter(), Characteristic.Segment.GROWTH, Key, ValueGrowth);
-            }
-        }
-
-        private void Box_ShowEditBoxes(object sender, EventArgs _)
-        {
-            if (IsReadOnly) { return; }
-            EditGrid.Visibility = Visibility.Visible;
-            Label_Value.Visibility = Visibility.Hidden;
-        }
-
-        private void Box_HideEditBoxes(object sender, EventArgs _)
-        {
-            if (!IsEditing)
-            {
-                EditGrid.Visibility = Visibility.Hidden;
-                Label_Value.Visibility = Visibility.Visible;
-            }
         }
 
         /// <summary>
@@ -171,21 +107,21 @@ namespace CardWizard.View
         /// </summary>
         /// <param name="onEndEdit"></param>
         /// <returns></returns>
-        public void BindToCharacteristicByTag(Func<Character> getter, CharacteristicEndEditEventHandler onEndEdit)
+        public void BindToCharacteristicByTag(Func<Character> getter, MouseButtonEventHandler onClick)
         {
             var tag = Tag?.ToString();
             Key = tag;
             TargetGetter = getter;
             Block_Key.SetValue(TagProperty, $"{Key}.Block");
-            if (onEndEdit != null) InputFieldEndEdit += onEndEdit;
+            Label_Value.MouseDown += (o, e)=>
+            {
+                onClick(this, e);
+            };
         }
 
         public void OnCharacteristicChanged(Character c, CharacteristicChangedEventArgs e)
         {
             if (!e.Key.EqualsIgnoreCase(Key)) { return; }
-            ValueInitial = c.GetInitial(Key);
-            ValueAdjustment = c.GetAdjustment(Key);
-            ValueGrowth = c.GetGrowth(Key);
             UpdateValueLabels();
         }
 
