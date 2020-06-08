@@ -236,9 +236,14 @@ namespace CardWizard.View
             character.Age = Age;
             foreach (var kvp in Bonus)
             {
-                if (!character.Initials.ContainsKey(kvp.Key)) continue;
+                bool setInitial = kvp.Key.EndsWith("*");
+                var key = kvp.Key.Replace("*", string.Empty);
+                if (!character.Initials.ContainsKey(key)) continue;
                 var delta = CharacteristicsRoller?.Invoke(kvp.Value, character.Initials) ?? 0;
-                character.SetAdjustment(kvp.Key, delta);
+                if (setInitial)
+                    character.SetInitial(key, delta);
+                else
+                    character.SetAdjustment(key, delta);
             }
             foreach (var kvp in AdjustmentsEditor.Values)
             {

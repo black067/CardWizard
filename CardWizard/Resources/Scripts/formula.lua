@@ -149,7 +149,7 @@ DATA_AGEBONUS = {
 Comment: 教育减 5 点。 力量/体型合计减 5 点。决定幸运值时可以骰 2 次并取较好的一次。
 Rule: STR + SIZ == -5
 Bonus:
-- key: LUCK
+- key: LUCK*
   formula: math.max(5 * (3D6), 5 * (3D6))
 - key: EDU
   formula: -5]],
@@ -157,7 +157,7 @@ Bonus:
 	[{20, 39}] = [[
 Comment: 对教育进行 1 次增强检定。
 Bonus: 
-- key: LUCK
+- key: LUCK*
   formula: 5 * (3D6)
 - key: EDU
   formula: EDUBonus(EDU, 1)]],
@@ -166,7 +166,7 @@ Bonus:
 Comment: 对教育进行 2 次增强检定。力量/体质/敏捷合计减 5 点。外貌减 5 点。
 Rule: STR + CON + DEX == -5
 Bonus: 
-- key: LUCK
+- key: LUCK*
   formula: 5 * (3D6)
 - key: APP
   formula: -5 
@@ -177,7 +177,7 @@ Bonus:
 Comment: 对教育进行 3 次增强检定。力量/体质/敏捷合计减 10 点。外貌减 10 点。
 Rule: STR + CON + DEX == -10
 Bonus: 
-- key: LUCK
+- key: LUCK*
   formula: 5 * (3D6)
 - key: APP  
   formula: -10 
@@ -188,7 +188,7 @@ Bonus:
 Comment: 对教育进行 4 次增强检定。力量/体质/敏捷合计减 20 点。外貌减 15 点。
 Rule: STR + CON + DEX == -20
 Bonus: 
-- key: LUCK
+- key: LUCK*
   formula: 5 * (3D6)
 - key: APP  
   formula: -15 
@@ -199,7 +199,7 @@ Bonus:
 Comment: 对教育进行 4 次增强检定。力量/体质/敏捷合计减 40 点。外貌减 20 点。
 Rule: STR + CON + DEX == -40
 Bonus: 
-- key: LUCK
+- key: LUCK*
   formula: 5 * (3D6)
 - key: APP  
   formula: -20 
@@ -210,7 +210,7 @@ Bonus:
 Comment: 对教育进行 4 次增强检定。力量/体质/敏捷合计减 80 点。外貌减 25 点。
 Rule: STR + CON + DEX == -80
 Bonus: 
-- key: LUCK
+- key: LUCK*
   formula: 5 * (3D6)
 - key: APP  
   formula: -25 

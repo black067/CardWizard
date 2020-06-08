@@ -1,5 +1,6 @@
 ﻿using CallOfCthulhu;
 using System.ComponentModel;
+using System.IO;
 
 namespace CardWizard.Data
 {
@@ -89,5 +90,19 @@ namespace CardWizard.Data
         [Config.ProcessIndex(1)]
         [Description("图片资源存储的目录")]
         public string PathTextures = "{PathResources}/Textures";
+
+        /// <summary>
+        /// 创建重要目录
+        /// </summary>
+        public void CreateDirectories()
+        {
+            var folders = new string[] {
+                PathSave, PathData,
+                PathScripts, PathTextures };
+            foreach (var item in folders)
+            {
+                Directory.CreateDirectory(item);
+            }
+        }
     }
 }

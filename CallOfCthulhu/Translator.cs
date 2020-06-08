@@ -83,7 +83,11 @@ namespace CallOfCthulhu
             // 理智
             { "SAN", "理智" },
             { "SAN.ToolTip", @"{SAN} 值用来衡量调查员是否能够承受克苏鲁神话的惊怖，以及能够勇敢地面对恐怖的情景而不转身逃走。" },
-            { "SAN.Block", "SAN # FontSize: 12\n 理智 # FontSize: 16" },
+            { "SAN.Block", "SAN # FontSize: 8\n 理智 # FontSize: 12" },
+            { "SAN.Status.Sober", "清醒" },
+            { "SAN.Status.Insanity.Temporary", "临时性疯狂" },
+            { "SAN.Status.Insanity.Indefinite", "间歇性疯狂" },
+            { "SAN.Status.Insanity.Permanent", "永久疯狂" },
             // 幸运
             { "LUCK", "幸运" },
             { "LUCK.ToolTip", @"在玩家进行技能检定后（使用技能或属性），可以花费幸运值来改变结果。" },
@@ -94,15 +98,20 @@ namespace CallOfCthulhu
             // 生命值
             { "HP", "生命值" },
             { "HP.ToolTip", @"{HP}用来计算一名调查员、NPC、怪物在游戏中累计受到的伤害量，用来表明这个家伙在被疼痛、疲惫和死亡压垮前还能走多久。" },
-            { "HP.Block", "Hit # FontSize: 10\n Points # FontSize: 10 \n 生命 # FontSize: 14" },
+            { "HP.Block", "Hit Points # FontSize: 8 \n 生命 # FontSize: 12" },
+            { "HP.MajorWound", "重伤值" },
+            { "HP.Status.Healthy", "健康" },
+            { "HP.Status.MajorWound", "重伤" },
+            { "HP.Status.Dying", "濒死" },
             // 魔法值
             { "MP", "魔法值" },
+            {"MP.RestoreRate", "恢复率" },
             { "MP.ToolTip", @"（大多数情况下）施法时必须消耗{MP}，激活造物、为魔法通道充能等同样需要。" },
-            { "MP.Block", "Magic # FontSize: 10\n Points # FontSize: 10 \n 魔法 # FontSize: 14" },
+            { "MP.Block", "Magic Points # FontSize: 8 \n 魔法 # FontSize: 12" },
             // 移动速度
             { "MOV", "移动" },
             { "MOV.ToolTip", @"调查员每轮可以移动的码数（或米数）等于他的{MOV}值的五倍。" },
-            { "MOV.Block", "MOV # FontSize: 12\n 移动 # FontSize: 16" },
+            { "MOV.Block", "MOV # FontSize: 8\n 移动 # FontSize: 12" },
             // 知识
             { "KNOW", "知识" },
             { "KNOW.ToolTip", @"所有人都了解一些不同方面的{KNOW}。因为没有人可以知道一切，{KNOW}检定永远不能到达99，哪怕一个调查员有21点教育。" },
@@ -116,6 +125,7 @@ namespace CallOfCthulhu
             { "AST", "资产" },
             { "AST.ToolTip", @"调查员拥有财产和其他价值年收入五倍的{AST}；" },
             { "SUM", "总计" },
+            { "Status", "状态" },
             { "Initial", "初始" },
             { "Initials", "属性初始值" },
             { "Initial.ToolTip", "初始值, 撰写档案时掷骰得出" },
@@ -201,7 +211,7 @@ namespace CallOfCthulhu
             { "Card.Button.DMGBonus.ToolTip", "掷一次伤害加值" },
             { "Card.NewItem.Placeholder", "添加新物品?"},
             { "Card.Button.AddItem", "➕"},
-            { "ValuesEditor.MoreInfo", "总计💡"},
+            { "ValuesEditor.MoreInfo", "总计 🔍"},
             { "ValuesEditor.ToolTip.BaseAndRange", "基础值: {0}, 合理范围: {1} ~ {2}" },
             { "ValuesEditor.ToolTip.BaseOnly", "基础值: {0}" },
             // 其它窗口

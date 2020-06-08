@@ -47,7 +47,7 @@ namespace CallOfCthulhu
         /// <summary>
         /// 编号
         /// </summary>
-        [Description("编号")]
+        [Description("技能.ID")]
         public int ID
         {
             get => id;
@@ -61,7 +61,7 @@ namespace CallOfCthulhu
         /// <summary>
         /// 名称
         /// </summary>
-        [Description("名称")]
+        [Description("技能.名称")]
         public string Name
         {
             get => name;
@@ -75,7 +75,7 @@ namespace CallOfCthulhu
         /// <summary>
         /// 技能类别
         /// </summary>
-        [Description("技能类别")]
+        [Description("技能.类别")]
         public string Category
         {
             get => category;
@@ -89,7 +89,7 @@ namespace CallOfCthulhu
         /// <summary>
         /// 技能描述
         /// </summary>
-        [Description("技能描述")]
+        [Description("技能.描述")]
         public string Description
         {
             get => description;
@@ -103,7 +103,7 @@ namespace CallOfCthulhu
         /// <summary>
         /// 能否获得幕间提升
         /// </summary>
-        [Description("能否获得幕间提升")]
+        [Description("技能.能否获得幕间提升")]
         public bool Growable
         {
             get => growable;
@@ -117,7 +117,7 @@ namespace CallOfCthulhu
         /// <summary>
         /// 上限
         /// </summary>
-        [Description("点数上限")]
+        [Description("技能.上限")]
         public int Upper
         {
             get => upper;
@@ -131,7 +131,7 @@ namespace CallOfCthulhu
         /// <summary>
         /// 点数下限
         /// </summary>
-        [Description("点数下限")]
+        [Description("技能.下限")]
         public int Lower
         {
             get => lower;
@@ -146,7 +146,7 @@ namespace CallOfCthulhu
         /// <summary>
         /// 技能基础值
         /// </summary>
-        [Description("技能基础值")]
+        [Description("技能.基础成功率")]
         public int BaseValue
         {
             get => baseValue;
@@ -160,7 +160,7 @@ namespace CallOfCthulhu
         /// <summary>
         /// 职业点数
         /// </summary>
-        [Description("职业点数")]
+        [Description("技能.已投入职业点数")]
         public int OccupationPoints
         {
             get => occupationPoints;
@@ -174,7 +174,7 @@ namespace CallOfCthulhu
         /// <summary>
         /// 兴趣点数
         /// </summary>
-        [Description("兴趣点数")]
+        [Description("技能.已投入兴趣点数")]
         public int PersonalPoints
         {
             get => personalPoints;
@@ -188,7 +188,7 @@ namespace CallOfCthulhu
         /// <summary>
         /// 成长点数
         /// </summary>
-        [Description("成长点数")]
+        [Description("技能.成长点数")]
         public int GrowthPoints
         {
             get => growthPoints;
@@ -202,7 +202,7 @@ namespace CallOfCthulhu
         /// <summary>
         /// 技能是否已经过幕间成长
         /// </summary>
-        [Description("技能是否已经过幕间成长")]
+        [Description("技能.是否已经过幕间成长")]
         public bool Grown
         {
             get => grown;

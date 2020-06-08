@@ -68,11 +68,6 @@ namespace CardWizard.View
         }
 
         /// <summary>
-        /// 是否处于编辑状态
-        /// </summary>
-        private bool IsEditing { get; set; }
-
-        /// <summary>
         /// Constructor
         /// </summary>
         public CharacteristicBox()
@@ -119,12 +114,21 @@ namespace CardWizard.View
             };
         }
 
+        /// <summary>
+        /// 当目标的属性数值改变时, 判断是否与自己的 <see cref="Key"/> 相同, 是则刷新
+        /// </summary>
+        /// <param name="c"></param>
+        /// <param name="e"></param>
         public void OnCharacteristicChanged(Character c, CharacteristicChangedEventArgs e)
         {
             if (!e.Key.EqualsIgnoreCase(Key)) { return; }
             UpdateValueLabels();
         }
 
+        /// <summary>
+        /// 当目标属性变更时, 强制刷新
+        /// </summary>
+        /// <param name="c"></param>
         public void UpdateValueFields(Character c)
         {
             OnCharacteristicChanged(c, new CharacteristicChangedEventArgs(Key));

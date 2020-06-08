@@ -19,6 +19,11 @@
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="InputScope" Value="Number"/>
             <Setter Property="MaxLines"  Value="1"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+
+                </Trigger>
+            </Style.Triggers>
         </Style>
         <System:Double x:Key="ItemWidth">52</System:Double>
         <System:Double x:Key="ItemWidthB">84</System:Double>
@@ -26,22 +31,35 @@
     <UserControl.Background>
         <SolidColorBrush Color="White" Opacity="0.87"/>
     </UserControl.Background>
-    <WrapPanel Name="wrapPanel" ItemHeight="32">
-        <Label x:Name="LabelMoreInfo" Content="SUM💡" Tag="ValuesEditor.MoreInfo" Style="{StaticResource XLabel}" Target="{Binding ElementName=FieldA, Mode=OneWay}" Width="{StaticResource ItemWidthB}" HorizontalContentAlignment="Left" Padding="6,0,0,0"/>
-        <Label x:Name="LabelSum" Content="999" Tag="OccupationPoints.Label" Style="{StaticResource XLabel}" Target="{Binding ElementName=FieldA, Mode=OneWay}" Width="{StaticResource ItemWidth}" Margin="0,2,0,2" FontStyle="Normal" HorizontalContentAlignment="Right" Padding="4,0,4,0" FontSize="16"/>
-        <Label x:Name="LabelA" Content="职业" Tag="OccupationPoints.Label" Style="{StaticResource XLabel}" Target="{Binding ElementName=FieldA, Mode=OneWay}" Width="{StaticResource ItemWidth}" HorizontalContentAlignment="Left" Padding="6,0,0,0"/>
-        <TextBox x:Name="FieldA" Tag="0" Text="999" Style="{StaticResource XInput}" Padding="4,0,4,0" HorizontalAlignment="Right" Width="{StaticResource ItemWidthB}"/>
-        <Label x:Name="LabelB" Content="兴趣" Tag="PersonalPoints.Label" Style="{StaticResource XLabel}" Target="{Binding ElementName=FieldB, Mode=OneWay}" Width="{StaticResource ItemWidth}" HorizontalContentAlignment="Left" Padding="6,0,0,0"/>
-        <TextBox x:Name="FieldB" Tag="1" Text="999" Style="{StaticResource XInput}" Padding="4,0,4,0" HorizontalAlignment="Right" Width="{StaticResource ItemWidthB}"/>
-        <Label x:Name="LabelC" Content="成长" Tag="GrowthPoints.Label" Style="{StaticResource XLabel}" Target="{Binding ElementName=FieldC, Mode=OneWay}" Width="{StaticResource ItemWidth}" HorizontalContentAlignment="Left" Padding="6,0,0,0"/>
-        <TextBox x:Name="FieldC" Tag="2" Text="999" Style="{StaticResource XInput}" Padding="4,0,4,0" HorizontalAlignment="Right" Width="{StaticResource ItemWidthB}"/>
-        <Grid x:Name="grid" Width="{Binding ActualWidth, ElementName=wrapPanel, Mode=OneWay}" >
+    <Grid Name="wrapPanel" Height="160">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Label x:Name="LabelMoreInfo" Content="SUM💡" Tag="ValuesEditor.MoreInfo" Style="{StaticResource XLabel}" Target="{Binding ElementName=FieldA, Mode=OneWay}" HorizontalContentAlignment="Left" Padding="6,0,0,0"/>
+        <Label x:Name="LabelSum" Content="999" Tag="OccupationPoints.Label" Style="{StaticResource XLabel}" Target="{Binding ElementName=FieldA, Mode=OneWay}" Margin="4,2,4,2" FontStyle="Normal" HorizontalContentAlignment="Right" Padding="4,0,4,0" FontSize="16" Grid.Column="2"/>
+        <Label x:Name="LabelA" Content="职业" Tag="OccupationPoints.Label" Style="{StaticResource XLabel}" Target="{Binding ElementName=FieldA, Mode=OneWay}" HorizontalContentAlignment="Left" Padding="6,0,0,0" Grid.Row="1"/>
+        <TextBox x:Name="FieldA" Tag="0" Text="999" Style="{StaticResource XInput}" Padding="4,0,4,0" HorizontalAlignment="Stretch" Grid.Row="1" Grid.Column="1"/>
+        <Label x:Name="LabelB" Content="兴趣" Tag="PersonalPoints.Label" Style="{StaticResource XLabel}" Target="{Binding ElementName=FieldB, Mode=OneWay}" HorizontalContentAlignment="Left" Padding="6,0,0,0" Grid.Row="2"/>
+        <TextBox x:Name="FieldB" Tag="1" Text="999" Style="{StaticResource XInput}" Padding="4,0,4,0" HorizontalAlignment="Stretch" Grid.Row="2" Grid.Column="1"/>
+        <Label x:Name="LabelC" Content="成长" Tag="GrowthPoints.Label" Style="{StaticResource XLabel}" Target="{Binding ElementName=FieldC, Mode=OneWay}" HorizontalContentAlignment="Left" Padding="6,0,0,0" Grid.Row="3"/>
+        <TextBox x:Name="FieldC" Tag="2" Text="999" Style="{StaticResource XInput}" Padding="4,0,4,0" HorizontalAlignment="Stretch" Grid.Row="3" Grid.Column="1"/>
+        <Grid x:Name="grid" Width="{Binding ActualWidth, ElementName=wrapPanel, Mode=OneWay}" Grid.Row="4" Grid.ColumnSpan="2" >
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="{Binding ActualHeight, ElementName=grid, Mode=OneWay}"/>
                 <ColumnDefinition Width="{Binding ActualHeight, ElementName=grid, Mode=OneWay}"/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
+            <Button x:Name="ButtonClear" Content="🗑" Tag="" Style="{StaticResource XButtonStyle}" Margin="1,1,0,1" Background="{x:Null}" Foreground="{DynamicResource MenuBackground}" Visibility="Hidden"/>
             <Button x:Name="ButtonCancel" Content="❌" Tag="" Style="{StaticResource XButtonStyle}" Margin="1,1,0,1" Background="{StaticResource CharacteristicBorderBrush}"/>
-            <Button x:Name="ButtonConfirm" Content="✔" Tag="" Style="{StaticResource XButtonStyle}" Margin="1,1,1,1" Grid.Column="1"/>
+            <Button x:Name="ButtonConfirm" Content="✔" Tag="" Style="{StaticResource XButtonStyle}" Margin="1,1,1,1" Grid.Column="1" Grid.ColumnSpan="2"/>
         </Grid>
-    </WrapPanel>
+    </Grid>
 </UserControl>

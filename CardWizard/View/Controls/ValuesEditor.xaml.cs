@@ -1,4 +1,5 @@
 ﻿using CallOfCthulhu;
+using CardWizard.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -52,6 +53,7 @@ namespace CardWizard.View
             OldValues = new int[FieldBoxes.Length + 1];
             ButtonConfirm.Click += ButtonConfirm_Click;
             ButtonCancel.Click += ButtonCancel_Click;
+            ButtonClear.Click += ButtonClear_Click;
 
             UIExtension.AddCommandsBindings(this, new RoutedCommand("enterpress", typeof(ValuesEditor)), (o, e) =>
             {
@@ -61,6 +63,13 @@ namespace CardWizard.View
             {
                 Cancel();
             }, new KeyGesture(Key.Escape));
+        }
+
+        private void ButtonClear_Click(object sender, RoutedEventArgs e)
+        {
+            FieldB.Text = "0";
+            FieldC.Text = "0";
+            LabelSum.Content = GetFields().Sum() + OldValues.Last();
         }
 
         private void ButtonCancel_Click(object sender, RoutedEventArgs e)
@@ -80,10 +89,16 @@ namespace CardWizard.View
             LabelSum.Content = GetFields().Sum() + OldValues.Last();
         }
 
+        /// <summary>
+        /// 气泡浮现时执行的事件
+        /// </summary>
         public event EventHandler PopupOpened;
 
         private void OnPopupOpened(object o, EventArgs e) => PopupOpened?.Invoke(o, e);
 
+        /// <summary>
+        /// 气泡关闭时执行的事件
+        /// </summary>
         public event EventHandler PopupClosed;
         private void OnPopupClosed(object o, EventArgs e) => PopupClosed?.Invoke(o, e);
 

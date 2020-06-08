@@ -55,8 +55,5 @@
                    ItemWidth="226" ItemHeight="27">
             <local:SkillBox FontSize="10"/>
         </WrapPanel>
-        <Popup x:Name="EditorPopup" Placement="MousePoint" StaysOpen="False" AllowsTransparency="True" PopupAnimation="Fade">
-            <local:ValuesEditor x:Name="SkillValuesEditor"/>
-        </Popup>
     </Grid>
 </UserControl>

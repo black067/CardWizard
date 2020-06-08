@@ -213,7 +213,7 @@
             };
             GCDispatcher.Start();
             // 根据 Config.PathosDatabase 创建目录
-            CreateDirectories(Paths);
+            Paths.CreateDirectories();
             // 初始化数据总线
             DataBus = new DataBus();
             DataBus.LoadFrom(Paths.PathData);
@@ -253,6 +253,7 @@
             Window.CommandCaptureGestured += DoCapturePicture;
             Window.CommandSwitchToolTipGestured += DoSwitchToolTip;
             Window.CommandConfirmGestured += DoMoveFocus;
+            Window.MouseWheel += DoCatchMouseWheel;
             // ToolTip 的显示
             ToolTipOpacity = Config.ToolTipAvailable ? Config.ToolTipOpacity : 0;
             Window.MenuItemSwitchToolTip.IsChecked = Config.ToolTipAvailable;
@@ -288,6 +289,23 @@
             if (element is TextBox textBox && textBox.MaxLines < 2)
             {
                 //Window.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
+            }
+        }
+        private void DoCatchMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (Keyboard.FocusedElement is TextBox box)
+            {
+                e.Handled = true;
+                if (string.IsNullOrWhiteSpace(box.Text))
+                {
+                    box.Text = "0";
+                    return;
+                }
+                if (int.TryParse(box.Text, out int value))
+                {
+                    value += e.Delta > 0 ? 1 : -1;
+                    box.Text = value.ToString();
+                }
             }
         }
 
@@ -466,25 +484,59 @@
         /// <param name="page"></param>
         private void InitializeMainPage(MainPage page)
         {
+            if (page is null)
+            {
+                throw new ArgumentNullException(nameof(page));
+            }
+
+            page.MouseWheel += DoCatchMouseWheel;
+            // 初始化数值编辑器
+            Window.XValueEditor.EditorPopup = Window.XValueEditorPopup;
+            Window.XValueEditor.SetTags("Initial", "Adjustment", "Growth");
+            void OpenEditor(object sender, EventArgs e)
+            {
+                if (sender == null) throw new ArgumentNullException(nameof(sender));
+                var box = sender as CharacteristicBox;
+                var target = box.TargetGetter();
+                Window.XValueEditor.Show(0, box.ValueInitial, box.ValueAdjustment, box.ValueGrowth);
+                Window.XValueEditor.ConfirmCallback += (values) =>
+                {
+                    for (int i = 0; i < 3; i++)
+                    {
+                        if (Window.XValueEditor.IsEdited(i, values[i]))
+                        {
+                            target.SetCharacteristic(box.Key, (Characteristic.Segment)i, values[i]);
+                        }
+                    }
+                };
+            }
             // 初始化杂项信息显示面板
             page.Miscellaneous.InitializeControl(this);
             // 属性重生成按钮
             page.Button_Regenerate.Click += GetHandlerForReGenerateCharacteristics(() => Current);
             // 角色属性数值面板初始化
             Character targetGetter() => Current;
-            page.CharacteristicBoxes.Boxes.Add(page.Box_Dodge);
-            foreach (var box in page.CharacteristicBoxes.Boxes)
+            page.CharacteristicBoxes.CharacteristicBoxes.Add(page.Box_Dodge);
+            foreach (var box in page.CharacteristicBoxes.CharacteristicBoxes)
             {
-                box.BindToCharacteristicByTag(targetGetter, page.CharacteristicBoxes.OpenEditor);
+                box.BindToCharacteristicByTag(targetGetter, OpenEditor);
                 CharacteristicChanged += box.OnCharacteristicChanged;
                 InfoUpdated += box.UpdateValueFields;
             }
+            foreach (var box in page.CharacteristicBoxes.PointsBoxes)
+            {
+                box.BindToCharacteristicByTag(targetGetter, Translator);
+                CharacteristicChanged += box.OnCharacteristicChanged;
+                InfoUpdated += box.UpdateValueFields;
+            }
+
             // 角色伤害奖励的控制
             InfoUpdated += UpdateDamageBonus;
             // 监控角色的属性变化
             CharacteristicChanged += MainManager_CharacteristicChanged;
             // 初始化技能的显示
-            page.SkillPanel.InitializeSkills(this, DataBus.Skills.Values);
+            Window.SkillValuesEditor.EditorPopup = Window.SValuesEditorPopup;
+            page.SkillPanel.InitializeSkills(this, DataBus.Skills.Values, Window.SkillValuesEditor);
             // 绑定事件: 点击骰一次按钮时触发
             page.Button_Roll_DMGBonus.Click += (o, e) =>
             {
@@ -510,6 +562,12 @@
         /// <param name="page"></param>
         private void InitializeBackstoryPage(BackstoryPage page)
         {
+            if (page is null)
+            {
+                throw new ArgumentNullException(nameof(page));
+            }
+
+            page.MouseWheel += DoCatchMouseWheel;
             var children = page.GetChildren();
             foreach (var child in children)
             {
@@ -574,21 +632,6 @@
             GCDispatcher.Tick += (o, e) => LuaHub.EnvGC();
             Window.Closed += (o, e) => LuaHub.Dispose();
             return LuaHub;
-        }
-
-        /// <summary>
-        /// 创建目录
-        /// </summary>
-        /// <param name="pathos"></param>
-        private static void CreateDirectories(Paths pathos)
-        {
-            var folders = new string[] {
-                pathos.PathSave, pathos.PathData,
-                pathos.PathScripts, pathos.PathTextures };
-            foreach (var item in folders)
-            {
-                Directory.CreateDirectory(item);
-            }
         }
 
         /// <summary>

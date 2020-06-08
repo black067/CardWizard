@@ -142,5 +142,11 @@
                 Style="{DynamicResource XButtonStyle}" Padding="0,0,0,0" Width="36" Height="36" FontSize="18">
             🖨
         </Button>
+        <Popup x:Name="XValueEditorPopup" Placement="MousePoint" StaysOpen="False" AllowsTransparency="True" PopupAnimation="Fade">
+            <cview:ValuesEditor x:Name="XValueEditor"/>
+        </Popup>
+        <Popup x:Name="SValuesEditorPopup" Placement="MousePoint" StaysOpen="False" AllowsTransparency="True" PopupAnimation="Fade">
+            <cview:ValuesEditor x:Name="SkillValuesEditor"/>
+        </Popup>
     </Grid>
 </Window>

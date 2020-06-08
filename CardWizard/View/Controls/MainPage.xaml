@@ -86,7 +86,7 @@
                            Grid.ColumnSpan="2" Grid.Column="1" Grid.Row="0" Style="{DynamicResource XTitle}"/>
 
             <Border Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Grid.RowSpan="4" BorderThickness="1,10,1,1" Background="{DynamicResource MenuBackground}" Opacity="0.1" Margin="1,1,1,1"/>
-            <Button x:Name="Button_Roll_DMGBonus" Content="🎲" Grid.Row="0" Grid.Column="2" Tag="Card.Button.DMGBonus" Cursor="Hand" HorizontalAlignment="Right" Background="{x:Null}" Foreground="{DynamicResource ButtonForeground}" BorderThickness="0,0,0,0" VerticalAlignment="Center" Margin="0,0,2,0" Padding="0,0,0,0" VerticalContentAlignment="Center" FontSize="18"/>
+            <Button x:Name="Button_Roll_DMGBonus" Content="🎲" Grid.Row="0" Grid.Column="2" Tag="Card.Button.DMGBonus" Cursor="Hand" HorizontalAlignment="Right" Background="{x:Null}" Foreground="{DynamicResource ButtonForeground}" BorderThickness="0,0,0,0" VerticalAlignment="Center" Margin="0,0,2,0" Padding="0,0,0,0" VerticalContentAlignment="Center" FontSize="18" Style="{StaticResource XButtonStyle}"/>
             <!--伤害加深的标签-->
             <TextBlock x:Name="Label_DamageBonus" Tag="DamageBonus.Block"
                        Grid.Row="1" Grid.Column="1"
