@@ -8,8 +8,8 @@
              d:DesignHeight="268" d:DesignWidth="580">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="3*"/>
-            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="435"/>
+            <ColumnDefinition Width="145"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="3*" />
@@ -31,7 +31,7 @@
             <cview:CharacteristicBox Tag="MOV" Style="{StaticResource CharacteristicBoxStyle}" Foreground="{StaticResource MenuBackground}" Width="{StaticResource CharacteristicBoxWidth}"/>
         </WrapPanel>
         <!--<Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Grid.RowSpan="4" Background="{DynamicResource MenuBackground}" Opacity="0.1" Margin="1,1,1,1"/>-->
-        <StackPanel Name="secondPanel" Orientation="Horizontal" Grid.Row="1" Grid.ColumnSpan="2">
+        <StackPanel Name="secondPanel" Orientation="Horizontal" Grid.Row="1" Grid.ColumnSpan="1">
             <!--<cview:CharacteristicBox Tag="LUCK" Style="{StaticResource CharacteristicBoxStyle}" Foreground="{StaticResource MenuBackground}" Width="{StaticResource CharacteristicBoxWidth}"/>
             <cview:CharacteristicBox Tag="SAN" Style="{StaticResource CharacteristicBoxStyle}" Foreground="{StaticResource MenuBackground}" Width="{StaticResource CharacteristicBoxWidth}"/>
             <cview:CharacteristicBox Tag="MP" Style="{StaticResource CharacteristicBoxStyle}" Foreground="{StaticResource MenuBackground}" Width="{StaticResource CharacteristicBoxWidth}"/>

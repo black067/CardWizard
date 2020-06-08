@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CardWizard.View" xmlns:System="clr-namespace:System;assembly=System.Runtime"
              mc:Ignorable="d" Foreground="{DynamicResource CharacteristicBorderBrush}" 
-             d:DesignWidth="200" d:DesignHeight="64" BorderBrush="{DynamicResource CharacteristicBorderBrush}" BorderThickness="1,1,1,1">
+             d:DesignWidth="200" d:DesignHeight="64">
     <UserControl.Resources>
         <Style x:Key="XInput" TargetType="TextBox">
             <Setter Property="Margin" Value="1"/>

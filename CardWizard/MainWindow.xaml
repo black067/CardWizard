@@ -5,15 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CardWizard"
         xmlns:cview="clr-namespace:CardWizard.View"
+        xmlns:System="clr-namespace:System;assembly=System.Runtime"
         mc:Ignorable="d"
         Title="Card Wizard" 
         Width="1080" d:DesignHeight="1080" 
         MinHeight="720" MinWidth="800"
         FontFamily="{DynamicResource WindowFontFamily}" 
-        Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" Cursor="Arrow"
-    xmlns:System="clr-namespace:System;assembly=System.Runtime">
-    <Window.Resources>
-    </Window.Resources>
+        Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" Cursor="Arrow">
     <!--绑定快捷键-->
     <Window.CommandBindings>
         <CommandBinding Command="{x:Static local:MainWindow.CommandCreate}" Executed="CommandCreate_Executed"/>
