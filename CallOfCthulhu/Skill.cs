@@ -142,7 +142,6 @@ namespace CallOfCthulhu
             }
         }
 
-
         /// <summary>
         /// 技能基础值
         /// </summary>

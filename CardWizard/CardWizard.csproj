@@ -23,13 +23,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Resources\Data\**" />
-    <EmbeddedResource Remove="Resources\Data\**" />
-    <None Remove="Resources\Data\**" />
-    <Page Remove="Resources\Data\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Remove="Resources\Scripts\debug.lua" />
     <None Remove="Resources\Scripts\formula.lua" />
     <None Remove="Resources\Scripts\startup.lua" />

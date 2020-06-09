@@ -61,10 +61,10 @@ namespace CardWizard.View
                 {
                     var sender = box;
                     var source = sender.Source;
-                    valuesEditor.Show(source.BaseValue, sender.ValueOccupation, sender.ValuePersonal, sender.ValueGrowth);
+                    int basevalue = source.BaseValue, upper = source.Upper, lower = source.Lower;
+                    valuesEditor.Show(basevalue, sender.ValueOccupation, sender.ValuePersonal, sender.ValueGrowth);
                     sender.SetHighlight(true, true);
                     // 如果技能的总值有范围限制, 设置提示
-                    int basevalue = source.BaseValue, upper = source.Upper, lower = source.Lower;
                     valuesEditor.SetRangeTip(basevalue, lower, upper, Manager.Translator);
                     // 点击确认后, 要保存填写的值
                     valuesEditor.ConfirmCallback += (values) =>

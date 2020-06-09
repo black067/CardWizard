@@ -211,7 +211,7 @@ namespace CallOfCthulhu
             { "Card.Button.DMGBonus.ToolTip", "掷一次伤害加值" },
             { "Card.NewItem.Placeholder", "添加新物品?"},
             { "Card.Button.AddItem", "➕"},
-            { "ValuesEditor.MoreInfo", "总计 🔍"},
+            { "ValuesEditor.MoreInfo", "总计🔍"},
             { "ValuesEditor.ToolTip.BaseAndRange", "基础值: {0}, 合理范围: {1} ~ {2}" },
             { "ValuesEditor.ToolTip.BaseOnly", "基础值: {0}" },
             // 其它窗口
