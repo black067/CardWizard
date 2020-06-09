@@ -217,7 +217,16 @@
             // 初始化数据总线
             DataBus = new DataBus();
             DataBus.LoadFrom(Paths.PathData);
-            if (DataBus.Skills.Count == 0) DataBus.GenerateDefaultData();
+            if (DataBus.Weapons.Count == 0)
+            {
+                DataBus.GenerateDefaultWeapons();
+                YamlKit.SaveFile(Paths.FileWeapons, DataBus.Weapons.Values);
+            }
+            if (DataBus.Occupations.Count == 0)
+            {
+                DataBus.GenerateDefaultOccupations();
+                YamlKit.SaveFile(Paths.FileOccupations, DataBus.Occupations.Values);
+            }
             // 创建 Lua 环境
             InitLuaHub();
             // 如果存在存储了计算公式的脚本文件, 执行
@@ -257,6 +266,17 @@
             // ToolTip 的显示
             ToolTipOpacity = Config.ToolTipAvailable ? Config.ToolTipOpacity : 0;
             Window.MenuItemSwitchToolTip.IsChecked = Config.ToolTipAvailable;
+            Window.MenuItemDebug.Click += (o, _) =>
+            {
+                try
+                {
+                    LuaHub.DoFile(Paths.ScriptDebug);
+                }
+                catch (Exception e)
+                {
+                    Messenger.Enqueue(e);
+                }
+            };
             // 可查看的角色卡列表初始化
             InitializeCardList(Window.List_Cards);
             // 角色文档初始化
@@ -930,6 +950,36 @@
             YamlKit.SaveFile(Paths.FileWeapons, DataBus.Weapons.Values);
             YamlKit.SaveFile(Paths.FileOccupations, DataBus.Occupations.Values);
             YamlKit.SaveFile(Paths.FileSkills, DataBus.Skills.Values);
+        }
+
+
+        [System.Diagnostics.Conditional("DEBUG")]
+        public void GenerateDatas(string text)
+        {
+            var skills = new List<Skill>();
+            var segments = text.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+            foreach (var segline in segments)
+            {
+                if (string.IsNullOrWhiteSpace(segline)) continue;
+                var s = new Skill();
+                s.ID = skills.Count + 1;
+                var isegments = segline.Split('–', 2);
+                var first = isegments[0].Trim();
+                s.Description = isegments[1].Trim();
+                var match = Regex.Match(first, @"(?<=\()[^\)]+", RegexOptions.Multiline);
+                if (match.Success)
+                {
+                    s.Name = first.Replace(match.Value, string.Empty).Replace("(", string.Empty).Replace(")", string.Empty).Trim();
+                    s.BaseValue = match.Value.Replace("%", string.Empty);
+                }
+                else
+                {
+                    s.Name = first;
+                    s.BaseValue = "0";
+                }
+                skills.Add(s);
+            }
+            YamlKit.SaveFile(Paths.FileSkills, skills);
         }
     }
 }

@@ -63,6 +63,11 @@
                 <MenuItem x:Name="MenuItemSwitchToolTip" Header="Show Tool Tip" Tag="MenuBar.Button.ShowToolTip" 
                           Command="{x:Static local:MainWindow.CommandSwitchToolTip}"
                           Foreground="{DynamicResource MenuBackground}"/>
+                <MenuItem x:Name="MenuItemDebug" Header="Debug" Tag="MenuBar.Button.Debug" 
+                          Height="{Binding ActualHeight, ElementName=MainMenuBar, Mode=OneWay}"
+                          Style="{DynamicResource MenuItemTop}" Foreground="{DynamicResource MenuBackground}"
+                          HorizontalAlignment="Stretch">
+                </MenuItem>
             </MenuItem>
         </Menu>
         <!--日志输出窗口-->

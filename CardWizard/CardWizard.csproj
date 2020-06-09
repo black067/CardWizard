@@ -23,6 +23,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\Data\Occupation.All.yaml" />
+    <None Remove="Resources\Data\Skill.All.yaml" />
+    <None Remove="Resources\Data\Weapon.All.yaml" />
     <None Remove="Resources\Scripts\debug.lua" />
     <None Remove="Resources\Scripts\formula.lua" />
     <None Remove="Resources\Scripts\startup.lua" />
@@ -40,14 +43,23 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Resources\Data\Occupation.All.yaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Data\Skill.All.yaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Data\Weapon.All.yaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\Scripts\debug.lua">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Scripts\formula.lua">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Scripts\startup.lua">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Libs\xlua.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

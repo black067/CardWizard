@@ -136,13 +136,13 @@ namespace CallOfCthulhu
         /// 困难命中率公式
         /// </summary>
         [Description("困难命中率公式")]
-        public string HitrateHard { get => $"({ HitrateNormal ?? "0"}) / 2"; }
+        public string HitrateHard { get => $"({ HitrateNormal ?? "0"}) / 2"; set { } }
 
         /// <summary>
         /// 极难命中率公式
         /// </summary>
         [Description("极难命中率公式")]
-        public string HitrateExtreme { get => $"({ HitrateNormal ?? "0"}) / 5"; }
+        public string HitrateExtreme { get => $"({ HitrateNormal ?? "0"}) / 5"; set { } }
 
         /// <summary>
         /// 伤害公式
@@ -222,6 +222,9 @@ namespace CallOfCthulhu
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private void OnPropertyChanged([CallerMemberName] string propertyName = "") => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        private void OnPropertyChanged([CallerMemberName] string propertyName = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 }

@@ -1,0 +1,27 @@
+﻿-
+# 编号
+  ID: 1
+  # 武器名称
+  Name: 徒手格斗
+  # 武器类型
+  WeaponType: Melee
+  # 武器描述
+  Description: 
+  # 常规命中率公式
+  HitrateNormal: 25
+  # 困难命中率公式
+  HitrateHard: (25) / 2
+  # 极难命中率公式
+  HitrateExtreme: (25) / 5
+  # 伤害公式
+  Damage: 1D3 + DB
+  # 基础射程
+  BaseRange: ''
+  # 每轮攻击次数
+  AttacksPerRound: 1
+  # 装弹数
+  Bullets: 0
+  # 耐久度
+  Resistance: 0
+  # 在各个年代的价格
+  Prices: 

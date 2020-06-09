@@ -52,6 +52,11 @@ namespace CardWizard.View
         public Func<Character> TargetGetter { get; set; }
 
         /// <summary>
+        /// 数值计算器
+        /// </summary>
+        public CalculateCharacteristic Calculator { get; set; }
+
+        /// <summary>
         /// 被绑定到的角色身上的指定技能
         /// </summary>
         private Skill TargetSkill
@@ -69,7 +74,7 @@ namespace CardWizard.View
         }
 
         /// <summary>
-        /// 属性初始值
+        /// 技能的职业点数
         /// </summary>
         public int ValueOccupation
         {
@@ -81,7 +86,7 @@ namespace CardWizard.View
         }
 
         /// <summary>
-        /// 属性调整值
+        /// 技能的个人点数
         /// </summary>
         public int ValuePersonal
         {
@@ -93,7 +98,7 @@ namespace CardWizard.View
         }
 
         /// <summary>
-        /// 属性成长值
+        /// 技能成长值
         /// </summary>
         public int ValueGrowth
         {
@@ -105,17 +110,30 @@ namespace CardWizard.View
         }
 
         /// <summary>
+        /// 技能的基本成功率
+        /// </summary>
+        public int BaseValue
+        {
+            get
+            {
+                if (TargetGetter == null || Source == null || Calculator == null) return 0;
+                return Calculator(Source.BaseValue, TargetGetter().GetCharacteristicTotal());
+            }
+        }
+
+        /// <summary>
         /// 绑定到特定的技能
         /// </summary>
         /// <param name="manager"></param>
         /// <param name="source"></param>
         /// <param name="targetGetter"></param>
-        public void BindToSkill(Skill source, Func<Character> targetGetter)
+        public void BindToSkill(Skill source, Func<Character> targetGetter, CalculateCharacteristic calculator)
         {
             Source = source ?? throw new ArgumentNullException(nameof(source));
             TargetGetter = targetGetter ?? throw new ArgumentNullException(nameof(targetGetter));
+            Calculator = calculator ?? throw new ArgumentNullException(nameof(calculator));
             GrowthMark.Visibility = source.Growable ? Visibility.Visible : Visibility.Hidden;
-            Block_Key.Text = $"{source.Name} ({source.BaseValue}%)";
+            //Block_Key.Text = $"{source.Name} ({source.BaseValue}%)";
         }
 
         /// <summary>
@@ -156,7 +174,8 @@ namespace CardWizard.View
         /// <param name="value"></param>
         private void UpdateValueLabels()
         {
-            var baseValue = Source == null ? 0 : Source.BaseValue;
+            var baseValue = BaseValue;
+            Block_Key.Text = $"{Source?.Name ?? "Skill"} ({baseValue:D2}%)";
             int value = baseValue + ValueOccupation + ValuePersonal + ValueGrowth;
             if (value == baseValue)
             {

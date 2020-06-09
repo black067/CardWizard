@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -36,7 +37,7 @@ namespace CallOfCthulhu
         private string category;
         private string description;
         private bool growable = true;
-        private int baseValue;
+        private string baseValue;
         private int growthPoints;
         private int occupationPoints;
         private int personalPoints;
@@ -146,7 +147,7 @@ namespace CallOfCthulhu
         /// 技能基础值
         /// </summary>
         [Description("技能.基础成功率")]
-        public int BaseValue
+        public string BaseValue
         {
             get => baseValue;
             set
@@ -280,7 +281,7 @@ namespace CallOfCthulhu
             if (match.Success)
             {
                 s.Name = first.Substring(0, match.Index).Trim();
-                s.BaseValue = int.Parse(match.Value.Replace("%", string.Empty));
+                s.BaseValue = match.Value.Replace("%", string.Empty);
             }
             else
             {

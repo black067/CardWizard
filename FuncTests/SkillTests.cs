@@ -30,7 +30,7 @@ namespace CallOfCthulhu.Tests
             {
                 Name = "Cthulhu Mythos",
                 Description = "克苏鲁神话",
-                BaseValue = 0,
+                BaseValue = "0",
                 Growable = false,
                 Category = "Mythos",
             };

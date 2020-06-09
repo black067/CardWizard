@@ -53,7 +53,7 @@ namespace CardWizard.View
             {
                 var box = AddBox(Container);
                 boxes.Add(box);
-                box.BindToSkill(item, () => Manager.Current);
+                box.BindToSkill(item, () => Manager.Current, Manager.CalcCharacteristic);
                 Manager.SkillChanged += box.OnSkillChanged;
                 Manager.InfoUpdated += box.UpdateValueFields;
                 if (valuesEditor == null) continue;
@@ -61,7 +61,7 @@ namespace CardWizard.View
                 {
                     var sender = box;
                     var source = sender.Source;
-                    int basevalue = source.BaseValue, upper = source.Upper, lower = source.Lower;
+                    int basevalue = sender.BaseValue, upper = source.Upper, lower = source.Lower;
                     valuesEditor.Show(basevalue, sender.ValueOccupation, sender.ValuePersonal, sender.ValueGrowth);
                     sender.SetHighlight(true, true);
                     // 如果技能的总值有范围限制, 设置提示

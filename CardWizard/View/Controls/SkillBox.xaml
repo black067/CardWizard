@@ -42,9 +42,8 @@
                   Checked="GrowthMark_Checked"  Unchecked="GrowthMark_Unchecked" Margin="4,0,0,0"/>
             <TextBlock x:Name="Block_Key" x:FieldModifier="public" Style="{DynamicResource GeneralTextBlock}" 
                    Grid.Column="1" Grid.RowSpan="2" HorizontalAlignment="Left" VerticalAlignment="Center" TextAlignment="Left"
-                   FontSize="{Binding ElementName=userControl, Path=FontSize}" Margin="4,0,0,0">
-                <Run>Firearms</Run><LineBreak/>
-                <Run>(Rifle/Shotgun) (25%)</Run>
+                   FontSize="{Binding ElementName=userControl, Path=FontSize}" Margin="4,0,0,0" TextWrapping="Wrap" Width="132">
+                <Run>Firearms (Rifle/Shotgun) (25%)</Run>
             </TextBlock>
         </StackPanel>
         <Label x:Name="Label_Value" Content="100" InputScope="Number" FontSize="20" HorizontalContentAlignment="Center" Style="{DynamicResource XLabel}" Foreground="{Binding Foreground, ElementName=userControl}" Grid.Column="1" Grid.RowSpan="2" BorderBrush="{Binding BorderBrush, ElementName=userControl}" BorderThickness="1" Margin="0,0,0,0" Cursor="IBeam"/>

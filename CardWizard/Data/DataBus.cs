@@ -11,24 +11,24 @@ namespace CardWizard.Data
     /// </summary>
     public class DataBus
     {
-        private Dictionary<string, Skill> skills;
-        private Dictionary<string, Occupation> occupations;
-        private Dictionary<string, Weapon> weapons;
+        private Dictionary<int, Skill> skills;
+        private Dictionary<int, Occupation> occupations;
+        private Dictionary<int, Weapon> weapons;
 
         /// <summary>
         /// 技能数据
         /// </summary>
-        public Dictionary<string, Skill> Skills { get => skills; private set => skills = value; }
+        public Dictionary<int, Skill> Skills { get => skills; private set => skills = value; }
 
         /// <summary>
         /// 职业数据
         /// </summary>
-        public Dictionary<string, Occupation> Occupations { get => occupations; private set => occupations = value; }
+        public Dictionary<int, Occupation> Occupations { get => occupations; private set => occupations = value; }
 
         /// <summary>
         /// 武器数据
         /// </summary>
-        public Dictionary<string, Weapon> Weapons { get => weapons; private set => weapons = value; }
+        public Dictionary<int, Weapon> Weapons { get => weapons; private set => weapons = value; }
 
         /// <summary>
         /// 根据技能名称查询技能
@@ -36,7 +36,7 @@ namespace CardWizard.Data
         /// <param name="key"></param>
         /// <param name="skill"></param>
         /// <returns></returns>
-        public bool TryGetSkill(string key, out Skill skill) => Skills.TryGetValue(key, out skill);
+        public bool TryGetSkill(int key, out Skill skill) => Skills.TryGetValue(key, out skill);
 
         /// <summary>
         /// 根据职业名称查询职业
@@ -44,7 +44,19 @@ namespace CardWizard.Data
         /// <param name="key"></param>
         /// <param name="occupation"></param>
         /// <returns></returns>
-        public bool TryGetOccupation(string key, out Occupation occupation) => Occupations.TryGetValue(key, out occupation);
+        public bool TryGetOccupation(int key, out Occupation occupation) => Occupations.TryGetValue(key, out occupation);
+
+        public bool TryGetOccupation(string key, out Occupation occupation)
+        {
+            var sql = (from val in Occupations.Values where val.Name.EqualsIgnoreCase(key) select val);
+            if (sql.Any())
+            {
+                occupation = sql.FirstOrDefault();
+                return true;
+            }
+            occupation = default;
+            return false;
+        }
 
         /// <summary>
         /// 根据武器名称查询武器
@@ -52,16 +64,16 @@ namespace CardWizard.Data
         /// <param name="key"></param>
         /// <param name="weapon"></param>
         /// <returns></returns>
-        public bool TryGetWeapon(string key, out Weapon weapon) => Weapons.TryGetValue(key, out weapon);
+        public bool TryGetWeapon(int key, out Weapon weapon) => Weapons.TryGetValue(key, out weapon);
 
         /// <summary>
         /// 初始化数据总线
         /// </summary>
         public DataBus()
         {
-            Skills = new Dictionary<string, Skill>();
-            Occupations = new Dictionary<string, Occupation>();
-            Weapons = new Dictionary<string, Weapon>();
+            Skills = new Dictionary<int, Skill>();
+            Occupations = new Dictionary<int, Occupation>();
+            Weapons = new Dictionary<int, Weapon>();
         }
 
         /// <summary>
@@ -86,15 +98,16 @@ namespace CardWizard.Data
             // 如果是文件
             else if (File.Exists(path))
             {
-                if (path.StartsWith(nameof(Weapon)))
+                var name = Path.GetFileName(path);
+                if (name.StartsWith(nameof(Weapon)))
                 {
                     SolveRaw<Weapon>(path);
                 }
-                else if (path.StartsWith(nameof(Occupation)))
+                else if (name.StartsWith(nameof(Occupation)))
                 {
                     SolveRaw<Occupation>(path);
                 }
-                else if (path.StartsWith(nameof(Skill)))
+                else if (name.StartsWith(nameof(Skill)))
                 {
                     SolveRaw<Skill>(path);
                 }
@@ -121,15 +134,15 @@ namespace CardWizard.Data
             {
                 case Weapon w:
                     w.ID = w.ID > 0 ? w.ID : (Weapons.Count + 1);
-                    Weapons[w.Name] = w;
+                    Weapons[w.ID] = w;
                     break;
                 case Skill s:
                     s.ID = s.ID > 0 ? s.ID : (Skills.Count + 1);
-                    Skills[s.Name] = s;
+                    Skills[s.ID] = s;
                     break;
                 case Occupation o:
                     o.ID = o.ID > 0 ? o.ID : (Occupations.Count + 1);
-                    Occupations[o.Name] = o;
+                    Occupations[o.ID] = o;
                     break;
                 default:
                     break;
@@ -139,9 +152,9 @@ namespace CardWizard.Data
         /// <summary>
         /// 生成默认数据
         /// </summary>
-        public void GenerateDefaultData()
+        public void GenerateDefaultOccupations()
         {
-            var models = new object[]
+            var defaults = new Occupation[]
             {
                 new Occupation()
                 {
@@ -180,6 +193,22 @@ namespace CardWizard.Data
                     CreditRatingRange = "20 ~ 50",
                     PointFormula = "EDU * 2 + math.max(DEX, STR) * 2",
                 },
+            };
+
+            foreach (var item in defaults)
+            {
+                item.ID = Occupations.Count + 1;
+                Occupations.Add(item.ID, item);
+            }
+        }
+
+        /// <summary>
+        /// 生成默认数据
+        /// </summary>
+        public void GenerateDefaultWeapons()
+        {
+            var defaults = new Weapon[]
+            {
                 new Weapon()
                 {
                     Name = "徒手格斗",
@@ -188,49 +217,12 @@ namespace CardWizard.Data
                     BaseRange = "",
                     AttacksPerRound = "1"
                 },
-                new Skill()
-                {
-                    Name = "Accounting",
-                    BaseValue = 25,
-                    Upper = 100,
-                },
-                new Skill()
-                {
-                    Name = "Anthropology",
-                    BaseValue = 1,
-                    Upper = 100,
-                },
-                new Skill()
-                {
-                    Name = "Appraise",
-                    BaseValue = 5,
-                    Upper = 100,
-                },
-                new Skill()
-                {
-                    Name = "Archaeology",
-                    BaseValue = 1,
-                    Upper = 100,
-                },
-                new Skill()
-                {
-                    Name = "Credit Rating",
-                    BaseValue = 0,
-                    Growable = false,
-                    Upper = 100,
-                },
-                new Skill()
-                {
-                    Name = "Cthulhu Mythos",
-                    BaseValue = 0,
-                    Growable = false,
-                    Upper = 100,
-                },
             };
 
-            foreach (var item in models)
+            foreach (var item in defaults)
             {
-                CacheData(item);
+                item.ID = Weapons.Count + 1;
+                Weapons.Add(item.ID, item);
             }
         }
     }
