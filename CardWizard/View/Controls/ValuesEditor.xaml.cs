@@ -105,28 +105,28 @@ namespace CardWizard.View
         /// <summary>
         /// 确认时的回调, 执行完后会被清空
         /// </summary>
-        public event Action<int[]> ConfirmCallback;
+        public event Action<int[]> ConfirmClick;
 
         /// <summary>
         /// 每次取消时的回调, 执行完后会被清空
         /// </summary>
-        public event Action CancelCallback;
+        public event Action CancelClick;
 
         /// <summary>
         /// 取消时的回调, 不会被清空
         /// </summary>
-        public event Action CancelCallbackStatic;
+        public event Action CancelClickStatic;
 
         public void Confirm()
         {
-            ConfirmCallback?.Invoke(GetFields());
+            ConfirmClick?.Invoke(GetFields());
             if (EditorPopup != null) EditorPopup.IsOpen = false;
         }
 
         public void Cancel()
         {
-            CancelCallbackStatic?.Invoke();
-            CancelCallback?.Invoke();
+            CancelClickStatic?.Invoke();
+            CancelClick?.Invoke();
             if (EditorPopup != null) EditorPopup.IsOpen = false;
         }
 
@@ -151,14 +151,22 @@ namespace CardWizard.View
             }
             OldValues[OldValues.Length - 1] = baseValue;
             LabelSum.Content = OldValues.Sum();
-            CancelCallback = null;
-            ConfirmCallback = null;
+            CancelClick = null;
+            ConfirmClick = null;
             EditorPopup.IsOpen = false;
             EditorPopup.IsOpen = true;
         }
 
+        /// <summary>
+        /// 设置范围的显示
+        /// </summary>
+        /// <param name="basevalue"></param>
+        /// <param name="lower"></param>
+        /// <param name="upper"></param>
+        /// <param name="translator"></param>
         public void SetRangeTip(int basevalue, int lower, int upper, Translator translator)
         {
+            if (translator == null) return;
             string message;
             if (upper != lower)
             {

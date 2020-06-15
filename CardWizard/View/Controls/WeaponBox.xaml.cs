@@ -1,9 +1,8 @@
 ﻿using CallOfCthulhu;
-using System;
+using CardWizard.Tools;
 using System.Collections.Generic;
-using System.Globalization;
+using System.Collections.ObjectModel;
 using System.Linq;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 
@@ -14,51 +13,62 @@ namespace CardWizard.View
     /// </summary>
     public partial class WeaponBox : UserControl
     {
+        private ObservableCollection<Weapon> weapons;
+
         public WeaponBox()
         {
             InitializeComponent();
         }
 
-        public List<Weapon> Weapons { get; set; }
-
-        public void InitializeBox(MainManager manager, IEnumerable<Weapon> weapons)
+        /// <summary>
+        /// 当前角色的武器
+        /// </summary>
+        public ObservableCollection<Weapon> Weapons
         {
-            if (manager == null || weapons == null || !weapons.Any()) return;
-            Weapons = weapons.ToList();
-            MainGrid.ItemsSource = Weapons;
-            Character getter() => manager.Current;
-            foreach (var item in FormulaCalculator.FormulaCalculators)
+            get => weapons;
+            set
             {
-                item.Calculator = manager.CalcCharacteristic;
-                item.CharacterGetter = getter;
+                weapons = value;
+                MainGrid.ItemsSource = weapons;
             }
         }
-    }
 
-    /// <summary>
-    /// 转换器: 将公式转换为值
-    /// </summary>
-    public class FormulaCalculator : IValueConverter
-    {
-        internal static List<FormulaCalculator> FormulaCalculators { get; set; } = new List<FormulaCalculator>();
-
-        public FormulaCalculator() { FormulaCalculators.Add(this); }
-
-        public CalculateCharacteristic Calculator { get; set; }
-
-        public Func<Character> CharacterGetter { get; set; }
-
-        public object Convert(object raw, Type targetType, object parameter, CultureInfo culture)
+        /// <summary>
+        /// 数据源
+        /// </summary>
+        private List<Weapon> DataSource
         {
-            if (raw == null || Calculator == null || CharacterGetter == null) return DependencyProperty.UnsetValue;
-
-            int value = Calculator(raw as string, CharacterGetter().GetCharacteristicTotal());
-            return value;
+            get;
+            set;
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        /// <summary>
+        /// 初始化数据表
+        /// </summary>
+        /// <param name="weaponsSource"></param>
+        public void InitializeDataGrid(IEnumerable<Weapon> weaponsSource)
         {
-            throw new NotImplementedException();
+            if (weaponsSource == null || !weaponsSource.Any()) return;
+            DataSource = weaponsSource.ToList();
+            ColumnWeaponName.ItemsSource = from w in DataSource select w.Name;
+            MainGrid.CanUserAddRows = true;
+            MainGrid.CanUserDeleteRows = true;
+            MainGrid.CellEditEnding += CellEditEnding;
+        }
+
+        private void CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
+        {
+            var grid = sender as DataGrid;
+            if (e.Column == ColumnWeaponName && e.EditingElement is ComboBox combo)
+            {
+                var selected = combo.SelectedItem as string;
+                var weapon = (from w in DataSource where w.Name.EqualsIgnoreCase(selected) select w).FirstOrDefault();
+                if (weapon != default)
+                {
+                    var item = e.Row.Item as Weapon;
+                    item.CopyFrom(weapon);
+                }
+            }
         }
     }
 }

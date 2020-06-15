@@ -1,5 +1,5 @@
 -- 点击 Debug 按钮时执行的脚本
-print('hello debug!')
+print('run debug scripts.')
 
 DATA_SKILLS = [[
 Accounting (10%) – Grants understanding of accountancy procedures, and reveals the financial functioning of a business or person. Inspecting the books, one might detect cheated employees, siphoned-off funds, payment of bribes or blackmail, and whether or not the financial condition is better or worse than claimed. Looking through old accounts, one could see how money was gained or lost in the past (grain, slave-trading, whiskey-running, etc.) and to whom and for what payment was made.

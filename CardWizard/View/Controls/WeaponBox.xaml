@@ -11,8 +11,8 @@
     </UserControl.Resources>
     <DataGrid x:Name="MainGrid" Style="{DynamicResource DataGridStyle}">
         <DataGrid.Columns>
-            <DataGridTextColumn Width="160" Header="武器" Binding="{Binding Name, Mode=OneWay}" />
-            <DataGridTextColumn Width="48" Header="常规" Binding="{Binding HitrateNormal, Mode=OneWay, Converter={StaticResource Calculator}}" />
+            <DataGridComboBoxColumn Width="160" Header="武器" x:Name="ColumnWeaponName" SelectedValueBinding="{Binding Path=Name}"/>
+            <DataGridTextColumn Width="48" Header="常规" Binding="{Binding HitrateNormal, Mode=OneWay, Converter={StaticResource Calculator}}"/>
             <DataGridTextColumn Width="48" Header="困难" Binding="{Binding HitrateHard, Mode=OneWay, Converter={StaticResource Calculator}}" />
             <DataGridTextColumn Width="48" Header="极难" Binding="{Binding HitrateExtreme, Mode=OneWay, Converter={StaticResource Calculator}}" />
             <DataGridTextColumn Width="80" Header="伤害" Binding="{Binding Damage, Mode=OneWay}" />

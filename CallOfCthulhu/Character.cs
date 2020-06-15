@@ -240,6 +240,15 @@ namespace CallOfCthulhu
             OnSkillChanged(args);
         }
 
+        public void RemoveSkill(Skill template)
+        {
+            if (!TryGetSkill(template.ID, out Skill skill))
+            {
+                return;
+            }
+            Skills.Remove(skill);
+        }
+
         /// <summary>
         /// 武器列表
         /// </summary>
@@ -432,6 +441,16 @@ namespace CallOfCthulhu
                 damageBonus = value;
                 OnPropertyChanged();
             }
+        }
+
+        /// <summary>
+        /// 解析职业字符串, 取得职业 ID
+        /// </summary>
+        /// <returns></returns>
+        public int GetOccupationID()
+        {
+            if (string.IsNullOrWhiteSpace(Occupation)) return 0;
+            return int.TryParse(Occupation.Split()[0], out int v) ? v : 0;
         }
 
         /// <summary>

@@ -32,9 +32,56 @@ namespace CallOfCthulhu
             GROWTH,
         }
 
+        /// <summary>
+        /// 技能的类型
+        /// </summary>
+        public enum Categories
+        {
+            /// <summary>
+            /// 任意
+            /// </summary>
+            Any,
+            /// <summary>
+            /// 科学
+            /// </summary>
+            Science,
+            /// <summary>
+            /// 社交
+            /// </summary>
+            Sociality,
+            /// <summary>
+            /// 技艺
+            /// </summary>
+            ArtAndCraft,
+            /// <summary>
+            /// 语言
+            /// </summary>
+            Language,
+            /// <summary>
+            /// 射击
+            /// </summary>
+            Shooting,
+            /// <summary>
+            /// 格斗
+            /// </summary>
+            Fighting,
+            /// <summary>
+            /// 驾驶
+            /// </summary>
+            Pilot,
+            /// <summary>
+            /// 生存
+            /// </summary>
+            Survival,
+            /// <summary>
+            /// 学问
+            /// </summary>
+            Knowledge,
+        }
+
         private int id;
         private string name;
-        private string category;
+        private Categories category;
         private string description;
         private bool growable = true;
         private string baseValue;
@@ -77,7 +124,7 @@ namespace CallOfCthulhu
         /// 技能类别
         /// </summary>
         [Description("技能.类别")]
-        public string Category
+        public Categories Category
         {
             get => category;
             set
@@ -224,7 +271,7 @@ namespace CallOfCthulhu
             {
                 Segment.OCCUPATION => OccupationPoints,
                 Segment.PERSONAL => PersonalPoints,
-                _ => growthPoints,
+                _ => GrowthPoints,
             };
         }
 
@@ -250,6 +297,12 @@ namespace CallOfCthulhu
                     break;
             }
         }
+
+        /// <summary>
+        /// 取得加点的总和
+        /// </summary>
+        /// <returns></returns>
+        public int GetPointsTotal() => OccupationPoints + PersonalPoints + GrowthPoints;
 
         /// <summary>
         /// 属性发生改变时触发的事件
@@ -299,16 +352,21 @@ namespace CallOfCthulhu
             return s;
         }
 
+        /// <summary>
+        /// 转换为格式化的字符串
+        /// </summary>
+        /// <returns></returns>
+        public string ToStringFormat()
+        {
+            var builder = new StringBuilder($"{Name} ({BaseValue}%)\n");
+            builder.AppendLine(Category.ToString());
+            if (!string.IsNullOrWhiteSpace(Description)) builder.AppendLine($"{Description}");
+            return builder.ToString().Trim();
+        }
+
         public override string ToString()
         {
-            var builder = new StringBuilder($"{Name} {BaseValue}% # {{");
-            var props = typeof(Skill).GetProperties();
-            foreach (var item in props)
-            {
-                builder.Append($"{item.Name}: {item.GetValue(this)}, ");
-            }
-            builder.Append("}");
-            return builder.ToString();
+            return Name;
         }
 
         /// <summary>

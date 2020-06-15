@@ -92,16 +92,16 @@ namespace CardWizard.View
             for (int i = items.Count - 1; i >= 0; i--)
             {
                 var item = items[i];
-                var properties = new Dictionary<string, int>(from m in dataModels
-                                                             where Filter(m)
-                                                             select new KeyValuePair<string, int>(m.Name, 0));
-                foreach (var key in properties.Keys.ToArray())
+                var characteristics = new Dictionary<string, int>(from m in dataModels
+                                                                  where Filter(m)
+                                                                  select KeyValuePair.Create(m.Name, 0));
+                foreach (var key in characteristics.Keys.ToArray())
                 {
-                    properties[key] = CharacteristicsRoller(datas[key].Formula, properties);
+                    characteristics[key] = CharacteristicsRoller(datas[key].Formula, characteristics);
                 }
-                var sum = properties.Sum(kvp => kvp.Value);
-                properties["SUM"] = sum;
-                item.InitAsDatas(properties, false);
+                var sum = characteristics.Sum(kvp => kvp.Value);
+                characteristics["SUM"] = sum;
+                item.InitAsDatas(characteristics, false);
                 item.MouseDown += (o, e) => Selection = item.Values;
             }
             Selection = items[0].Values;
@@ -234,17 +234,19 @@ namespace CardWizard.View
         {
             if (character == null) return;
             character.Age = Age;
-            foreach (var kvp in Bonus)
+            foreach (var (kvp, setInitial, key) in from kvp in Bonus
+                                                   let setInitial = kvp.Key.EndsWith("*")
+                                                   let key = kvp.Key.Replace("*", string.Empty)
+                                                   select (kvp, setInitial, key))
             {
-                bool setInitial = kvp.Key.EndsWith("*");
-                var key = kvp.Key.Replace("*", string.Empty);
                 if (!character.Initials.ContainsKey(key)) continue;
-                var delta = CharacteristicsRoller?.Invoke(kvp.Value, character.Initials) ?? 0;
+                int value = CharacteristicsRoller?.Invoke(kvp.Value, character.Initials) ?? 0;
                 if (setInitial)
-                    character.SetInitial(key, delta);
+                    character.SetInitial(key, value);
                 else
-                    character.SetAdjustment(key, delta);
+                    character.SetAdjustment(key, value);
             }
+
             foreach (var kvp in AdjustmentsEditor.Values)
             {
                 if (!character.Initials.ContainsKey(kvp.Key) || kvp.Value == 0) continue;

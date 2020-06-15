@@ -5,49 +5,52 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CardWizard.View" xmlns:System="clr-namespace:System;assembly=System.Runtime"
              mc:Ignorable="d" Foreground="{DynamicResource CharacteristicBorderBrush}" 
-             d:DesignWidth="144" d:DesignHeight="64"
+             d:DesignWidth="200" d:DesignHeight="100"
     xmlns:theme="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2">
     <UserControl.Resources>
         <Style x:Key="XInput" TargetType="TextBox">
             <Setter Property="Margin" Value="1"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#7F3C6185"/>
+            <Setter Property="Background" Value="White"/>
             <Setter Property="Foreground" Value="{Binding Foreground, ElementName=userControl}"/>
             <Setter Property="HorizontalAlignment" Value="Stretch"/>
-            <Setter Property="HorizontalContentAlignment" Value="Right"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="InputScope" Value="Number"/>
             <Setter Property="MaxLines"  Value="1"/>
+            <Setter Property="FontSize" Value="28"/>
         </Style>
     </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*"/>
-            <ColumnDefinition Width="0.7*"/>
+            <ColumnDefinition Width="0.6*"/>
             <ColumnDefinition Width="0.4*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="0.8*"/>
-            <RowDefinition Height="0.45*"/>
+            <RowDefinition Height="0.3*"/>
             <RowDefinition Name="Row_Status" Height="0.4*"/>
         </Grid.RowDefinitions>
-        <TextBlock x:Name="Block_Key" Style="{StaticResource GeneralTextBlock}" FontSize="10">Magic Points<LineBreak/>体力</TextBlock>
-        <Border Grid.Row="0" Grid.Column="1" Margin="1" BorderThickness="1" Background="White" BorderBrush="#7F3C6185">
-            <TextBox x:Name="Text_CurrentValue" Style="{DynamicResource XInput}" Text="89" FontSize="16" HorizontalContentAlignment="Center"/>
-        </Border>
-        <Label x:Name="Mark_MaxValue" Content="MAX" Grid.Column="2" Grid.Row="0" Style="{StaticResource XLabel}" Margin="1,1,1,1" VerticalAlignment="Top" FontSize="10" HorizontalAlignment="Center">
+        <TextBlock x:Name="Block_Key" Style="{StaticResource GeneralTextBlock}" FontSize="14">Magic Points<LineBreak/>体力</TextBlock>
+        <!--<Border Grid.Row="0" Grid.Column="1" Margin="1" BorderThickness="1" Background="White" BorderBrush="#7F3C6185">
+        </Border>-->
+
+        <TextBox x:Name="Text_CurrentValue" Style="{StaticResource XInput}" Grid.Row="0" Grid.Column="1" Text="89" Margin="1,4,1,4"/>
+        <Label x:Name="Mark_MaxValue" Content="MAX" Grid.Column="2" Grid.Row="0" Style="{StaticResource XLabel}" Margin="1,4,1,1" VerticalAlignment="Top" FontSize="14" HorizontalAlignment="Center">
             <Label.Foreground>
                 <SolidColorBrush Color="Gray" Opacity="0.45"/>
             </Label.Foreground>
         </Label>
-        <Label x:Name="Label_MaxValue" Content="99" Grid.Column="2" Grid.Row="0" Style="{StaticResource XLabel}" Foreground="{Binding ElementName=userControl, Path=Foreground}" Margin="1,1,1,1"/>
+        <Label x:Name="Label_MaxValue" Content="99" Grid.Column="2" Grid.Row="0" Style="{StaticResource XLabel}" Foreground="{Binding ElementName=userControl, Path=Foreground}" Margin="1,1,1,1" FontSize="20"/>
         <Label x:Name="Label_Misc" Content="Major Wound" 
-               Grid.Column="0" Grid.Row="2"  Grid.ColumnSpan="1"  Style="{StaticResource XLabel}" Margin="0,0,0,0" FontSize="10"/>
+               Grid.Column="0" Grid.Row="2"  Grid.ColumnSpan="1"  Style="{StaticResource XLabel}" Margin="0,0,0,0"/>
         <Label x:Name="Value_Misc" Content="50" 
-               Grid.Column="1" Grid.Row="2"  Grid.ColumnSpan="2"  Style="{StaticResource XLabel}" Margin="0,0,0,0" FontSize="10" HorizontalContentAlignment="Left" Padding="6,0,0,0"/>
+               Grid.Column="1" Grid.Row="2"  Grid.ColumnSpan="2"  Style="{StaticResource XLabel}" Margin="0,0,0,0" HorizontalContentAlignment="Left" Padding="6,0,0,0"/>
         <Label x:Name="Label_Status" Content="Status" Tag="Status" 
-               Grid.Column="0" Grid.Row="1"  Grid.ColumnSpan="1"  Style="{StaticResource XLabel}" Margin="0,0,0,0" FontSize="10"/>
+               Grid.Column="0" Grid.Row="1"  Grid.ColumnSpan="1"  Style="{StaticResource XLabel}" Margin="0,0,0,0" FontSize="14"/>
         <ComboBox x:Name="Combo_Status" 
-                  Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" Margin="1" BorderThickness="1,1,1,1" FontSize="10" Padding="2,1,4,1" Template="{DynamicResource XComboBoxTemplate}"/>
+                  Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" Margin="1" BorderThickness="1,1,1,1" Padding="2,1,4,1" Template="{DynamicResource XComboBoxTemplate}" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
     </Grid>
 </UserControl>

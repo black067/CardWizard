@@ -36,6 +36,8 @@ namespace CardWizard
             Closing += (o, e) =>
             {
                 YamlKit.SaveFile(fileConfig, config);
+                FormulaCalculator.FormulaCalculators = null;
+                GC.Collect();
             };
             // 将动态链接库的目录添加到 PATH
             AddEnvironmentPaths(config.Paths.PathLibs);

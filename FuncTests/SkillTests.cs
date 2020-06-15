@@ -32,7 +32,7 @@ namespace CallOfCthulhu.Tests
                 Description = "克苏鲁神话",
                 BaseValue = "0",
                 Growable = false,
-                Category = "Mythos",
+                Category = Skill.Categories.Any,
             };
 
             var text = skill.ToString();

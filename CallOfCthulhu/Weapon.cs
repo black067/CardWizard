@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 namespace CallOfCthulhu
@@ -59,8 +60,9 @@ namespace CallOfCthulhu
         private string damage;
         private string baseRange;
         private string attacksPerRound;
-        private int bullets;
-        private int resistance;
+        private string bullets;
+        private string resistance;
+        private List<string> prices;
 
         /// <summary>
         /// 编号
@@ -190,7 +192,7 @@ namespace CallOfCthulhu
         /// 装弹数
         /// </summary>
         [Description("装弹数")]
-        public int Bullets
+        public string Bullets
         {
             get => bullets;
             set
@@ -204,7 +206,7 @@ namespace CallOfCthulhu
         /// 耐久度
         /// </summary>
         [Description("耐久度")]
-        public int Resistance
+        public string Resistance
         {
             get => resistance;
             set
@@ -218,13 +220,29 @@ namespace CallOfCthulhu
         /// 在各个年代的价格
         /// </summary>
         [Description("在各个年代的价格")]
-        public float[] Prices { get; set; }
+        public List<string> Prices
+        {
+            get => prices;
+            set
+            {
+                prices = value;
+                OnPropertyChanged();
+            }
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         private void OnPropertyChanged([CallerMemberName] string propertyName = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public void CopyFrom(Weapon source)
+        {
+            foreach (var item in typeof(Weapon).GetProperties())
+            {
+                item.SetValue(this, item.GetValue(source));
+            }
         }
     }
 }

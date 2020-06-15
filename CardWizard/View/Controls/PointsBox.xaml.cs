@@ -198,7 +198,7 @@ namespace CardWizard.View
         /// <param name="e"></param>
         public void OnCharacteristicChanged(Character c, CharacteristicChangedEventArgs e)
         {
-            if (!e.Key.EqualsIgnoreCase(Key)) { return; }
+            if (e == null || !e.Key.EqualsIgnoreCase(Key)) { return; }
             UpdateValueLabels();
         }
 

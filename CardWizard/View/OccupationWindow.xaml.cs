@@ -116,7 +116,7 @@ namespace CardWizard.View
 {{{nameof(Occupation.CreditRatingRange)}}} {titleStyle}
 {item.CreditRatingRange}
 {{{nameof(Occupation.Skills)}}} {titleStyle}
-{item.Skills.Select(str => str.SplitRemoveEmpty('#')[0]).CombineToString(", ", null)}
+{item.GetSkillNames().CombineToString(", ", null)}
 {{{nameof(Occupation)}.{nameof(Occupation.PointFormula)}}} {titleStyle}
 {item.PointFormula}
 ";

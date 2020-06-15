@@ -191,6 +191,12 @@
         }
 
         /// <summary>
+        /// 方法: 取得当前查看/编辑的角色
+        /// </summary>
+        /// <returns></returns>
+        public Character CurrentGetter() => current;
+
+        /// <summary>
         /// 创建主窗口管理器
         /// </summary>
         /// <param name="window"></param>
@@ -251,12 +257,15 @@
             }
             else
             {
-                Current = Character.Create(Config.BaseModelDict, CalcCharacteristic);
-                AddToCharacters(Current);
+                GetHandlerForReGenerateCharacteristics(() =>
+                {
+                    Current = Character.Create(Config.BaseModelDict);
+                    return Current;
+                }, null).Invoke(null, null);
             }
             #region 设置界面的交互逻辑
             // 绑定各种事件
-            Window.CommandCreateGestured += GetHandlerForReGenerateCharacteristics(() => Character.Create(Config.BaseModelDict));
+            Window.CommandCreateGestured += GetHandlerForReGenerateCharacteristics(() => Character.Create(Config.BaseModelDict), Window);
             Window.CommandSaveGestured += DoSave;
             //Window.Button_Debug.Click += DoDebug;
             Window.CommandCaptureGestured += DoCapturePicture;
@@ -282,6 +291,12 @@
             // 角色文档初始化
             InitializeMainPage(IMainPage);
             InitializeBackstoryPage(Window.BackstoryPage);
+            // 初始化所有公式计算器
+            foreach (var item in FormulaCalculator.FormulaCalculators)
+            {
+                item.Calculator = CalcCharacteristic;
+                item.CharacterGetter = CurrentGetter;
+            }
             #endregion
             // 刷新界面
             OnInfoUpdate(Current);
@@ -336,9 +351,8 @@
         /// <param name="e"></param>
         private void DoSave(object sender, RoutedEventArgs e)
         {
-            Keyboard.ClearFocus();
+            ClearTextBoxFocus();
 
-            ;
             if (!CharacterFiles.TryGetValue(Current, out string dest))
             {
                 dest = Path.Combine(Paths.PathSave, Current.Name + Config.FileExtensionForCard);
@@ -362,10 +376,33 @@
                     }
                 }
             }
+            foreach (var skill in Current.Skills.ToArray())
+            {
+                if (skill.GetPointsTotal() == 0) Current.Skills.Remove(skill);
+            }
             YamlKit.SaveFile(dest, Current);
             var message = Translator.Translate("Message.Character.Saved", "Saved at {0}");
             Messenger.EnqueueFormat(message, dest.Replace("\\", "/"));
             CharacterFiles[Current] = dest;
+        }
+
+        /// <summary>
+        /// 清除当前在 TextBox 上的焦点
+        /// </summary>
+        public static void ClearTextBoxFocus()
+        {
+            if (Keyboard.FocusedElement is TextBox textBox)
+            {
+                // Move to a parent that can take focus
+                FrameworkElement parent = (FrameworkElement)textBox.Parent;
+                while (parent != null && parent is IInputElement && !((IInputElement)parent).Focusable)
+                {
+                    parent = (FrameworkElement)parent.Parent;
+                }
+
+                DependencyObject scope = FocusManager.GetFocusScope(textBox);
+                FocusManager.SetFocusedElement(scope, parent as IInputElement);
+            }
         }
 
         /// <summary>
@@ -519,7 +556,7 @@
                 var box = sender as CharacteristicBox;
                 var target = box.TargetGetter();
                 Window.XValueEditor.Show(0, box.ValueInitial, box.ValueAdjustment, box.ValueGrowth);
-                Window.XValueEditor.ConfirmCallback += (values) =>
+                Window.XValueEditor.ConfirmClick += (values) =>
                 {
                     for (int i = 0; i < 3; i++)
                     {
@@ -533,19 +570,18 @@
             // 初始化杂项信息显示面板
             page.Miscellaneous.InitializeControl(this);
             // 属性重生成按钮
-            page.Button_Regenerate.Click += GetHandlerForReGenerateCharacteristics(() => Current);
-            // 角色属性数值面板初始化
-            Character targetGetter() => Current;
+            page.Button_Regenerate.Click += GetHandlerForReGenerateCharacteristics(CurrentGetter, Window);
             page.CharacteristicBoxes.CharacteristicBoxes.Add(page.Box_Dodge);
             foreach (var box in page.CharacteristicBoxes.CharacteristicBoxes)
             {
-                box.BindToCharacteristicByTag(targetGetter, OpenEditor);
+                box.BindToCharacteristicByTag(CurrentGetter, OpenEditor);
                 CharacteristicChanged += box.OnCharacteristicChanged;
                 InfoUpdated += box.UpdateValueFields;
             }
-            foreach (var box in page.CharacteristicBoxes.PointsBoxes)
+            var pointsboxes = (from UIElement e in page.PointsPanel.Children where e is PointsBox select e as PointsBox).ToList();
+            foreach (var box in pointsboxes)
             {
-                box.BindToCharacteristicByTag(targetGetter, Translator);
+                box.BindToCharacteristicByTag(CurrentGetter, Translator);
                 CharacteristicChanged += box.OnCharacteristicChanged;
                 InfoUpdated += box.UpdateValueFields;
             }
@@ -573,7 +609,11 @@
                 image.Drop += OnAvatarImageDrop;
             });
             // 武器面板初始化
-            page.WeaponBox.InitializeBox(this, DataBus.Weapons.Values);
+            InfoUpdated += c =>
+            {
+                page.WeaponBox.Weapons = c.Weapons;
+            };
+            page.WeaponBox.InitializeDataGrid(DataBus.Weapons.Values);
         }
 
         /// <summary>
@@ -655,15 +695,20 @@
         }
 
         /// <summary>
+        /// 在 ToolTip 浮现时, 同步其透明度
+        /// </summary>
+        /// <param name="o"></param>
+        /// <param name="e"></param>
+        internal static void SynchronizeOpacity(object o, RoutedEventArgs e)
+        {
+            if (o is ToolTip tip) tip.Opacity = ToolTipOpacity;
+        }
+
+        /// <summary>
         /// 本地化控件及其子控件的文本
         /// </summary>
         public static void Localize(FrameworkElement container, Translator translator, HashSet<Visual> histories = null)
         {
-            // 在 ToolTip 浮现时, 同步其透明度
-            static void SynchronizeOpacity(object o, RoutedEventArgs e)
-            {
-                if (o is ToolTip tip) tip.Opacity = ToolTipOpacity;
-            }
             static void translate(FrameworkElement element, Translator translator)
             {
                 if (translator == null) return;
@@ -693,10 +738,10 @@
                     element.AddOrSetToolTip(text, (Style)Application.Current.FindResource("XToolTip"), SynchronizeOpacity);
                 }
                 // 否则不添加 ToolTip
-                else if (element.ToolTip != null)
-                {
-                    element.ToolTip = null;
-                }
+                //else if (element.ToolTip != null)
+                //{
+                //    element.ToolTip = null;
+                //}
             }
             if (translator == null) throw new ArgumentNullException(nameof(translator));
             // 创建历史记录, 避免重复操作元素
@@ -759,7 +804,8 @@
                 var defaultName = Translator.Translate("Name.Default", "Adam");
                 character.Name = $"{defaultName} {Characters.Count}";
             }
-            Characters.Add(character);
+            if (!Characters.Contains(character))
+                Characters.Add(character);
         }
 
         /// <summary>
@@ -848,7 +894,7 @@
         /// </summary>
         /// <param name="getter"></param>
         /// <returns></returns>
-        public RoutedEventHandler GetHandlerForReGenerateCharacteristics(Func<Character> getter)
+        public RoutedEventHandler GetHandlerForReGenerateCharacteristics(Func<Character> getter, Window owner)
         {
             void regenerateprops(object o, EventArgs _)
             {
@@ -856,10 +902,18 @@
                 if (character == null) return;
                 var generator = new GenerationWindow(this, CalcCharacteristic)
                 {
-                    Owner = Window,
+                    Owner = owner,
                     Age = character.Age,
-                    WindowStartupLocation = WindowStartupLocation.CenterOwner
                 };
+                if (owner == null)
+                {
+                    generator.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                    generator.Title = Translator.Translate("GenerationWindow.Title.New", "新建调查员档案");
+                }
+                else
+                {
+                    generator.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                }
                 generator.ShowDialog();
                 if ((bool)generator.DialogResult)
                 {
@@ -952,8 +1006,10 @@
             YamlKit.SaveFile(Paths.FileSkills, DataBus.Skills.Values);
         }
 
-
-        [System.Diagnostics.Conditional("DEBUG")]
+        /// <summary>
+        /// 根据字符串生成技
+        /// </summary>
+        /// <param name="text"></param>
         public void GenerateDatas(string text)
         {
             var skills = new List<Skill>();

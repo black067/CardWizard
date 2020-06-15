@@ -1,5 +1,8 @@
 ﻿using CallOfCthulhu;
+using CardWizard.Tools;
 using System;
+using System.ComponentModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -12,6 +15,13 @@ namespace CardWizard.View
     /// </summary>
     public partial class SkillBox : UserControl
     {
+        public const string ContextForInvalid = "invalid";
+        public const string ContextForOccupationed = "occupationed";
+
+        private Skill source;
+
+        private bool isChild;
+
         public SkillBox()
         {
             InitializeComponent();
@@ -41,10 +51,32 @@ namespace CardWizard.View
         /// </summary>
         public bool Editing { get; set; }
 
+        public bool IsChild { get => isChild; set => isChild = value; }
+
         /// <summary>
         /// 绑定的技能
         /// </summary>
-        public Skill Source { get; set; }
+        public Skill Source
+        {
+            get
+            {
+                if (IsChild)
+                {
+                    return Combo_Selector.SelectedItem as Skill;
+                }
+                return source;
+            }
+
+            set
+            {
+                if (IsChild)
+                {
+                    Combo_Selector.SelectedItem = value;
+                }
+                source = value;
+            }
+        }
+
 
         /// <summary>
         /// 获取当前角色的方法
@@ -127,13 +159,57 @@ namespace CardWizard.View
         /// <param name="manager"></param>
         /// <param name="source"></param>
         /// <param name="targetGetter"></param>
-        public void BindToSkill(Skill source, Func<Character> targetGetter, CalculateCharacteristic calculator)
+        public void BindToSkill(Func<Character> targetGetter, CalculateCharacteristic calculator, Skill source, params Skill[] sources)
         {
-            Source = source ?? throw new ArgumentNullException(nameof(source));
             TargetGetter = targetGetter ?? throw new ArgumentNullException(nameof(targetGetter));
             Calculator = calculator ?? throw new ArgumentNullException(nameof(calculator));
-            GrowthMark.Visibility = source.Growable ? Visibility.Visible : Visibility.Hidden;
-            //Block_Key.Text = $"{source.Name} ({source.BaseValue}%)";
+            if (sources.Length > 0)
+            {
+                isChild = true;
+                Grid_Selector.Visibility = Visibility.Visible;
+                Block_Key.Visibility = Visibility.Hidden;
+                GrowthMark.Visibility = Visibility.Visible;
+                Block_Category.Tag = $"{nameof(Skill)}.{nameof(Skill.Categories)}.{sources[0].Category}";
+                Block_Category.Text = sources[0].Category.ToString();
+                Combo_Selector.ItemsSource = sources;
+                Source = source;
+                this.AddOrSetToolTip(source.ToStringFormat(), (Style)App.Current.FindResource("XToolTip"), MainManager.SynchronizeOpacity);
+                Combo_Selector.SelectionChanged += Combo_Selector_SelectionChanged;
+            }
+            else
+            {
+                Source = source ?? throw new ArgumentNullException(nameof(source));
+                isChild = false;
+                Grid_Selector.Visibility = Visibility.Hidden;
+                Block_Key.Visibility = Visibility.Visible;
+                GrowthMark.Visibility = source.Growable ? Visibility.Visible : Visibility.Hidden;
+                var baseValueText = Source.BaseValue ?? "0";
+                Block_Key.Text = $"{Source.Name ?? "Skill"} ({baseValueText:D2}%)";
+                this.AddOrSetToolTip(Source.ToStringFormat(), (Style)App.Current.FindResource("XToolTip"), MainManager.SynchronizeOpacity);
+            }
+        }
+
+        private void Combo_Selector_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            Skill newSklll = e.AddedItems.Count > 0 ? e.AddedItems[0] as Skill : null, oldSkill = e.RemovedItems.Count > 0 ? e.RemovedItems[0] as Skill : null;
+            if (newSklll != null)
+            {
+                if (TargetGetter().TryGetSkill(newSklll.ID, out var tskill)) { }
+                else
+                {
+                    tskill = newSklll.Clone() as Skill;
+                    TargetGetter().Skills.Add(tskill);
+                }
+                this.AddOrSetToolTip(newSklll.ToStringFormat(), (Style)App.Current.FindResource("XToolTip"), MainManager.SynchronizeOpacity);
+            }
+            else
+            {
+                this.AddOrSetToolTip(string.Empty);
+                Block_Key.DataContext = string.Empty;
+                Combo_Selector.DataContext = string.Empty;
+                Block_Category.DataContext = string.Empty;
+            }
+            UpdateValueLabels();
         }
 
         /// <summary>
@@ -151,21 +227,18 @@ namespace CardWizard.View
         /// 刷新数字的显示
         /// </summary>
         /// <param name="c"></param>
-        public void UpdateValueFields(Character c)
-        {
-            OnSkillChanged(c, new SkillChangedEventArgs(Source.ID));
-        }
+        public void UpdateValueFields(Character c) => UpdateValueLabels();
 
         private void GrowthMark_Checked(object sender, RoutedEventArgs e)
         {
             var targetSkill = TargetSkill;
-            targetSkill.Grown = true;
+            if (targetSkill != null) targetSkill.Grown = true;
         }
 
         private void GrowthMark_Unchecked(object sender, RoutedEventArgs e)
         {
             var targetSkill = TargetSkill;
-            targetSkill.Grown = false;
+            if (targetSkill != null) targetSkill.Grown = false;
         }
 
         /// <summary>
@@ -174,8 +247,22 @@ namespace CardWizard.View
         /// <param name="value"></param>
         private void UpdateValueLabels()
         {
+            bool grown;
+            if (TargetGetter == null || Source == null)
+            {
+                grown = false;
+            }
+            else if (TargetGetter().TryGetSkill(Source.ID, out var skill))
+            {
+                grown = skill.Grown;
+            }
+            else
+            {
+                grown = false;
+                Combo_Selector.SelectedIndex = -1;
+            }
+            GrowthMark.IsChecked = grown;
             var baseValue = BaseValue;
-            Block_Key.Text = $"{Source?.Name ?? "Skill"} ({baseValue:D2}%)";
             int value = baseValue + ValueOccupation + ValuePersonal + ValueGrowth;
             if (value == baseValue)
             {
@@ -191,6 +278,11 @@ namespace CardWizard.View
             }
         }
 
+        private void ResetSelector(object sender, RoutedEventArgs e)
+        {
+            Combo_Selector.SelectedIndex = -1;
+            UpdateValueLabels();
+        }
     }
 
     /// <summary>

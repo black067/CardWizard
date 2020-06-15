@@ -5,56 +5,93 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CardWizard.View"
              Focusable="True"
-             xmlns:System="clr-namespace:System;assembly=System.Runtime"
              mc:Ignorable="d"
              d:DesignWidth ="216" d:DesignHeight="27"
              BorderBrush="{DynamicResource CharacteristicBorderBrush}" Foreground="{DynamicResource MenuBackground}">
     <UserControl.Resources>
         <SolidColorBrush x:Key="HoverdBrush" Color="#FFC0E8FF"/>
-        <Style x:Key="XInput" TargetType="TextBox">
-            <Setter Property="BorderThickness" Value="0,0,0,0"/>
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Foreground" Value="{Binding Foreground, ElementName=userControl}"/>
-            <Setter Property="HorizontalContentAlignment" Value="Right"/>
-            <Setter Property="VerticalContentAlignment" Value="Center"/>
-            <Setter Property="InputScope" Value="Number"/>
-            <Setter Property="MaxLength"  Value="3"/>
-        </Style>
         <Style x:Key="XBorder" TargetType="Border">
             <Setter Property="BorderBrush" Value="{Binding BorderBrush, ElementName=userControl}"/>
             <Setter Property="Background" Value="#4CFFFFFF"/>
+        </Style>
+        <Style x:Key="LabelNumberic" TargetType="{x:Type Label}">
+            <Setter Property="Margin" Value="{StaticResource DefaultMargin}"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
+            <Setter Property="Cursor" Value="Arrow"/>
+            <Setter Property="Foreground" Value="{Binding Foreground, ElementName=userControl}"/>
+            <Style.Triggers>
+                <Trigger Property="DataContext" Value="{x:Static local:SkillBox.ContextForInvalid}">
+                    <Setter Property="Foreground" Value="{StaticResource InvalidForeground}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="TextBlockStyle" TargetType="{x:Type TextBlock}">
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="TextWrapping" Value="WrapWithOverflow"/>
+            <Setter Property="TextAlignment" Value="Center"/>
+            <Style.Triggers>
+                <Trigger Property="DataContext" Value="{x:Static local:SkillBox.ContextForOccupationed}">
+                    <Setter Property="FontWeight" Value="Bold"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="ComboStyle" TargetType="ComboBox">
+            <Style.Triggers>
+                <Trigger Property="DataContext" Value="{x:Static local:SkillBox.ContextForOccupationed}">
+                    <Setter Property="FontWeight" Value="Bold"></Setter>
+                </Trigger>
+            </Style.Triggers>
         </Style>
     </UserControl.Resources>
 
     <Grid Grid.ColumnSpan="2">
         <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="18"/>
             <ColumnDefinition x:Name="SkillTitleColumn"/>
-            <ColumnDefinition x:Name="PointLabelColumn" Width="40"/>
+            <ColumnDefinition x:Name="PointLabelColumn" Width="32"/>
             <ColumnDefinition Width="18"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <StackPanel Grid.RowSpan="2" Orientation="Horizontal">
-            <CheckBox x:Name="GrowthMark" Grid.RowSpan="2" 
+
+        <CheckBox x:Name="GrowthMark" Grid.RowSpan="2" 
                   HorizontalAlignment="Center" VerticalAlignment="Center"
-                  Checked="GrowthMark_Checked"  Unchecked="GrowthMark_Unchecked" Margin="4,0,0,0"/>
-            <TextBlock x:Name="Block_Key" x:FieldModifier="public" Style="{DynamicResource GeneralTextBlock}" 
-                   Grid.Column="1" Grid.RowSpan="2" HorizontalAlignment="Left" VerticalAlignment="Center" TextAlignment="Left"
-                   FontSize="{Binding ElementName=userControl, Path=FontSize}" Margin="4,0,0,0" TextWrapping="Wrap" Width="132">
-                <Run>Firearms (Rifle/Shotgun) (25%)</Run>
+                  Checked="GrowthMark_Checked"  Unchecked="GrowthMark_Unchecked" Margin="1,0,1,0"/>
+        <TextBlock x:Name="Block_Key" x:FieldModifier="public" Style="{StaticResource TextBlockStyle}" TextAlignment="Left"
+                   Grid.Column="1" Grid.RowSpan="2" FontSize="{Binding ElementName=userControl, Path=FontSize}" Margin="1,0,0,0" HorizontalAlignment="Left">Operate Heavy Machine (25%)</TextBlock>
+        <Grid x:Name="Grid_Selector" Grid.Column="1" Grid.RowSpan="2" Margin="0,0,0,0" Visibility="Visible">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="{Binding Path=ActualWidth, ElementName=Block_Category}"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <TextBlock x:Name="Block_Category" Style="{StaticResource TextBlockStyle}" TextAlignment="Left" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="1,0,4,0" TextWrapping="NoWrap">
+                <Run>Science</Run>
             </TextBlock>
-        </StackPanel>
-        <Label x:Name="Label_Value" Content="100" InputScope="Number" FontSize="20" HorizontalContentAlignment="Center" Style="{DynamicResource XLabel}" Foreground="{Binding Foreground, ElementName=userControl}" Grid.Column="1" Grid.RowSpan="2" BorderBrush="{Binding BorderBrush, ElementName=userControl}" BorderThickness="1" Margin="0,0,0,0" Cursor="IBeam"/>
+            <ComboBox x:Name="Combo_Selector" Grid.Column="1" Grid.RowSpan="2" Template="{StaticResource XComboBoxTemplate}" VerticalContentAlignment="Center" BorderBrush="{x:Null}" Foreground="{Binding Foreground, ElementName=userControl}" Style="{StaticResource ComboStyle}"/>
+            <Grid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Reset Skill" Tag="SkillBox.Button.ResetSkill" Click="ResetSelector"/>
+                </ContextMenu>
+            </Grid.ContextMenu>
+        </Grid>
+        <Label x:Name="Label_Value" Content="100" InputScope="Number" FontSize="15" HorizontalContentAlignment="Center" Style="{StaticResource LabelNumberic}" Grid.Column="2" Grid.RowSpan="2" BorderBrush="{Binding BorderBrush, ElementName=userControl}" BorderThickness="1" Margin="0,0,0,0" Cursor="IBeam"
+               DataContext=""/>
 
         <!--<Border x:Name="BorderForValue" Grid.Column="1" Grid.RowSpan="2" Grid.ColumnSpan="2" BorderThickness="1,1,1,1" Style="{DynamicResource XBorder}" Background="{x:Null}" Visibility="Visible"/>-->
-        <Border x:Name="BorderForHalf" Grid.Column="3" CornerRadius="0,5,0,0" BorderThickness="0,1,1,0" Style="{DynamicResource XBorder}">
-            <Label x:Name="Label_ValueHalf" Tag="Value.Half" Content="50" Style="{DynamicResource XLabel}" Padding="0,0,0,0" Margin="2,0,2,0" FontSize="10"/>
+        <Border x:Name="BorderForHalf" Grid.Column="3" CornerRadius="0,5,0,0" BorderThickness="0,1,1,0" Style="{StaticResource XBorder}">
+            <Label x:Name="Label_ValueHalf" Tag="Value.Half" Content="50" Style="{StaticResource LabelNumberic}" Padding="0,0,0,0" Margin="2,0,2,0" FontSize="10" Foreground="Gray"/>
         </Border>
-        <Border x:Name="BorderForOneFifth" Grid.Column="3" Grid.Row="1" BorderThickness="0,1,1,1" Style="{DynamicResource XBorder}">
-            <Label x:Name="Label_ValueOneFifth" Tag="Value.OneFifth" Content="20" Grid.Row="1" Style="{DynamicResource XLabel}" Padding="0,0,0,0" Margin="2,0,2,0" FontSize="9"/>
+        <Border x:Name="BorderForOneFifth" Grid.Column="3" Grid.Row="1" BorderThickness="0,1,1,1" Style="{StaticResource XBorder}">
+            <Label x:Name="Label_ValueOneFifth" Tag="Value.OneFifth" Content="20" Grid.Row="1" Style="{StaticResource LabelNumberic}" Padding="0,0,0,0" Margin="2,0,2,0" FontSize="9" Foreground="Gray"/>
         </Border>
     </Grid>
-
 </UserControl>

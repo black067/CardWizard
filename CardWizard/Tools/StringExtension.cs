@@ -52,7 +52,7 @@ namespace CardWizard.Tools
         /// <param name="separators"></param>
         /// <returns></returns>
         public static string[] SplitRemoveEmpty(this string text, params char[] separators)
-            => text.Split(separators, StringSplitOptions.RemoveEmptyEntries);
+            => text?.Split(separators, StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>();
 
         /// <summary>
         /// 分隔字符串并移除空项
@@ -105,7 +105,7 @@ namespace CardWizard.Tools
         /// <summary>
         /// 中文字符在编码后的前缀
         /// </summary>
-        public static string Prefix_CHS { get; } = "OX";
+        public static string PrefixCHS { get; } = "OX";
 
         /// <summary>
         /// 将字符串中的所有中文字符转换为 16 进制编码, 比如 "文字" => "OX8765OX575b"
@@ -119,7 +119,7 @@ namespace CardWizard.Tools
                 {
                     var encoded = Encoding.Unicode.GetBytes(chs.Value);
                     var hexed = BitConverter.ToString(encoded).ToLower().Replace("-", string.Empty);
-                    return hexed.PrefixBy(Prefix_CHS);
+                    return hexed.PrefixBy(PrefixCHS);
                 });
         }
 

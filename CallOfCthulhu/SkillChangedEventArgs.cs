@@ -43,11 +43,12 @@ namespace CallOfCthulhu
         /// <summary>
         /// 判断是否是同一个技能
         /// </summary>
-        /// <param name="source"></param>
+        /// <param name="other"></param>
         /// <returns></returns>
-        public bool IsSameSkill(Skill source)
+        public bool IsSameSkill(Skill other)
         {
-            return SkillID == source.ID;
+            if (other == null) return false;
+            return SkillID == other.ID;
         }
     }
 }

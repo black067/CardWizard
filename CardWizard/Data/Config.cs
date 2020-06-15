@@ -30,7 +30,7 @@ namespace CardWizard.Data
         /// 提示浮窗出现时, 其背景的透明度
         /// </summary>
         [Description("提示浮窗出现时, 其背景的透明度")]
-        public double ToolTipOpacity = 0.87;
+        public double ToolTipOpacity = 0.95;
 
         /// <summary>
         /// 角色存档文件的标准后缀名

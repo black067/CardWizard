@@ -54,10 +54,11 @@
                Grid.Row="2" Content="Occupation" Tag="Occupation" 
                Style="{DynamicResource XLabel}" FontSize="{DynamicResource LabelFontSize}" Margin="2,6,2,6"/>
         <Button x:Name="Button_Occupation" 
-                Content="Select Occupation" Tag="Occupation.Select" 
+                Content="Select Occupation"
                 Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3"
                 Margin="6,6,6,6"
-                Style="{DynamicResource XButtonStyle}" FontSize="{DynamicResource LabelFontSize}"/>
+                Style="{DynamicResource XButtonStyle}" FontSize="{DynamicResource LabelFontSize}">
+        </Button>
         <!--性别-->
         <Label x:Name="Label_Gender" 
                Content="Gender" Grid.Row="3" 

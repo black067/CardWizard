@@ -33,22 +33,28 @@ namespace CardWizard.Data
         /// <summary>
         /// 根据技能名称查询技能
         /// </summary>
-        /// <param name="key"></param>
+        /// <param name="id"></param>
         /// <param name="skill"></param>
         /// <returns></returns>
-        public bool TryGetSkill(int key, out Skill skill) => Skills.TryGetValue(key, out skill);
+        public bool TryGetSkill(int id, out Skill skill) => Skills.TryGetValue(id, out skill);
 
         /// <summary>
-        /// 根据职业名称查询职业
+        /// 根据职业 ID 查询职业
         /// </summary>
-        /// <param name="key"></param>
+        /// <param name="id"></param>
         /// <param name="occupation"></param>
         /// <returns></returns>
-        public bool TryGetOccupation(int key, out Occupation occupation) => Occupations.TryGetValue(key, out occupation);
+        public bool TryGetOccupation(int id, out Occupation occupation) => Occupations.TryGetValue(id, out occupation);
 
-        public bool TryGetOccupation(string key, out Occupation occupation)
+        /// <summary>
+        /// 根据职业名称查询职业数据
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="occupation"></param>
+        /// <returns></returns>
+        public bool TryGetOccupation(string name, out Occupation occupation)
         {
-            var sql = (from val in Occupations.Values where val.Name.EqualsIgnoreCase(key) select val);
+            var sql = (from val in Occupations.Values where val.Name.EqualsIgnoreCase(name) select val);
             if (sql.Any())
             {
                 occupation = sql.FirstOrDefault();

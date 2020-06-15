@@ -118,12 +118,13 @@ namespace CardWizard.View
                 if (tip.Content is string str)
                 {
                     if (string.IsNullOrWhiteSpace(str))
-                        tip.Opacity = 0;
+                        tip.Visibility = Visibility.Hidden;
                     else
-                    {
-                        var setters = (from Setter setter in tip.Style.Setters where setter.Property.Name == nameof(tip.Opacity) select setter.Value).FirstOrDefault() ?? 0.87;
-                        tip.Opacity = (double)Convert.ChangeType(setters, typeof(double));
-                    }
+                        tip.Visibility = Visibility.Visible;
+                }
+                if (tip.Content == null)
+                {
+                    tip.Visibility = Visibility.Hidden;
                 }
             };
             if (element == null) throw new ArgumentNullException(nameof(element));
@@ -138,12 +139,14 @@ namespace CardWizard.View
                 toolTip.Content = text;
                 element.RegisterName($"ToolTip_{toolTip.GetHashCode()}", toolTip);
                 element.ToolTip = toolTip;
+                toolTip.Opened += OnOpended;
+                if (handler != null)
+                {
+                    toolTip.Opened += handler;
+                }
+                if (style != null)
+                    toolTip.Style = style;
             }
-            toolTip.Opened += OnOpended;
-            if (handler != null)
-                toolTip.Opened += handler;
-            if (style != null)
-                toolTip.Style = style;
             return toolTip;
         }
 
@@ -204,6 +207,10 @@ namespace CardWizard.View
         {
             if (root == null) return new List<Visual>();
             var result = new List<Visual> { root };
+            if (root is FrameworkElement fe)
+            {
+                if (fe.ContextMenu != null) result.AddRange(GetChildren(fe.ContextMenu));
+            }
             switch (root)
             {
                 case Panel panel:

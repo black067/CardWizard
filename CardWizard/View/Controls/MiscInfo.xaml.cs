@@ -46,7 +46,7 @@ namespace CardWizard.View
             Combo_Era.ItemsSource = translator.labelForEras;
             // 角色职业
             Button_Occupation.Click += Button_Occupation_Click;
-            Manager.InfoUpdated += GetHandler(Button_Occupation.Tag?.ToString());
+            Manager.InfoUpdated += UpdateOccupationView;
             // 角色年龄的显示
             BindTextBox(Text_Age, nameof(Character.Age), Manager, new IntRangeRule(1, 99));
             AgeBonusMark = Manager.IMainPage.Label_Validity;
@@ -70,22 +70,17 @@ namespace CardWizard.View
             };
         }
 
-        private Action<Character> GetHandler(string originalTag)
+        private void UpdateOccupationView(Character c)
         {
-            void UpdateOccupationView(Character c)
+            var occupationID = c.GetOccupationID();
+            if (Manager.DataBus.TryGetOccupation(occupationID, out var occupation))
             {
-                if (string.IsNullOrWhiteSpace(c.Occupation))
-                {
-                    Button_Occupation.Tag = originalTag;
-                    Button_Occupation.Content = Manager.Translator.Translate(originalTag, originalTag);
-                }
-                else
-                {
-                    Button_Occupation.Tag = c.Occupation;
-                    Button_Occupation.Content = c.Occupation;
-                }
+                Button_Occupation.Content = occupation.Name;
             }
-            return UpdateOccupationView;
+            else
+            {
+                Button_Occupation.Content = Manager.Translator.Translate("Occupation.Select", "Select Occupation");
+            }
         }
 
         private void Button_Occupation_Click(object sender, RoutedEventArgs e)
@@ -97,7 +92,7 @@ namespace CardWizard.View
             MainManager.Localize(window, Manager.Translator);
             if ((bool)window.ShowDialog() && window.Selection is Occupation occupation)
             {
-                Manager.Current.Occupation = occupation.Name;
+                Manager.Current.Occupation = $"{occupation.ID:D3} {occupation.Name}";
                 Button_Occupation.Content = occupation.Name;
                 if (Button_Occupation.ToolTip is ToolTip tip)
                 {

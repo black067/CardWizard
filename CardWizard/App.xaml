@@ -22,10 +22,26 @@
         <!--默认的 Margin-->
         <Thickness x:Key="DefaultMargin">2,2,2,2</Thickness>
         <!--提示信息窗口的显示样式-->
+        <ControlTemplate x:Key="ToolTipTemplate" TargetType="ToolTip">
+            <Border BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}" MaxWidth="{TemplateBinding MaxWidth}" Opacity="{TemplateBinding Opacity}">
+                <TextBlock Opacity="{TemplateBinding Opacity}" Background="{TemplateBinding Background}" FontSize="{TemplateBinding FontSize}" Text="{TemplateBinding Content}" TextWrapping="WrapWithOverflow" Padding="4" FontFamily="{TemplateBinding FontFamily}"/>
+
+            </Border>
+            <!--<ControlTemplate.Triggers>
+                <Trigger Property="Content" Value="">
+                    <Setter Property="Opacity" Value="0"/>
+                </Trigger>
+            </ControlTemplate.Triggers>-->
+        </ControlTemplate>
         <Style x:Key="XToolTip" TargetType="ToolTip">
             <Setter Property="FontSize" Value="14"/>
+            <Setter Property="MaxWidth" Value="384"/>
+            <Setter Property="BorderBrush" Value="{StaticResource MenuBackground}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontFamily" Value="{StaticResource WindowFontFamily}"/>
             <Setter Property="Background" Value="WhiteSmoke"/>
-            <Setter Property="Opacity" Value="0.87"/>
+            <Setter Property="Template" Value="{StaticResource ToolTipTemplate}">
+            </Setter>
         </Style>
         <!-- 定义Label 的样式-->
         <Style x:Key="XLabel" TargetType="Label">
@@ -52,12 +68,6 @@
             <Setter Property="Background" Value="#FF426E93"/>
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="FontSize" Value="22"/>
-        </Style>
-        <!--下拉弹窗-->
-        <Style x:Key="ComboGenceral" TargetType="ComboBox">
-            <Setter Property="Background" Value="WhiteSmoke"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="BorderBrush" Value="{DynamicResource MenuBackground}"/>
         </Style>
         <!-- 定义 Button 的样式 -->
         <Style x:Key="XButtonStyle" TargetType="Button">
@@ -267,10 +277,8 @@
         <SolidColorBrush x:Key="ComboBox.MouseOver.Glyph" Color="#FF000000"/>
         <SolidColorBrush x:Key="ComboBox.MouseOver.Editable.Background" Color="#FFFFFFFF"/>
         <SolidColorBrush x:Key="ComboBox.MouseOver.Editable.Border" Color="#FF7EB4EA"/>
-        <LinearGradientBrush x:Key="ComboBox.MouseOver.Editable.Button.Background" EndPoint="0,1" StartPoint="0,0">
-            <GradientStop Color="#FFEBF4FC" Offset="0.0"/>
-            <GradientStop Color="#FFDCECFC" Offset="1.0"/>
-        </LinearGradientBrush>
+        <SolidColorBrush x:Key="ComboBox.MouseOver.Editable.Button.Background" Color="#4C1692FF">
+        </SolidColorBrush>
         <SolidColorBrush x:Key="ComboBox.MouseOver.Editable.Button.Border" Color="#FF7EB4EA"/>
         <LinearGradientBrush x:Key="ComboBox.Pressed.Background" EndPoint="0,1" StartPoint="0,0">
             <GradientStop Color="#FFDAECFC" Offset="0.0"/>
@@ -300,7 +308,7 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type ToggleButton}">
-                        <Border x:Name="templateRoot" BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{StaticResource ComboBox.Static.Border}" SnapsToDevicePixels="true" Background="White">
+                        <Border x:Name="templateRoot" BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}" SnapsToDevicePixels="true" Background="White">
                             <Border x:Name="splitBorder" HorizontalAlignment="Right" Margin="0" SnapsToDevicePixels="true" Width="10">
                                 <Path x:Name="arrow" Data="F1 M 0,0 L 2.667,2.66665 L 5.3334,0 L 5.3334,-1.78168 L 2.6667,0.88501 L0,-1.78168 L0,0 Z" Fill="{StaticResource ComboBox.Static.Glyph}" HorizontalAlignment="Center" Margin="0" VerticalAlignment="Center"/>
                             </Border>

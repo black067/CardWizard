@@ -18,10 +18,10 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="28"/>
             <RowDefinition Height="{DynamicResource TitleRowHeight}"/>
-            <RowDefinition Height="200"/>
-            <RowDefinition Height="68"/>
-            <RowDefinition x:Name="Row_Skills" Height="640"/>
-            <RowDefinition Height="180"/>
+            <RowDefinition Height="256"/>
+            <RowDefinition Height="108"/>
+            <RowDefinition x:Name="Row_Skills" Height="520"/>
+            <RowDefinition />
             <RowDefinition Height="28"/>
         </Grid.RowDefinitions>
         <!--页首的显示-->
@@ -41,7 +41,7 @@
                        Style="{DynamicResource ValidityCheck}" Padding="5,0,5,0" Margin="0,0,5,0"/>
         <!--角色背景信息的显示-->
         <cview:MiscInfo x:Name="Miscellaneous" HorizontalAlignment="Stretch" 
-                        Grid.Row="2" Grid.RowSpan="2" 
+                        Grid.Row="2" Grid.RowSpan="1" 
                         VerticalContentAlignment="Stretch" VerticalAlignment="Stretch"/>
         <!--属性总计与重新生成按钮-->
         <Label Content="Characteristics" Tag="Investigator.Characteristics.Title"
@@ -53,7 +53,7 @@
                         Foreground="{DynamicResource ButtonForeground}" Style="{DynamicResource XButtonStyle}"
                         FontSize="20" BorderThickness="0,0,0,0" Background="{x:Null}"/>
         <!--角色属性的显示-->
-        <cview:CharacteristicViewer x:Name="CharacteristicBoxes" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Grid.RowSpan="2" Margin="2,0,2,0"/>
+        <cview:CharacteristicViewer x:Name="CharacteristicBoxes" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="1" Grid.RowSpan="1" Margin="2,0,2,0"/>
         <!--角色照片的显示-->
         <Image x:Name="Image_Avatar" Tag="Card.Image.Avatar"
                        Grid.Column="2"  Grid.Row="2" VerticalAlignment="Center" Cursor="Hand" 
@@ -63,7 +63,14 @@
                 <DropShadowEffect BlurRadius="3" Opacity="0.885" ShadowDepth="2"/>
             </Image.Effect>
         </Image>
-        
+        <!--角色生命值等点数显示-->
+        <WrapPanel x:Name="PointsPanel" Orientation="Horizontal" Grid.Row="3" Grid.ColumnSpan="3" Margin="2" ItemWidth="209" ItemHeight="100">
+            <cview:PointsBox Tag="HP" Margin="2,2,2,2" Background="#4CABD9FF"/>
+            <cview:PointsBox Tag="SAN" Margin="2,2,2,2" Background="#4CABD9FF"/>
+            <cview:PointsBox Tag="MP"  Margin="2,2,2,2" Background="#4CABD9FF"/>
+            <cview:PointsBox Tag="MOV"   Margin="2,2,2,2" Background="#4CABD9FF"/>
+        </WrapPanel>
+        <!--角色技能的显示-->
         <cview:SkillsViewer x:Name="SkillPanel" Grid.Row="4" Grid.ColumnSpan="3" />
         <!--伤害奖励与体格的显示-->
         <Grid Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,2,0,2">

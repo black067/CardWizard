@@ -20,8 +20,8 @@
   # 每轮攻击次数
   AttacksPerRound: 1
   # 装弹数
-  Bullets: 0
+  Bullets: –
   # 耐久度
-  Resistance: 0
+  Resistance: –
   # 在各个年代的价格
   Prices: 

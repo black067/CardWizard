@@ -166,11 +166,16 @@ namespace CallOfCthulhu
             // 职业相关
             { "Occupation.PointFormula", "技能点数公式" },
             // 技能相关
-            { "Custom", "自选技能" },
-            { "Custom.Professional", "自选专业技能" },
-            { "Custom.Social", "自选社交型技能" },
-            { "Custom.Artistic", "自选艺术与手艺" },
-            { "OccupationPoints.Label", "职业"},
+            { "Skill.Categories.Any", "无类别" },
+            { "Skill.Categories.Science", "科学" },
+            { "Skill.Categories.Sociality", "社交" },
+            { "Skill.Categories.ArtAndCraft", "艺术与手艺" },
+            { "Skill.Categories.Language", "语言" },
+            { "Skill.Categories.Shooting", "射击" },
+            { "Skill.Categories.Fighting", "格斗" },
+            { "Skill.Categories.Pilot", "驾驶" },
+            { "Skill.Categories.Survival", "生存" },
+            { "Skill.Categories.Knowledge", "学问" },
             { "PersonalPoints.Label", "兴趣"},
             { "GrowthPoints.Label", "成长"},
             // 其它语句
@@ -188,6 +193,7 @@ namespace CallOfCthulhu
             { "MenuBar.Button.SavePicture.ToolTip", "Ctrl + Shift + S\n将你的调查员档案保存为一张图片" },
             { "MenuBar.Button.Settings", "设置" },
             { "MenuBar.Button.ShowToolTip", "显示 Tool Tip 提示" },
+            { "SkillBox.Button.ResetSkill", "重置为空" },
             { "Tab.Front.Header", "档案 正面" },
             { "Tab.Back.Header", "档案 背面" },
             // 界面元素
@@ -215,6 +221,7 @@ namespace CallOfCthulhu
             { "ValuesEditor.ToolTip.BaseAndRange", "基础值: {0}, 合理范围: {1} ~ {2}" },
             { "ValuesEditor.ToolTip.BaseOnly", "基础值: {0}" },
             // 其它窗口
+            { "GenerationWindow.Title.New", "新建调查员档案" },
             { "GenerationWindow.Title", "生成了以下属性" },
             { "GenerationWindow.Message", $"选择一组数据作为调查员的基础属性\n* 请确认调查员年龄, 并按照年龄调整属性点\n* {{LUCK}} 将在确认后自动骰出" },
             { "GenerationWindow.Helper", "* 此行填写调整值" },
